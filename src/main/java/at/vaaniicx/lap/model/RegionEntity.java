@@ -6,18 +6,18 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-@Entity(name = "role")
+@Entity(name = "region")
 @Data
 @NoArgsConstructor
-public class RoleEntity {
+public class RegionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(name = "role", unique = true, nullable = false)
-    private String roleName;
+    @Column(name = "region", unique = true, nullable = false)
+    private String region;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
-    private List<UserEntity> users;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "region")
+    private List<GameEntity> games;
 }
