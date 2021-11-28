@@ -20,4 +20,7 @@ public class CountryEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "country")
     private List<LocationEntity> locations;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "country")
+    private List<AgeRestrictionEntity> ageRestrictions;
 }

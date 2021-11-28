@@ -1,6 +1,5 @@
 package at.vaaniicx.lap.model;
 
-import javafx.application.Platform;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -56,6 +55,6 @@ public class GameEntity {
     @JoinColumn(name = "age_restriction")
     private AgeRestrictionEntity ageRestriction;
 
-    // Sprache -> many to many
-    // Kategorie -> many to many
+    // Language -> many to many
+    // Category -> many to many
 }

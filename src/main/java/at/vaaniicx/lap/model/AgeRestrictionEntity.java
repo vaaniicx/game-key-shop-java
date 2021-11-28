@@ -19,4 +19,8 @@ public class AgeRestrictionEntity {
 
     @Column(name = "institution", nullable = false)
     private String institution;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", nullable = false)
+    private CountryEntity country;
 }

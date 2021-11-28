@@ -18,9 +18,7 @@ public class UserEntity {
     @Column(name = "email", length = 100, unique = true, nullable = false)
     private String email;
 
-    // private boolean isActive;
-
-    @Column(name = "password", length = 255, nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "salt", length = 24, nullable = false)
