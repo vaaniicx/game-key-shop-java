@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "ageRestriction")
+@Entity(name = "age_restriction")
 @Data
 @NoArgsConstructor
 public class AgeRestrictionEntity {

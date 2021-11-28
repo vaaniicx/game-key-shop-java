@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@Entity(name = "shoppingcart")
+@Entity(name = "shopping_cart")
 @Data
 @NoArgsConstructor
 public class ShoppingCartEntity {

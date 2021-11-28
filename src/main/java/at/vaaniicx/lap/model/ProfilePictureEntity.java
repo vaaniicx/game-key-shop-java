@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.sql.Blob;
 
-@Entity(name = "profilepicture")
+@Entity(name = "profile_picture")
 @Data
 @NoArgsConstructor
 public class ProfilePictureEntity {
