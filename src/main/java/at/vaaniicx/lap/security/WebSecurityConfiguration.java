@@ -13,8 +13,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    /**
+     * Jede Anfrage erfordert eine Authentifizierung (1)
+     * Formular-basierende Authentifizierung wird unterstützt (2)
+     * HTTP-Basic Authentifizierung wird unterstützt (3)
+     *
+     * @param http
+     * @throws Exception
+     */
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(final HttpSecurity http) throws Exception {
         http.authorizeRequests()
                     .antMatchers("/", "/home").permitAll()
                     .anyRequest().authenticated()
@@ -25,6 +33,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .and()
                 .logout()
                     .permitAll();
+
     }
 
     @Override
@@ -40,4 +49,5 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

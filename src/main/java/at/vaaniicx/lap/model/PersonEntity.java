@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "person")
 @Data
@@ -26,5 +27,8 @@ public class PersonEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", nullable = false)
-    private AddressEntity addressEntity;
+    private AddressEntity address;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
+    private List<PlacingEntity> placings;
 }

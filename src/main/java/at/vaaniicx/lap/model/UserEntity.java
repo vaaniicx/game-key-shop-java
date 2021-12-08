@@ -21,6 +21,9 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @Column(name = "salt", length = 24, nullable = false)
     private String salt;
 
@@ -38,7 +41,7 @@ public class UserEntity {
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "profile_picture_id", nullable = false)
     private ProfilePictureEntity profilePicture;
 }

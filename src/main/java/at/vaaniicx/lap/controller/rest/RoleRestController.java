@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.controller;
+package at.vaaniicx.lap.controller.rest;
 
 import at.vaaniicx.lap.model.RoleEntity;
 import at.vaaniicx.lap.repository.RoleRepository;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/role")
-public class RoleController {
+public class RoleRestController {
 
     @Autowired
     RoleRepository roleRepository;

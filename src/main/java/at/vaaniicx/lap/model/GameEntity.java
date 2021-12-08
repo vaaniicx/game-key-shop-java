@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 @Entity(name = "game")
 @Data
@@ -36,6 +37,7 @@ public class GameEntity {
     @Column(name = "savings")
     private double savings;
 
+    // MAX LENGTH
     @Column(name = "system_requirements")
     private String systemRequirements;
 
@@ -43,18 +45,10 @@ public class GameEntity {
     @JoinColumn(name = "developer_id", nullable = false)
     private DeveloperEntity developer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id", nullable = false)
-    private RegionEntity region;
+    @Column(name = "age_restriction", nullable = false)
+    private byte ageRestriction;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "platform_id", nullable = false)
-    private PlatformEntity platform;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "age_restriction")
-    private AgeRestrictionEntity ageRestriction;
-
-    // Language -> many to many
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
+    private List<GamePictureEntity> gamePictures;
     // Category -> many to many
 }
