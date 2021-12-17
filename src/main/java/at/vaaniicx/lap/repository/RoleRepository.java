@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.repository;
 
-import at.vaaniicx.lap.model.RoleEntity;
+import at.vaaniicx.lap.model.entity.RoleEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
@@ -13,4 +13,6 @@ public interface RoleRepository extends CrudRepository<RoleEntity, Long> {
 
     @Override
     Optional<RoleEntity> findById(Long id);
+
+    Optional<RoleEntity> findByRoleName(String roleName);
 }

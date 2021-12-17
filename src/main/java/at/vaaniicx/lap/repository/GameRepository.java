@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.repository;
 
-import at.vaaniicx.lap.model.GameEntity;
+import at.vaaniicx.lap.model.entity.GameEntity;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
