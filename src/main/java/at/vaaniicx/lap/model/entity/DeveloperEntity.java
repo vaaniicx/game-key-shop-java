@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model;
+package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 public class DeveloperEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "developer", length = 75, nullable = false)

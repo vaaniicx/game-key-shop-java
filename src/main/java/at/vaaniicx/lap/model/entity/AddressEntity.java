@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model;
+package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +11,10 @@ import javax.persistence.*;
 public class AddressEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id", nullable = false)
     private LocationEntity location;
 
@@ -29,4 +29,11 @@ public class AddressEntity {
 
     @Column(name = "stair", length = 10)
     private String stair;
+
+    public AddressEntity(String street, String houseNumber, String door, String stair) {
+        this.street = street;
+        this.houseNumber = houseNumber;
+        this.door = door;
+        this.stair = stair;
+    }
 }

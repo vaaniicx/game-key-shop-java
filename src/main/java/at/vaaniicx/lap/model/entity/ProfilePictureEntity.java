@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model;
+package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import javax.persistence.*;
 public class ProfilePictureEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "picture", nullable = false)

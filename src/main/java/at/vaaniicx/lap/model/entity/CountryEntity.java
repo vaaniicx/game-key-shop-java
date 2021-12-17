@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model;
+package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +12,13 @@ import java.util.List;
 public class CountryEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "country", unique = true, nullable = false)
     private String country;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "country")
     private List<LocationEntity> locations;
+
 }

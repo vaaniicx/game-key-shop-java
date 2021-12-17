@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model;
+package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ import java.util.List;
 public class PersonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "first_name", length = 50, nullable = false)
     private String firstName;
@@ -25,10 +25,16 @@ public class PersonEntity {
     @Column(name = "birth_date", nullable = false)
     private Date birthDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
     private List<PlacingEntity> placings;
+
+    public PersonEntity(String firstName, String lastName, Date birthDate) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+    }
 }
