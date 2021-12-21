@@ -55,6 +55,9 @@ public class GameEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
     private List<GamePictureEntity> gamePictures;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
+    private List<KeyCodeEntity> keys;
+
     @ManyToMany(mappedBy = "games")
     private List<CategoryEntity> categories;
 
@@ -64,4 +67,12 @@ public class GameEntity {
             orphanRemoval = true
     )
     private List<ShoppingCartGameEntity> shoppingCarts;
+
+
+    @OneToMany(
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PlacingDetailsEntity> placings;
 }

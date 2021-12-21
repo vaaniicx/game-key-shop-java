@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.List;
 
 @Entity(name = "placing")
 @Data
@@ -24,4 +25,11 @@ public class PlacingEntity {
 
     @Column(name = "placing_date", nullable = false)
     private Instant placingDate;
+
+    @OneToMany(
+            mappedBy = "placing",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<PlacingDetailsEntity> games;
 }
