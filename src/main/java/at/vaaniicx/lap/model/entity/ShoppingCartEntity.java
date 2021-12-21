@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity(name = "shopping_cart")
 @Data
@@ -20,4 +21,11 @@ public class ShoppingCartEntity {
     @OneToOne
     @JoinColumn(name = "person_id", nullable = false)
     private PersonEntity person;
+
+    @OneToMany(
+            mappedBy = "shoppingCart",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ShoppingCartGameEntity> games;
 }

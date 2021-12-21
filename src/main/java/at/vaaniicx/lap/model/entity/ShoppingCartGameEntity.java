@@ -1,0 +1,27 @@
+package at.vaaniicx.lap.model.entity;
+
+import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Entity(name = "shopping_cart_game")
+@Data
+@NoArgsConstructor
+public class ShoppingCartGameEntity {
+
+    @EmbeddedId
+    private ShoppingCartGamePk id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("shoppingCartId")
+    private ShoppingCartEntity shoppingCart;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("gameId")
+    private GameEntity game;
+
+    @Column(name = "amount", nullable = false)
+    private byte amount;
+}

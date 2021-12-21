@@ -57,4 +57,11 @@ public class GameEntity {
 
     @ManyToMany(mappedBy = "games")
     private List<CategoryEntity> categories;
+
+    @OneToMany(
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<ShoppingCartGameEntity> shoppingCarts;
 }
