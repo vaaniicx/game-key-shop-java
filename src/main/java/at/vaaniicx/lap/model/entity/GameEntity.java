@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "game")
@@ -25,8 +25,9 @@ public class GameEntity {
     @Column(name = "short_description", nullable = false)
     private String shortDescription;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "release_date", nullable = false)
-    private Instant releaseDate;
+    private Date releaseDate;
 
     @Column(name = "original_price", nullable = false)
     private double originalPrice;

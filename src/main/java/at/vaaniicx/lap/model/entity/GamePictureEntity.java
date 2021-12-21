@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Blob;
 
 @Entity(name = "gamePicture")
 @Data
@@ -19,7 +20,7 @@ public class GamePictureEntity {
     private GameEntity game;
 
     @Column(name = "image", nullable = false)
-    private byte[] image;
+    private Blob image;
 
     @Column(name = "is_thumb", nullable = false)
     private boolean thumb;
