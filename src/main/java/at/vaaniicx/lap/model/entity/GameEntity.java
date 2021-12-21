@@ -14,12 +14,12 @@ public class GameEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    @Column(name = "title", length = 128, nullable = false)
+    @Column(name = "title", length = 50, nullable = false)
     private String title;
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", length = 8000, nullable = false)
     private String description;
 
     @Column(name = "short_description", nullable = false)
@@ -38,18 +38,23 @@ public class GameEntity {
     @Column(name = "savings")
     private double savings;
 
-    // MAX LENGTH
-    @Column(name = "system_requirements")
+    @Column(name = "system_requirements", length = 8000, nullable = false)
     private String systemRequirements;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "developer_id", nullable = false)
     private DeveloperEntity developer;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publisher_id", nullable = false)
+    private PublisherEntity publisher;
+
     @Column(name = "age_restriction", nullable = false)
     private byte ageRestriction;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
     private List<GamePictureEntity> gamePictures;
-    // Category -> many to many
+
+    @ManyToMany(mappedBy = "games")
+    private List<CategoryEntity> categories;
 }

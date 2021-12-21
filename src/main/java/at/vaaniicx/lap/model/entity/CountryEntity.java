@@ -15,7 +15,7 @@ public class CountryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "country", unique = true, nullable = false)
+    @Column(name = "country", length = 50, unique = true, nullable = false)
     private String country;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "country")

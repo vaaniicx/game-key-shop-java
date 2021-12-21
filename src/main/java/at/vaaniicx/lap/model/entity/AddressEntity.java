@@ -18,7 +18,7 @@ public class AddressEntity {
     @JoinColumn(name = "location_id", nullable = false)
     private LocationEntity location;
 
-    @Column(name = "street", length= 100, nullable = false)
+    @Column(name = "street", length = 100, nullable = false)
     private String street;
 
     @Column(name = "house_number", length = 10, nullable = false)
