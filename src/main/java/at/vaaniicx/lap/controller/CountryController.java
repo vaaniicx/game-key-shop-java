@@ -1,6 +1,5 @@
 package at.vaaniicx.lap.controller;
 
-
 import at.vaaniicx.lap.model.dto.CountryDTO;
 import at.vaaniicx.lap.model.entity.CountryEntity;
 import at.vaaniicx.lap.model.mapper.CountryMapper;
@@ -28,7 +27,7 @@ public class CountryController {
     }
 
     @GetMapping("/{id}")
-    public CountryEntity findById(@PathVariable Long id) {
+    public CountryEntity getById(@PathVariable Long id) {
         return countryRepository.findById(id).orElse(null);
     }
 }

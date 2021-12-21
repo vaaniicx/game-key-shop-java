@@ -8,6 +8,7 @@ import at.vaaniicx.lap.model.response.JwtLoginResponse;
 import at.vaaniicx.lap.model.response.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
@@ -35,7 +37,7 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping("/auth/login")
+    @PostMapping("/login")
     public ResponseEntity<JwtLoginResponse> login(@RequestBody @Validated JwtLoginRequest request) {
 
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -46,12 +48,17 @@ public class AuthController {
     }
 
 
-    @PostMapping("/auth/register")
+    @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody @Validated RegisterRequest request) {
         if (userService.isEmailAlreadyRegistered(request.getEmail())) {
             throw new UserExistsException();
         }
         UserEntity userEntity = userService.registerUser(request);
         return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
+    }
+
+    @PostMapping("/isLoggedIn")
+    public void isLoggedIn() {
+        throw new NotYetImplementedException();
     }
 }
