@@ -6,8 +6,11 @@ import at.vaaniicx.lap.repository.GamePictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class GamePictureService {
@@ -30,18 +33,21 @@ public class GamePictureService {
     }
 
     public List<GamePictureEntity> getGamePicturesForGameId(Long gameId) {
-        return gamePictureRepository.findByGameId(gameId);
+        List<GamePictureEntity> entities = gamePictureRepository.findByGameId(gameId);
+
+        if (entities.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return entities;
     }
 
     public GamePictureEntity getThumbPictureForGameId(Long gameId) {
         Optional<GamePictureEntity> entity =
                 gamePictureRepository.findByGameId(gameId).stream().filter(GamePictureEntity::isThumb).findFirst();
 
-        if (!entity.isPresent()) {
-//            throw new GamePictureNotFoundException();
-            return null;
-        }
+        return entity.orElse(null);
 
-        return entity.get();
     }
+
 }

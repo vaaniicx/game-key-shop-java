@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -37,9 +38,15 @@ public class GameDTO {
     @JsonProperty("developer_id")
     private Long developerId;
 
+    @JsonProperty("publisher_id")
+    private Long publisherId;
+
+    @JsonProperty("game_pictures")
+    private List<byte[]> gamePictures;
+
     @JsonProperty("age_restriction")
     private byte ageRestriction;
 
-    @JsonProperty("encoded_thumb")
-    private byte[] encodedThumb;
+    @JsonProperty("thumbnail")
+    private byte[] thumbId;
 }
