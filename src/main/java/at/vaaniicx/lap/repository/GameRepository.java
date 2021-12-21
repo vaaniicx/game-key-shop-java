@@ -13,4 +13,6 @@ public interface GameRepository extends CrudRepository<GameEntity, Long> {
 
     @Override
     Optional<GameEntity> findById(Long id);
+
+    List<GameEntity> findByOrderByTitleAsc();
 }
