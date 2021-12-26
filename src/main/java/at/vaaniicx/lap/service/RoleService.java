@@ -29,7 +29,7 @@ public class RoleService {
     }
 
     public RoleEntity getRoleByRoleName(String roleName) {
-        Optional<RoleEntity> entity = roleRepository.findByRoleName(roleName);
+        Optional<RoleEntity> entity = roleRepository.findByRole(roleName);
 
         if (!entity.isPresent()) {
             throw new RoleNotFoundException();

@@ -1,9 +1,8 @@
 package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.dto.CountryDTO;
-import at.vaaniicx.lap.model.entity.CountryEntity;
 import at.vaaniicx.lap.model.mapper.CountryMapper;
-import at.vaaniicx.lap.repository.CountryRepository;
+import at.vaaniicx.lap.service.CountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
 public class CountryController {
 
     @Autowired
-    private CountryRepository countryRepository;
+    private CountryService countryService;
 
     @Autowired
     private CountryMapper mapper;
@@ -23,11 +22,11 @@ public class CountryController {
     @GetMapping
     @ResponseBody
     public List<CountryDTO> getAll() {
-        return countryRepository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return countryService.getAllCountries().stream().map(mapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public CountryEntity getById(@PathVariable Long id) {
-        return countryRepository.findById(id).orElse(null);
+    public CountryDTO getById(@PathVariable Long id) {
+        return mapper.toDto(countryService.getCountryById(id));
     }
 }

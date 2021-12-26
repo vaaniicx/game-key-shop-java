@@ -29,7 +29,7 @@ public class AuthUserDetailsService implements UserDetailsService {
         }
 
         List<GrantedAuthority> authorities =
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getRole()));
 
         return new User(user.getEmail(), user.getPassword(), authorities);
     }

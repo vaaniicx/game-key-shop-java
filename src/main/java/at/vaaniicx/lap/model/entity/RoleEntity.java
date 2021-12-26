@@ -16,7 +16,7 @@ public class RoleEntity {
     private long id;
 
     @Column(name = "role", length = 50, unique = true, nullable = false)
-    private String roleName;
+    private String role;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "role")
     private List<UserEntity> users;
