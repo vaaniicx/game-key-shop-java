@@ -58,8 +58,12 @@ public class GameEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
     private List<KeyCodeEntity> keys;
 
-    @ManyToMany(mappedBy = "games")
-    private List<CategoryEntity> categories;
+    @OneToMany(
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<CategoryGameEntity> categories;
 
     @OneToMany(
             mappedBy = "game",

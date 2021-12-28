@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+@AllArgsConstructor
+public class ProfilePictureDTO {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("role")
-    private String roleName;
+    @JsonProperty("bytes")
+    private byte[] picture;
 }

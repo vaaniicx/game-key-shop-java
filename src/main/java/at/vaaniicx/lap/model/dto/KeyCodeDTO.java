@@ -8,11 +8,20 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeveloperDTO {
+public class KeyCodeDTO {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("name")
-    private String developer;
+    @JsonProperty("game")
+    private GameDTO game;
+
+    @JsonProperty("person")
+    private PersonDTO person;
+
+    @JsonProperty("key_code")
+    private String keyCode;
+
+    @JsonProperty("sold")
+    private boolean sold;
 }

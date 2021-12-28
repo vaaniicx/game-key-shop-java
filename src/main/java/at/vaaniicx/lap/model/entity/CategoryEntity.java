@@ -21,11 +21,10 @@ public class CategoryEntity {
     @Column(name = "description", length = 8000, nullable = false)
     private String description;
 
-    @ManyToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-    @JoinTable(
-            name = "category_game",
-            joinColumns = { @JoinColumn(name = "category_id") },
-            inverseJoinColumns = { @JoinColumn(name = "game_id") }
+    @OneToMany(
+            mappedBy = "category",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
     )
-    private List<GameEntity> games;
+    private List<CategoryGameEntity> games;
 }

@@ -6,13 +6,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+@AllArgsConstructor
+public class LocationDTO {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("role")
-    private String roleName;
+    @JsonProperty("postal")
+    private String postal;
+
+    @JsonProperty("location")
+    private String location;
+
+    @JsonProperty("country")
+    private CountryDTO country;
 }

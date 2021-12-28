@@ -31,5 +31,5 @@ public class PlacingEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PlacingDetailsEntity> games;
+    private List<PlacingDetailsEntity> placingDetails;
 }

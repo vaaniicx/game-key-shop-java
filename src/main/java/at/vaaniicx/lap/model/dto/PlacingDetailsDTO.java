@@ -1,0 +1,24 @@
+package at.vaaniicx.lap.model.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlacingDetailsDTO {
+
+    @JsonProperty("placing")
+    private PlacingDTO placing;
+
+    @JsonProperty("game")
+    private GameDTO game;
+
+    @JsonProperty("key_code")
+    private KeyCodeDTO keyCode;
+
+    @JsonProperty("price")
+    private double price;
+}

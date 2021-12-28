@@ -25,7 +25,6 @@ public class PersonEntity {
     @Column(name = "birth_date", nullable = false)
     private Date birthDate;
 
-    // TODO: Beziehung auf Many to One ändern (eine Adresse kann mehrere Personen haben)
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;

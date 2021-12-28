@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+public class CategoryDTO {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("role")
-    private String roleName;
+    @JsonProperty("name")
+    private String category;
 }

@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+public class ShoppingCartGameDTO {
 
     @JsonProperty("id")
-    private Long id;
+    private Long shoppingCartId;
 
-    @JsonProperty("role")
-    private String roleName;
+    @JsonProperty("game")
+    private GameDTO game;
+
+    @JsonProperty("amount")
+    private byte amount;
 }

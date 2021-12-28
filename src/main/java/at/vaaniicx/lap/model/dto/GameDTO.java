@@ -35,11 +35,11 @@ public class GameDTO {
     @JsonProperty("system_requirements")
     private String systemRequirements;
 
-    @JsonProperty("developer_id")
-    private Long developerId;
+    @JsonProperty("developer")
+    private DeveloperDTO developer;
 
-    @JsonProperty("publisher_id")
-    private Long publisherId;
+    @JsonProperty("publisher")
+    private PublisherDTO publisher;
 
     @JsonProperty("game_pictures")
     private List<byte[]> gamePictures;
@@ -48,5 +48,8 @@ public class GameDTO {
     private byte ageRestriction;
 
     @JsonProperty("thumbnail")
-    private byte[] thumbId;
+    private byte[] thumbnail;
+
+    @JsonProperty("categories")
+    private List<CategoryDTO> categories;
 }

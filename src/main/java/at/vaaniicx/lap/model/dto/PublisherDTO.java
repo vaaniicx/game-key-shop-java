@@ -6,13 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class RoleDTO {
+@AllArgsConstructor
+public class PublisherDTO {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("role")
-    private String roleName;
+    @JsonProperty("name")
+    private String publisher;
 }

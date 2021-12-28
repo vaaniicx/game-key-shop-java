@@ -21,7 +21,7 @@ public class GamePictureDTO {
     @JsonProperty("game_id")
     private Long gameId;
 
-    @JsonProperty("image")
+    @JsonProperty("bytes")
     private byte[] image;
 
     @JsonProperty("is_thumb")
