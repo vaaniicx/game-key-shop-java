@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GamePictureMapper {
 
-    public GamePictureDTO toDto(GamePictureEntity entity) {
+    public static GamePictureDTO toDto(GamePictureEntity entity) {
         return new GamePictureDTO(entity.getId(), entity.getGame().getId(),
                 ImageConversionHelper.blobToByteArray(entity.getImage()), entity.isThumb());
     }

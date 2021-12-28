@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CountryMapper {
 
-    public CountryDTO toDto(CountryEntity entity) {
+    public static CountryDTO toDto(CountryEntity entity) {
         return new CountryDTO(entity.getId(), entity.getCountry());
     }
 
