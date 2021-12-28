@@ -12,6 +12,8 @@ import at.vaaniicx.lap.model.mapper.UserMapper;
 import at.vaaniicx.lap.model.request.RegisterRequest;
 import at.vaaniicx.lap.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,18 +24,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
-    private PersonMapper personMapper;
-
-    @Autowired
-    private LocationMapper locationMapper;
-
-    @Autowired
-    private AddressMapper addressMapper;
 
     @Autowired
     private CountryService countryService;
@@ -70,11 +60,10 @@ public class UserService {
     }
 
     public UserEntity registerUser(RegisterRequest request) {
-        System.out.println("moin im register user");
-        LocationEntity locationEntity = locationMapper.toEntity(request);
-        AddressEntity addressEntity = addressMapper.toEntity(request);
-        PersonEntity personEntity = personMapper.toEntity(request);
-        UserEntity userEntity = userMapper.toEntity(request);
+        LocationEntity locationEntity = LocationMapper.toEntity(request);
+        AddressEntity addressEntity = AddressMapper.toEntity(request);
+        PersonEntity personEntity = PersonMapper.toEntity(request);
+        UserEntity userEntity = UserMapper.toEntity(request);
 
         userEntity.setPerson(personEntity);
         personEntity.setAddress(addressEntity);
@@ -83,4 +72,11 @@ public class UserService {
 
         return userRepository.save(userEntity);
     }
+
+    public UserEntity getCurrentUserEntity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return getUserByEmail(authentication.getName());
+    }
+
 }
