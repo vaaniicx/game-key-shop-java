@@ -16,17 +16,14 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @Autowired
-    private GameMapper mapper;
-
     @GetMapping
     @ResponseBody
     public List<GameDTO> getAll() {
-        return gameService.getAllGamesOrderByTitle().stream().map(mapper::toDto).collect(Collectors.toList());
+        return gameService.getAllGamesOrderByTitle().stream().map(GameMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public GameDTO getById(@PathVariable Long id) {
-        return mapper.toDto(gameService.getGameById(id));
+        return GameMapper.toDto(gameService.getGameById(id));
     }
 }

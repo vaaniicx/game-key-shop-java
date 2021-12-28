@@ -1,14 +1,17 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.InvalidTokenException;
 import at.vaaniicx.lap.exception.UserExistsException;
+import at.vaaniicx.lap.exception.UserNotFoundException;
 import at.vaaniicx.lap.model.entity.UserEntity;
+import at.vaaniicx.lap.model.mapper.UserMapper;
 import at.vaaniicx.lap.model.request.JwtLoginRequest;
 import at.vaaniicx.lap.model.request.RegisterRequest;
+import at.vaaniicx.lap.model.response.AuthResponse;
 import at.vaaniicx.lap.model.response.JwtLoginResponse;
 import at.vaaniicx.lap.model.response.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
-import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,10 +19,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -57,8 +57,15 @@ public class AuthController {
         return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
     }
 
-    @PostMapping("/isLoggedIn")
-    public void isLoggedIn() {
-        throw new NotYetImplementedException();
+    @GetMapping
+    public ResponseEntity<AuthResponse> auth() {
+        UserEntity userEntity;
+        try {
+            userEntity = userService.getCurrentUserEntity();
+        } catch (UserNotFoundException e) {
+            throw new InvalidTokenException();
+        }
+
+        return ResponseEntity.ok(new AuthResponse(UserMapper.toDto(userEntity)));
     }
 }

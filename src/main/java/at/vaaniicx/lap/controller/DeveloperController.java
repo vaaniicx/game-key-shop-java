@@ -16,17 +16,14 @@ public class DeveloperController {
     @Autowired
     private DeveloperService developerService;
 
-    @Autowired
-    private DeveloperMapper mapper;
-
     @GetMapping
     @ResponseBody
     public List<DeveloperDTO> getAll() {
-        return developerService.getAllDeveloper().stream().map(mapper::toDto).collect(Collectors.toList());
+        return developerService.getAllDeveloper().stream().map(DeveloperMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public DeveloperDTO getById(@PathVariable Long id) {
-        return mapper.toDto(developerService.getDeveloperById(id));
+        return DeveloperMapper.toDto(developerService.getDeveloperById(id));
     }
 }

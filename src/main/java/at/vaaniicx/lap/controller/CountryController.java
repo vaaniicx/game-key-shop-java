@@ -16,17 +16,14 @@ public class CountryController {
     @Autowired
     private CountryService countryService;
 
-    @Autowired
-    private CountryMapper mapper;
-
     @GetMapping
     @ResponseBody
     public List<CountryDTO> getAll() {
-        return countryService.getAllCountries().stream().map(mapper::toDto).collect(Collectors.toList());
+        return countryService.getAllCountries().stream().map(CountryMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public CountryDTO getById(@PathVariable Long id) {
-        return mapper.toDto(countryService.getCountryById(id));
+        return CountryMapper.toDto(countryService.getCountryById(id));
     }
 }

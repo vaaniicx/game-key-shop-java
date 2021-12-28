@@ -16,17 +16,14 @@ public class GamePictureController {
     @Autowired
     private GamePictureService gamePictureService;
 
-    @Autowired
-    private GamePictureMapper mapper;
-
     @GetMapping
     @ResponseBody
     public List<GamePictureDTO> getAll() {
-        return gamePictureService.getAllGamePictures().stream().map(mapper::toDto).collect(Collectors.toList());
+        return gamePictureService.getAllGamePictures().stream().map(GamePictureMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public GamePictureDTO getById(@PathVariable Long id) {
-        return mapper.toDto(gamePictureService.getGamePictureById(id));
+        return GamePictureMapper.toDto(gamePictureService.getGamePictureById(id));
     }
 }

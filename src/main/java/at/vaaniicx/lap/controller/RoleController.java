@@ -24,11 +24,11 @@ public class RoleController {
 
     @GetMapping
     public List<RoleDTO> getAll() {
-        return roleService.getAllRoles().stream().map(mapper::toDto).collect(Collectors.toList());
+        return roleService.getAllRoles().stream().map(RoleMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public RoleDTO getById(@PathVariable Long id) {
-        return mapper.toDto(roleService.getRoleById(id));
+        return RoleMapper.toDto(roleService.getRoleById(id));
     }
 }
