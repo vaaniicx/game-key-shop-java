@@ -28,4 +28,9 @@ public class ShoppingCartEntity {
             orphanRemoval = true
     )
     private List<ShoppingCartGameEntity> games;
+
+    public ShoppingCartEntity(PersonEntity person, double totalPrice) {
+        this.person = person;
+        this.totalPrice = totalPrice;
+    }
 }
