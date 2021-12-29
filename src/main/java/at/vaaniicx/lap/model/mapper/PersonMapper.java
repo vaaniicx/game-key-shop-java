@@ -10,10 +10,6 @@ import java.util.stream.Collectors;
 @Component
 public class PersonMapper {
 
-    public static PersonEntity toEntity(RegisterRequest request) {
-        return new PersonEntity(request.getFirstName(), request.getLastName(), request.getBirthDate());
-    }
-
     public static PersonDTO toDto(PersonEntity e) {
         return new PersonDTO(e.getId(), e.getFirstName(), e.getLastName(), e.getBirthDate(),
                 AddressMapper.toDto(e.getAddress()),
