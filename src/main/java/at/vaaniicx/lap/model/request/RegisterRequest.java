@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.model.request;
 
+import at.vaaniicx.lap.model.entity.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -47,4 +48,6 @@ public class RegisterRequest {
 
     @NotNull
     private String password;
+
+    private RoleEntity role;
 }
