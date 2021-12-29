@@ -1,10 +1,7 @@
 package at.vaaniicx.lap.service;
 
 import at.vaaniicx.lap.exception.UserNotFoundException;
-import at.vaaniicx.lap.model.entity.AddressEntity;
-import at.vaaniicx.lap.model.entity.LocationEntity;
-import at.vaaniicx.lap.model.entity.PersonEntity;
-import at.vaaniicx.lap.model.entity.UserEntity;
+import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.mapper.AddressMapper;
 import at.vaaniicx.lap.model.mapper.LocationMapper;
 import at.vaaniicx.lap.model.mapper.PersonMapper;
@@ -14,8 +11,10 @@ import at.vaaniicx.lap.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +26,18 @@ public class UserService {
 
     @Autowired
     private CountryService countryService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private PersonService personService;
+
+    @Autowired
+    private ShoppingCartService shoppingCartService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
@@ -59,18 +70,24 @@ public class UserService {
         return userEntity.isPresent();
     }
 
-    public UserEntity registerUser(RegisterRequest request) {
-        LocationEntity locationEntity = LocationMapper.toEntity(request);
-        AddressEntity addressEntity = AddressMapper.toEntity(request);
-        PersonEntity personEntity = PersonMapper.toEntity(request);
-        UserEntity userEntity = UserMapper.toEntity(request);
+    public UserEntity registerUser(RegisterRequest req) {
+        LocationEntity location = new LocationEntity(req.getPostal(), req.getLocation());
+        AddressEntity address = new AddressEntity(req.getStreet(), req.getHouseNumber(), req.getDoor(), req.getStair());
+        PersonEntity person = new PersonEntity(req.getFirstName(), req.getLastName(), req.getBirthDate());
+        UserEntity user = new UserEntity(req.getEmail(), passwordEncoder.encode(req.getPassword()), true, Instant.now(), roleService.getRoleByRoleName("Kunde"));
 
-        userEntity.setPerson(personEntity);
-        personEntity.setAddress(addressEntity);
-        addressEntity.setLocation(locationEntity);
-        locationEntity.setCountry(countryService.getCountryById(request.getCountryId()));
+        user.setPerson(person);
+        person.setAddress(address);
+        address.setLocation(location);
+        location.setCountry(countryService.getCountryById(req.getCountryId()));
 
-        return userRepository.save(userEntity);
+        UserEntity persistedUser = userRepository.save(user);
+
+        ShoppingCartEntity shoppingCart =
+                new ShoppingCartEntity(personService.getPersonById(persistedUser.getPerson().getId()), 0);
+        shoppingCartService.saveShoppingCart(shoppingCart);
+
+        return persistedUser;
     }
 
     public UserEntity getCurrentUserEntity() {

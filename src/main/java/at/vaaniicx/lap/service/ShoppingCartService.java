@@ -38,4 +38,12 @@ public class ShoppingCartService {
 
         return entity.get();
     }
+
+    public ShoppingCartEntity saveShoppingCart(ShoppingCartEntity entity) {
+        return repository.save(entity);
+    }
+
+    public ShoppingCartEntity createShoppingCart(Long personId) {
+        return repository.save(new ShoppingCartEntity());
+    }
 }
