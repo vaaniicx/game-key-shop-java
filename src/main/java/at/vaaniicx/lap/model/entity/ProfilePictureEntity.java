@@ -7,7 +7,7 @@ import java.sql.Blob;
 
 import javax.persistence.*;
 
-@Entity(name = "profilepicture")
+@Entity(name = "profile_picture")
 @Data
 @NoArgsConstructor
 public class ProfilePictureEntity {
