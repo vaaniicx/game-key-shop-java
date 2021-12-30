@@ -19,7 +19,7 @@ public class KeyCodeEntity {
     private GameEntity game;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "person_id")
     private PersonEntity person;
 
     @Column(name = "key_code", length = 50, nullable = false)
