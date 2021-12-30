@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.response;
+package at.vaaniicx.lap.model.response.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

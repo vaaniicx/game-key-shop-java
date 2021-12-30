@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.response;
+package at.vaaniicx.lap.model.response.auth;
 
 import at.vaaniicx.lap.model.dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
