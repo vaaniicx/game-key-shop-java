@@ -27,4 +27,10 @@ public class KeyCodeEntity {
 
     @Column(name = "is_sold", nullable = false)
     private boolean sold;
+
+    public KeyCodeEntity(GameEntity game, String keyCode, boolean sold ) {
+        this.game = game;
+        this.keyCode = keyCode;
+        this.sold = sold;
+    }
 }

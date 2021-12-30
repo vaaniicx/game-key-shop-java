@@ -96,4 +96,13 @@ public class UserService {
         return getUserByEmail(authentication.getName());
     }
 
+    public UserEntity getUserByPersonId(Long id) {
+        Optional<UserEntity> entity = userRepository.findByPersonId(id);
+
+        if (!entity.isPresent()) {
+            throw new UserNotFoundException();
+        }
+
+        return entity.get();
+    }
 }
