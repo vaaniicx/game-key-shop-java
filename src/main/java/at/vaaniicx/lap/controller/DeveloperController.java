@@ -23,7 +23,7 @@ public class DeveloperController {
     }
 
     @GetMapping("/{id}")
-    public DeveloperDTO getById(@PathVariable Long id) {
-        return DeveloperMapper.toDto(developerService.getDeveloperById(id));
+    public DeveloperDTO getById(@PathVariable("id") Long developerId) {
+        return DeveloperMapper.toDto(developerService.getDeveloperById(developerId));
     }
 }

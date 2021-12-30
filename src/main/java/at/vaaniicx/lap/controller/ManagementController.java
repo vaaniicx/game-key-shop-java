@@ -1,11 +1,17 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.response.*;
+import at.vaaniicx.lap.model.entity.GameEntity;
+import at.vaaniicx.lap.model.entity.KeyCodeEntity;
+import at.vaaniicx.lap.model.entity.UserEntity;
+import at.vaaniicx.lap.model.request.KeyManagementGenerateCodeRequest;
+import at.vaaniicx.lap.model.response.management.*;
 import at.vaaniicx.lap.service.*;
+import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +41,9 @@ public class ManagementController {
 
     @Autowired
     private GameService gameService;
+
+    @Autowired
+    private KeyCodeService keyCodeService;
 
     @GetMapping("/user")
     public List<UserManagementDataResponse> getUserManagementData() {
@@ -109,6 +118,66 @@ public class ManagementController {
                 .forEach(g -> ret.add(new GameManagementDataResponse(g.getId(), g.getTitle(), g.getDeveloper().getId(),
                         g.getDeveloper().getDeveloper(), g.getPublisher().getId(), g.getPublisher().getPublisher(),
                         g.getReleaseDate(), g.getOriginalPrice(), g.getPrice(), g.getAgeRestriction())));
+
+        return ret;
+    }
+
+    @GetMapping("/game/flat/{id}")
+    public KeyManagementGameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {
+        return new KeyManagementGameFlatResponse(gameId, gameService.getGameById(gameId).getTitle(),
+                keyCodeService.getKeyCountByGameIdAndSold(gameId, true), keyCodeService.getKeyCountByGameIdAndSold(gameId, false));
+    }
+
+    @GetMapping("/game/key/{id}")
+    public List<KeyManagementDataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
+        List<KeyManagementDataResponse> ret = new ArrayList<>();
+
+        keyCodeService.getAllKeyCodesByGameId(gameId).stream().filter(Objects::nonNull)
+                .forEach(k -> {
+                    UserEntity user = null;
+                    if (k.getPerson() != null) {
+                        user = userService.getUserByPersonId(k.getPerson().getId());
+                    }
+
+                    ret.add(new KeyManagementDataResponse(k.getId(), k.getKeyCode(), k.isSold(),
+                            user != null ? user.getId() : null,
+                            user != null ? user.getEmail() : null));
+                });
+
+        return ret;
+    }
+
+    @PostMapping("/game/key/generate")
+    public List<KeyManagementGenerateCodeResponse> generateKeys(@RequestBody @Validated KeyManagementGenerateCodeRequest request) {
+        List<KeyManagementGenerateCodeResponse> ret = new ArrayList<>();
+
+        for (byte i = 0; i < request.getAmount(); i++) {
+            String keyCode = KeyCodeGenerationHelper.generateKeyCode();
+
+            KeyCodeEntity entity =
+                    keyCodeService.saveKeyCode(new KeyCodeEntity(gameService.getGameById(request.getGameId()), keyCode, false));
+
+            ret.add(new KeyManagementGenerateCodeResponse(entity.getId(), entity.getKeyCode()));
+        }
+
+        return ret;
+    }
+
+    @DeleteMapping("/game/key/delete/{id}")
+    public ResponseEntity<Boolean> deleteKey(@PathVariable("id") Long keyId) {
+        boolean deleted = keyCodeService.deleteKeyCodeById(keyId);
+
+        return new ResponseEntity<>(deleted, deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/warehouse/entrance")
+    public List<WarehouseEntranceDataResponse> getWarehouseEntranceData() {
+        List<WarehouseEntranceDataResponse> ret = new ArrayList<>();
+
+        gameService.getAllGamesOrderByTitle().stream().filter(Objects::nonNull).forEach(g -> {
+            Long amount = keyCodeService.getKeyCountByGameIdAndSold(g.getId(), false);
+            ret.add(new WarehouseEntranceDataResponse(g.getId(), g.getTitle(), amount, g.getPrice()));
+        });
 
         return ret;
     }

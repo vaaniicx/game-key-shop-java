@@ -23,7 +23,7 @@ public class CountryController {
     }
 
     @GetMapping("/{id}")
-    public CountryDTO getById(@PathVariable Long id) {
-        return CountryMapper.toDto(countryService.getCountryById(id));
+    public CountryDTO getById(@PathVariable("id") Long countryId) {
+        return CountryMapper.toDto(countryService.getCountryById(countryId));
     }
 }

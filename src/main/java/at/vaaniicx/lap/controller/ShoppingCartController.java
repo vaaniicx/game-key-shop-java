@@ -22,12 +22,12 @@ public class ShoppingCartController {
     }
 
     @GetMapping("/{id}")
-    public ShoppingCartDTO getById(@PathVariable Long id) {
-        return ShoppingCartMapper.toDto(service.getShoppingCartById(id));
+    public ShoppingCartDTO getById(@PathVariable("id") Long shoppingCartId) {
+        return ShoppingCartMapper.toDto(service.getShoppingCartById(shoppingCartId));
     }
 
     @GetMapping("/person/{id}")
-    public ShoppingCartDTO getByPersonId(@PathVariable Long id) {
-        return ShoppingCartMapper.toDto(service.getShoppingCartByPersonId(id));
+    public ShoppingCartDTO getByPersonId(@PathVariable("id") Long personId) {
+        return ShoppingCartMapper.toDto(service.getShoppingCartByPersonId(personId));
     }
 }

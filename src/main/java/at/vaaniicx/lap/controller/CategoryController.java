@@ -26,7 +26,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public CategoryEntity getById(@PathVariable Long id) {
+    public CategoryEntity getById(@PathVariable("id") Long id) {
         Optional<CategoryEntity> entity = categoryRepository.findById(id);
 
         if (!entity.isPresent()) {

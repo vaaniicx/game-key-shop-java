@@ -23,7 +23,7 @@ public class GamePictureController {
     }
 
     @GetMapping("/{id}")
-    public GamePictureDTO getById(@PathVariable Long id) {
-        return GamePictureMapper.toDto(gamePictureService.getGamePictureById(id));
+    public GamePictureDTO getById(@PathVariable("id") Long gamePictureId) {
+        return GamePictureMapper.toDto(gamePictureService.getGamePictureById(gamePictureId));
     }
 }

@@ -17,6 +17,8 @@ public class PublisherController {
     @Autowired
     private PublisherRepository repository;
 
+    // TODO: Service einbauen
+
     @GetMapping
     @ResponseBody
     public List<PublisherDTO> getAll() {
@@ -24,7 +26,7 @@ public class PublisherController {
     }
 
     @GetMapping("/{id}")
-    public PublisherDTO getById(@PathVariable Long id) {
-        return PublisherMapper.toDto(Objects.requireNonNull(repository.findById(id).orElse(null)));
+    public PublisherDTO getById(@PathVariable("id") Long publisherId) {
+        return PublisherMapper.toDto(Objects.requireNonNull(repository.findById(publisherId).orElse(null)));
     }
 }
