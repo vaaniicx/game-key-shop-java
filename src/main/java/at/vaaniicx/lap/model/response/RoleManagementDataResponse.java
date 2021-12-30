@@ -1,0 +1,18 @@
+package at.vaaniicx.lap.model.response;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class RoleManagementDataResponse {
+
+    @JsonProperty("role_id")
+    private Long roleId;
+
+    @JsonProperty("role")
+    private String role;
+}
