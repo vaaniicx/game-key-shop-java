@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.response.management;
+package at.vaaniicx.lap.model.response.management.key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeyManagementGameFlatResponse {
+public class GameFlatResponse {
 
     @JsonProperty("game_id")
     private Long gameId;

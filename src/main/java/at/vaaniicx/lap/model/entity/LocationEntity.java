@@ -1,5 +1,7 @@
 package at.vaaniicx.lap.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity(name = "location")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class LocationEntity {
 
     @Id
@@ -25,7 +29,12 @@ public class LocationEntity {
     @JoinColumn(name = "country_id", nullable = false)
     private CountryEntity country;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "location",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<AddressEntity> addresses;
 
     public LocationEntity(String postal, String location) {

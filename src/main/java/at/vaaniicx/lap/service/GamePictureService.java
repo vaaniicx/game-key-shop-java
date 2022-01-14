@@ -48,4 +48,7 @@ public class GamePictureService {
 
     }
 
+    public GamePictureEntity save(GamePictureEntity e) {
+        return gamePictureRepository.save(e);
+    }
 }

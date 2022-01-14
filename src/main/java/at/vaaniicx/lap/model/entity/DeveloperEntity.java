@@ -1,5 +1,7 @@
 package at.vaaniicx.lap.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity(name = "developer")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class DeveloperEntity {
 
     @Id
@@ -18,6 +22,11 @@ public class DeveloperEntity {
     @Column(name = "developer", length = 75, nullable = false)
     private String developer;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "developer")
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "developer",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<GameEntity> games;
 }

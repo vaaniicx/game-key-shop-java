@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoleManagementDataResponse {
 
-    @JsonProperty("role_id")
+    @JsonProperty("id")
     private Long roleId;
 
     @JsonProperty("role")

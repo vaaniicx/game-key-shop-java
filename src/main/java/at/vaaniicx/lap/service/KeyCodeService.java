@@ -50,4 +50,8 @@ public class KeyCodeService {
     public Long getKeyCountByGameIdAndSold(Long gameId, boolean sold) {
         return keyCodeRepository.countByGameIdAndSold(gameId, sold);
     }
+
+    public Long getKeyCountByGame(Long gameId) {
+        return keyCodeRepository.countByGameId(gameId);
+    }
 }

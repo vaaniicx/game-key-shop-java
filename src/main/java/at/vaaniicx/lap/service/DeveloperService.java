@@ -45,4 +45,12 @@ public class DeveloperService {
 
         return entity.get();
     }
+
+    public DeveloperEntity registerDeveloper(String name) {
+        return developerRepository.save(DeveloperEntity.builder().developer(name).build());
+    }
+
+    public DeveloperEntity updateDeveloper(DeveloperEntity e) {
+        return developerRepository.save(e);
+    }
 }

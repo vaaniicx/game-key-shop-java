@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 public class CategoryMapper {
 
     public static CategoryDTO toDto(CategoryEntity e) {
-        return new CategoryDTO(e.getId(), e.getCategory());
+        return new CategoryDTO(e.getId(), e.getCategory(), e.getDescription());
     }
 }

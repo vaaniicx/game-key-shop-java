@@ -15,4 +15,6 @@ public interface GamePictureRepository extends CrudRepository<GamePictureEntity,
     Optional<GamePictureEntity> findById(Long id);
 
     List<GamePictureEntity> findByGameId(Long id);
+
+    GamePictureEntity save(GamePictureEntity e);
 }

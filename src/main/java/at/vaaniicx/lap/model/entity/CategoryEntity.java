@@ -1,5 +1,7 @@
 package at.vaaniicx.lap.model.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import java.util.List;
 @Entity(name = "category")
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CategoryEntity {
 
     @Id

@@ -1,9 +1,12 @@
 package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.dto.DeveloperDTO;
+import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.model.mapper.DeveloperMapper;
+import at.vaaniicx.lap.model.request.management.developer.UpdateDeveloperRequest;
 import at.vaaniicx.lap.service.DeveloperService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,5 +28,13 @@ public class DeveloperController {
     @GetMapping("/{id}")
     public DeveloperDTO getById(@PathVariable("id") Long developerId) {
         return DeveloperMapper.toDto(developerService.getDeveloperById(developerId));
+    }
+
+    @PostMapping("/update")
+    public DeveloperEntity updateDeveloper(@RequestBody @Validated UpdateDeveloperRequest request) {
+        DeveloperEntity developer = developerService.getDeveloperById(request.getId());
+        developer.setDeveloper(request.getDeveloper());
+
+        return developerService.updateDeveloper(developer);
     }
 }

@@ -32,4 +32,8 @@ public class CategoryGameService {
     public List<CategoryGameEntity> getCategoriesByGameId(Long id) {
         return repository.findByGameId(id);
     }
+
+    public CategoryGameEntity save(CategoryGameEntity e) {
+        return repository.save(e);
+    }
 }

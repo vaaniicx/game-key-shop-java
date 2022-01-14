@@ -2,6 +2,7 @@ package at.vaaniicx.lap.util;
 
 import org.springframework.stereotype.Component;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.sql.SQLException;
 
@@ -16,5 +17,14 @@ public class ImageConversionHelper {
         }
 
         return new byte[0];
+    }
+
+    public static Blob byteArrayToBlob(byte[] arr) {
+        try {
+            return new SerialBlob(arr);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

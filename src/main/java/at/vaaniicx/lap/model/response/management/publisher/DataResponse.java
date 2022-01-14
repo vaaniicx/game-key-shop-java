@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.response.management;
+package at.vaaniicx.lap.model.response.management.publisher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PublisherManagementDataResponse {
+public class DataResponse {
 
     @JsonProperty("publisher_id")
     private Long publisherId;

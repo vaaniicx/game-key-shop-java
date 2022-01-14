@@ -32,4 +32,8 @@ public class GameService {
     public List<GameEntity> getAllGamesOrderByTitle() {
         return gameRepository.findByOrderByTitleAsc();
     }
+
+    public GameEntity registerGame(GameEntity entity) {
+        return gameRepository.save(entity);
+    }
 }

@@ -15,4 +15,7 @@ public class CategoryDTO {
 
     @JsonProperty("name")
     private String category;
+
+    @JsonProperty("description")
+    private String description;
 }

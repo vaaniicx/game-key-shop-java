@@ -1,11 +1,24 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.entity.GameEntity;
-import at.vaaniicx.lap.model.entity.KeyCodeEntity;
-import at.vaaniicx.lap.model.entity.UserEntity;
+import at.vaaniicx.lap.model.entity.*;
+import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
 import at.vaaniicx.lap.model.request.KeyManagementGenerateCodeRequest;
+import at.vaaniicx.lap.model.request.management.category.RegisterCategoryRequest;
+import at.vaaniicx.lap.model.request.management.key.RegisterCodeRequest;
+import at.vaaniicx.lap.model.request.management.developer.RegisterDeveloperRequest;
+import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
+import at.vaaniicx.lap.model.request.management.publisher.RegisterPublisherRequest;
+import at.vaaniicx.lap.model.response.RegisterGameResponse;
 import at.vaaniicx.lap.model.response.management.*;
+import at.vaaniicx.lap.model.response.management.category.RegisterCategoryResponse;
+import at.vaaniicx.lap.model.response.management.developer.RegisterDeveloperResponse;
+import at.vaaniicx.lap.model.response.management.key.GameFlatResponse;
+import at.vaaniicx.lap.model.response.management.key.GenerateCodeResponse;
+import at.vaaniicx.lap.model.response.management.key.RegisterCodeResponse;
+import at.vaaniicx.lap.model.response.management.publisher.DataResponse;
+import at.vaaniicx.lap.model.response.management.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.service.*;
+import at.vaaniicx.lap.util.ImageConversionHelper;
 import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +48,9 @@ public class ManagementController {
     private CategoryService categoryService;
 
     @Autowired
+    private CategoryGameService categoryGameService;
+
+    @Autowired
     private DeveloperService developerService;
 
     @Autowired
@@ -44,6 +61,9 @@ public class ManagementController {
 
     @Autowired
     private KeyCodeService keyCodeService;
+
+    @Autowired
+    private GamePictureService gamePictureService;
 
     @GetMapping("/user")
     public List<UserManagementDataResponse> getUserManagementData() {
@@ -91,21 +111,21 @@ public class ManagementController {
     }
 
     @GetMapping("/developer")
-    public List<DeveloperManagementDataResponse> getDeveloperManagementData() {
-        List<DeveloperManagementDataResponse> ret = new ArrayList<>();
+    public List<at.vaaniicx.lap.model.response.management.developer.DataResponse> getDeveloperManagementData() {
+        List<at.vaaniicx.lap.model.response.management.developer.DataResponse> ret = new ArrayList<>();
 
         developerService.getAllDeveloper().stream().filter(Objects::nonNull)
-                .forEach(d -> ret.add(new DeveloperManagementDataResponse(d.getId(), d.getDeveloper())));
+                .forEach(d -> ret.add(new at.vaaniicx.lap.model.response.management.developer.DataResponse(d.getId(), d.getDeveloper())));
 
         return ret;
     }
 
     @GetMapping("/publisher")
-    public List<PublisherManagementDataResponse> getPublisherManagementData() {
-        List<PublisherManagementDataResponse> ret = new ArrayList<>();
+    public List<DataResponse> getPublisherManagementData() {
+        List<DataResponse> ret = new ArrayList<>();
 
         publisherService.getAllPublisher().stream().filter(Objects::nonNull)
-                .forEach(p -> ret.add(new PublisherManagementDataResponse(p.getId(), p.getPublisher())));
+                .forEach(p -> ret.add(new DataResponse(p.getId(), p.getPublisher())));
 
         return ret;
     }
@@ -123,14 +143,14 @@ public class ManagementController {
     }
 
     @GetMapping("/game/flat/{id}")
-    public KeyManagementGameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {
-        return new KeyManagementGameFlatResponse(gameId, gameService.getGameById(gameId).getTitle(),
+    public GameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {
+        return new GameFlatResponse(gameId, gameService.getGameById(gameId).getTitle(),
                 keyCodeService.getKeyCountByGameIdAndSold(gameId, true), keyCodeService.getKeyCountByGameIdAndSold(gameId, false));
     }
 
     @GetMapping("/game/key/{id}")
-    public List<KeyManagementDataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
-        List<KeyManagementDataResponse> ret = new ArrayList<>();
+    public List<at.vaaniicx.lap.model.response.management.key.DataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
+        List<at.vaaniicx.lap.model.response.management.key.DataResponse> ret = new ArrayList<>();
 
         keyCodeService.getAllKeyCodesByGameId(gameId).stream().filter(Objects::nonNull)
                 .forEach(k -> {
@@ -139,7 +159,7 @@ public class ManagementController {
                         user = userService.getUserByPersonId(k.getPerson().getId());
                     }
 
-                    ret.add(new KeyManagementDataResponse(k.getId(), k.getKeyCode(), k.isSold(),
+                    ret.add(new at.vaaniicx.lap.model.response.management.key.DataResponse(k.getId(), k.getKeyCode(), k.isSold(),
                             user != null ? user.getId() : null,
                             user != null ? user.getEmail() : null));
                 });
@@ -148,8 +168,8 @@ public class ManagementController {
     }
 
     @PostMapping("/game/key/generate")
-    public List<KeyManagementGenerateCodeResponse> generateKeys(@RequestBody @Validated KeyManagementGenerateCodeRequest request) {
-        List<KeyManagementGenerateCodeResponse> ret = new ArrayList<>();
+    public List<GenerateCodeResponse> generateKeys(@RequestBody @Validated KeyManagementGenerateCodeRequest request) {
+        List<GenerateCodeResponse> ret = new ArrayList<>();
 
         for (byte i = 0; i < request.getAmount(); i++) {
             String keyCode = KeyCodeGenerationHelper.generateKeyCode();
@@ -157,10 +177,18 @@ public class ManagementController {
             KeyCodeEntity entity =
                     keyCodeService.saveKeyCode(new KeyCodeEntity(gameService.getGameById(request.getGameId()), keyCode, false));
 
-            ret.add(new KeyManagementGenerateCodeResponse(entity.getId(), entity.getKeyCode()));
+            ret.add(new GenerateCodeResponse(entity.getId(), entity.getKeyCode()));
         }
 
         return ret;
+    }
+
+    @PostMapping("/game/key/register")
+    public RegisterCodeResponse registerCode(@RequestBody @Validated RegisterCodeRequest request) {
+        KeyCodeEntity entity = keyCodeService.saveKeyCode(
+                new KeyCodeEntity(gameService.getGameById(request.getGameId()), request.getKeyCode(), false));
+
+        return new RegisterCodeResponse(entity.getGame().getId(), entity.getId(), entity.getKeyCode());
     }
 
     @DeleteMapping("/game/key/delete/{id}")
@@ -180,5 +208,60 @@ public class ManagementController {
         });
 
         return ret;
+    }
+
+    @PostMapping("/game/register")
+    public RegisterGameResponse registerGame(@RequestBody @Validated RegisterGameRequest request) {
+        // GameEntity speichern
+        GameEntity gameEntity = gameService.registerGame(GameEntity.builder().title(request.getTitle())
+                .description(request.getDescription()).shortDescription(request.getShortDescription())
+                .releaseDate(request.getReleaseDate()).originalPrice(request.getOriginalPrice())
+                .price(request.getPrice())
+                .savings(BigDecimal.valueOf(request.getOriginalPrice()).subtract(BigDecimal.valueOf(request.getPrice())).doubleValue())
+                .systemRequirements("")
+                .developer(developerService.getDeveloperById(request.getDeveloperId()))
+                .publisher(publisherService.getPublisherById(request.getPublisherId()))
+                .ageRestriction(request.getAgeRestriction())
+                .build());
+
+        // Thumbnail speichern
+        gamePictureService.save(GamePictureEntity.builder().game(gameEntity)
+                .image(ImageConversionHelper.byteArrayToBlob(request.getThumbnail())).thumb(true).build());
+
+        // Spielebilder speichern
+        request.getGamePictures().forEach(gp -> gamePictureService.save(GamePictureEntity.builder().game(gameEntity)
+                .image(ImageConversionHelper.byteArrayToBlob(gp)).thumb(false).build()));
+
+        // Kategorien speichern
+        request.getCategories().forEach(cat ->
+                categoryGameService.save(CategoryGameEntity.builder()
+                        .id(new CategoryGamePk(cat, gameEntity.getId()))
+                        .game(gameEntity)
+                        .category(categoryService.getCategoryById(cat))
+                .build()));
+
+        return new RegisterGameResponse(gameEntity.getId(), gameEntity.getTitle(), gameEntity.getReleaseDate(),
+                gameEntity.getDeveloper().getId(), gameEntity.getPublisher().getId(), request.getAgeRestriction());
+    }
+
+    @PostMapping("/developer/register")
+    public RegisterDeveloperResponse registerDeveloper(@RequestBody @Validated RegisterDeveloperRequest request) {
+        DeveloperEntity developerEntity = developerService.registerDeveloper(request.getDeveloper());
+
+        return new RegisterDeveloperResponse(developerEntity.getId(), developerEntity.getDeveloper());
+    }
+
+    @PostMapping("/publisher/register")
+    public RegisterPublisherResponse registerPublisher(@RequestBody @Validated RegisterPublisherRequest request) {
+        PublisherEntity publisherEntity = publisherService.registerPublisher(request.getPublisher());
+
+        return new RegisterPublisherResponse(publisherEntity.getId(), publisherEntity.getPublisher());
+    }
+
+    @PostMapping("/category/register")
+    public RegisterCategoryResponse registerCategory(@RequestBody @Validated RegisterCategoryRequest request) {
+        CategoryEntity categoryEntity = categoryService.registerCategory(request.getCategory(), request.getDescription());
+
+        return new RegisterCategoryResponse(categoryEntity.getId(), categoryEntity.getCategory(), categoryEntity.getDescription());
     }
 }

@@ -1,7 +1,6 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -9,7 +8,9 @@ import java.util.List;
 
 @Entity(name = "game")
 @Data
-@NoArgsConstructor
+@Builder
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@AllArgsConstructor(access = AccessLevel.PACKAGE)
 public class GameEntity {
 
     @Id
@@ -79,4 +80,5 @@ public class GameEntity {
             orphanRemoval = true
     )
     private List<PlacingDetailsEntity> placings;
+
 }
