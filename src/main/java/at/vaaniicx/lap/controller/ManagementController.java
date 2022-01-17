@@ -17,6 +17,7 @@ import at.vaaniicx.lap.model.response.management.key.GenerateCodeResponse;
 import at.vaaniicx.lap.model.response.management.key.RegisterCodeResponse;
 import at.vaaniicx.lap.model.response.management.publisher.DataResponse;
 import at.vaaniicx.lap.model.response.management.publisher.RegisterPublisherResponse;
+import at.vaaniicx.lap.model.response.management.role.UserByRoleResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
@@ -30,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/management")
@@ -84,6 +86,13 @@ public class ManagementController {
                 .forEach(r -> ret.add(new RoleManagementDataResponse(r.getId(), r.getRole())));
 
         return ret;
+    }
+
+    @GetMapping("/role/{id}/user")
+    public List<UserByRoleResponse> getUserByRole(@PathVariable("id") Long roleId) {
+        return userService.findUserByRoleId(roleId).stream()
+                .map(u -> UserByRoleResponse.builder().id(u.getId()).email(u.getEmail()).active(u.isActive()).build())
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/address")

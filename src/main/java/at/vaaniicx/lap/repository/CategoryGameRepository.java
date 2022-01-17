@@ -16,4 +16,6 @@ public interface CategoryGameRepository extends CrudRepository<CategoryGameEntit
     Optional<CategoryGameEntity> findById(CategoryGamePk privateKey);
 
     List<CategoryGameEntity> findByGameId(Long id);
+
+    List<CategoryGameEntity> findByCategoryId(Long id);
 }

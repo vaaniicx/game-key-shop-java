@@ -105,4 +105,21 @@ public class UserService {
 
         return entity.get();
     }
+
+    public void updateLastLogin(String username) {
+        Optional<UserEntity> entity = userRepository.findByEmail(username);
+
+        if (!entity.isPresent()) {
+            throw new UserNotFoundException();
+        }
+
+        UserEntity user = entity.get();
+        user.setLastLogin(Instant.now());
+
+        saveUser(user);
+    }
+
+    public List<UserEntity> findUserByRoleId(Long id) {
+        return userRepository.findByRoleId(id);
+    }
 }

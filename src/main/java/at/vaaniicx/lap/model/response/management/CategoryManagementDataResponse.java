@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CategoryManagementDataResponse {
 
-    @JsonProperty("category_id")
+    @JsonProperty("id")
     private Long categoryId;
 
     @JsonProperty("category")

@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.dto;
+package at.vaaniicx.lap.model.response.management.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryDTO {
+public class UserByRoleResponse {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("category")
-    private String category;
+    @JsonProperty("email")
+    private String email;
 
-    @JsonProperty("description")
-    private String description;
+    @JsonProperty("active")
+    private boolean active;
 }
