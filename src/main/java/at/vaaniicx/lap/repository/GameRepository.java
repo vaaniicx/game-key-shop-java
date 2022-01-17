@@ -15,4 +15,8 @@ public interface GameRepository extends CrudRepository<GameEntity, Long> {
     Optional<GameEntity> findById(Long id);
 
     List<GameEntity> findByOrderByTitleAsc();
+
+    List<GameEntity> findByPublisherId(Long id);
+
+    List<GameEntity> findByDeveloperId(Long id);
 }

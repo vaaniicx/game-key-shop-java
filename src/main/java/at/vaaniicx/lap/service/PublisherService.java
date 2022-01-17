@@ -36,4 +36,8 @@ public class PublisherService {
     public PublisherEntity updatePublisher(PublisherEntity e) {
         return publisherRepository.save(e);
     }
+
+    public void deletePublisherById(Long id) {
+        publisherRepository.deleteById(id);
+    }
 }

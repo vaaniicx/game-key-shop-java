@@ -36,4 +36,12 @@ public class GameService {
     public GameEntity registerGame(GameEntity entity) {
         return gameRepository.save(entity);
     }
+
+    public List<GameEntity> getAllGamesByPublisherId(Long id) {
+        return gameRepository.findByPublisherId(id);
+    }
+
+    public List<GameEntity> getAllGamesByDeveloperId(Long id) {
+        return gameRepository.findByDeveloperId(id);
+    }
 }

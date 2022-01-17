@@ -4,8 +4,12 @@ import at.vaaniicx.lap.model.dto.PublisherDTO;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
 import at.vaaniicx.lap.model.mapper.PublisherMapper;
 import at.vaaniicx.lap.model.request.management.publisher.UpdatePublisherRequest;
+import at.vaaniicx.lap.model.response.management.game.GamesByPublisherResponse;
+import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +22,9 @@ public class PublisherController {
 
     @Autowired
     private PublisherService publisherService;
+
+    @Autowired
+    private GameService gameService;
 
     @GetMapping
     @ResponseBody
@@ -37,5 +44,24 @@ public class PublisherController {
         publisher.setPublisher(request.getPublisher());
 
         return publisherService.updatePublisher(publisher);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deletePublisher(@PathVariable("id") Long id) {
+        publisherService.deletePublisherById(id);
+
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/game")
+    public ResponseEntity<List<GamesByPublisherResponse>> getGamesByPublisher(@PathVariable("id") Long id) {
+        List<GamesByPublisherResponse> ret = gameService.getAllGamesByDeveloperId(id).stream().map(g ->
+                GamesByPublisherResponse.builder()
+                        .gameId(g.getId())
+                        .title(g.getTitle())
+                        .ageRestriction(g.getAgeRestriction())
+                        .build())
+                .collect(Collectors.toList());
+        return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 }

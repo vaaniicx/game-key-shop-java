@@ -53,4 +53,8 @@ public class DeveloperService {
     public DeveloperEntity updateDeveloper(DeveloperEntity e) {
         return developerRepository.save(e);
     }
+
+    public void deleteDeveloperById(Long id) {
+        developerRepository.deleteById(id);
+    }
 }
