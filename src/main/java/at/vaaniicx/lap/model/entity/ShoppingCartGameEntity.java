@@ -3,6 +3,7 @@ package at.vaaniicx.lap.model.entity;
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -15,10 +16,12 @@ public class ShoppingCartGameEntity {
     private ShoppingCartGamePk id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @MapsId("shoppingCartId")
     private ShoppingCartEntity shoppingCart;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @MapsId("gameId")
     private GameEntity game;
 

@@ -2,6 +2,7 @@ package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,6 +20,7 @@ public class ShoppingCartEntity {
     private double totalPrice;
 
     @OneToOne
+    @ToString.Exclude
     @JoinColumn(name = "person_id", nullable = false)
     private PersonEntity person;
 
@@ -27,6 +29,7 @@ public class ShoppingCartEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @ToString.Exclude
     private List<ShoppingCartGameEntity> games;
 
     public ShoppingCartEntity(PersonEntity person, double totalPrice) {

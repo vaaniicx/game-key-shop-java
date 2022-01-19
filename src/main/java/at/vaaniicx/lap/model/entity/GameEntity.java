@@ -43,10 +43,12 @@ public class GameEntity {
     private String systemRequirements;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @JoinColumn(name = "developer_id", nullable = false)
     private DeveloperEntity developer;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @JoinColumn(name = "publisher_id", nullable = false)
     private PublisherEntity publisher;
 
@@ -57,6 +59,7 @@ public class GameEntity {
     private List<GamePictureEntity> gamePictures;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
+    @ToString.Exclude
     private List<KeyCodeEntity> keys;
 
     @OneToMany(
@@ -64,6 +67,7 @@ public class GameEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @ToString.Exclude
     private List<CategoryGameEntity> categories;
 
     @OneToMany(
@@ -71,6 +75,7 @@ public class GameEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @ToString.Exclude
     private List<ShoppingCartGameEntity> shoppingCarts;
 
 
@@ -79,6 +84,7 @@ public class GameEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @ToString.Exclude
     private List<PlacingDetailsEntity> placings;
 
 }
