@@ -33,4 +33,8 @@ public class ShoppingCartGameService {
     public List<ShoppingCartGameEntity> getShoppingCartGameByShoppingCartId(long id) {
         return repository.findByShoppingCartId(id);
     }
+
+    public void save(ShoppingCartGameEntity e) {
+        repository.save(e);
+    }
 }

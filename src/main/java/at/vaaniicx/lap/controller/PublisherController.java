@@ -55,7 +55,7 @@ public class PublisherController {
 
     @GetMapping("/{id}/game")
     public ResponseEntity<List<GamesByPublisherResponse>> getGamesByPublisher(@PathVariable("id") Long id) {
-        List<GamesByPublisherResponse> ret = gameService.getAllGamesByDeveloperId(id).stream().map(g ->
+        List<GamesByPublisherResponse> ret = gameService.getAllGamesByPublisherId(id).stream().map(g ->
                 GamesByPublisherResponse.builder()
                         .gameId(g.getId())
                         .title(g.getTitle())
