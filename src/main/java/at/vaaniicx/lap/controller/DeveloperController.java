@@ -4,6 +4,7 @@ import at.vaaniicx.lap.model.dto.DeveloperDTO;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.model.mapper.DeveloperMapper;
 import at.vaaniicx.lap.model.request.management.developer.UpdateDeveloperRequest;
+import at.vaaniicx.lap.model.response.management.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.model.response.management.game.GamesByPublisherResponse;
 import at.vaaniicx.lap.service.DeveloperService;
 import at.vaaniicx.lap.service.GameService;
@@ -53,9 +54,9 @@ public class DeveloperController {
     }
 
     @GetMapping("/{id}/game")
-    public ResponseEntity<List<GamesByPublisherResponse>> getGamesByDeveloperId(@PathVariable("id") Long id) {
-        List<GamesByPublisherResponse> ret = gameService.getAllGamesByPublisherId(id).stream().map(g ->
-                        GamesByPublisherResponse.builder()
+    public ResponseEntity<List<GamesByDeveloperResponse>> getGamesByDeveloperId(@PathVariable("id") Long id) {
+        List<GamesByDeveloperResponse> ret = gameService.getAllGamesByDeveloperId(id).stream().map(g ->
+                        GamesByDeveloperResponse.builder()
                                 .gameId(g.getId())
                                 .title(g.getTitle())
                                 .ageRestriction(g.getAgeRestriction())
