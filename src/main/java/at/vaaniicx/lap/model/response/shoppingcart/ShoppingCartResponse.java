@@ -1,6 +1,5 @@
 package at.vaaniicx.lap.model.response.shoppingcart;
 
-import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AddToShoppingCartResponse {
+public class ShoppingCartResponse {
 
     @JsonProperty("cart_id")
     private Long shoppingCartId;
@@ -25,5 +24,5 @@ public class AddToShoppingCartResponse {
     private double totalPrice;
 
     @JsonProperty("cart_games")
-    private List<ShoppingCartGameEntity> shoppingCartGames;
+    private List<ShoppingCartGameResponse> shoppingCartGames;
 }

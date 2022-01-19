@@ -56,6 +56,7 @@ public class GameEntity {
     private byte ageRestriction;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
+    @ToString.Exclude
     private List<GamePictureEntity> gamePictures;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
