@@ -1,16 +1,14 @@
 package at.vaaniicx.lap.model.entity.pk;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 @Embeddable
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode

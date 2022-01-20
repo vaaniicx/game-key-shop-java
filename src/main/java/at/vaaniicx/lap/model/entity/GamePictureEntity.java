@@ -6,7 +6,8 @@ import javax.persistence.*;
 import java.sql.Blob;
 
 @Entity(name = "gamePicture")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)

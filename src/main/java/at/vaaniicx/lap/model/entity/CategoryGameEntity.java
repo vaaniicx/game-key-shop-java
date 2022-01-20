@@ -1,15 +1,13 @@
 package at.vaaniicx.lap.model.entity;
 
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity(name = "category_game")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

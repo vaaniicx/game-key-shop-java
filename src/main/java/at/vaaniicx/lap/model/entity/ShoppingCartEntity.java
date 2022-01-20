@@ -1,14 +1,13 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity(name = "shopping_cart")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class ShoppingCartEntity {
 

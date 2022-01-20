@@ -1,12 +1,10 @@
 package at.vaaniicx.lap.model.dto;
 
-import at.vaaniicx.lap.model.entity.LocationEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressDTO {

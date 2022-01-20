@@ -7,7 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity(name = "game")
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)

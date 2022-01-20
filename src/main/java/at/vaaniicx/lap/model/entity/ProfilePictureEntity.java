@@ -1,16 +1,14 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Blob;
 
 import javax.persistence.*;
 
 @Entity(name = "profile_picture")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

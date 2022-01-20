@@ -1,14 +1,17 @@
 package at.vaaniicx.lap.model.entity;
 
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.List;
 
 @Entity(name = "placing")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class PlacingEntity {
 

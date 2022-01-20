@@ -3,11 +3,14 @@ package at.vaaniicx.lap.model.request;
 import at.vaaniicx.lap.model.entity.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 public class RegisterRequest {
 
     @NotNull
