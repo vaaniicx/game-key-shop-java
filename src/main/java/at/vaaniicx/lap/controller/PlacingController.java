@@ -4,6 +4,8 @@ import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
 import at.vaaniicx.lap.model.response.management.placement.CreatePlacingResponse;
 import at.vaaniicx.lap.model.response.management.placement.PlacingDetailsResponse;
+import at.vaaniicx.lap.model.response.management.placement.PlacingManagementDataResponse;
+import at.vaaniicx.lap.model.response.management.placement.UserPlacingsResponse;
 import at.vaaniicx.lap.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -122,6 +124,61 @@ public class PlacingController {
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
         shoppingCartService.saveShoppingCart(cart);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<List<UserPlacingsResponse>> getPlacementsForUser(@PathVariable("id") Long userId) {
+
+        UserEntity user = userService.getUserById(userId);
+        PersonEntity person = user.getPerson();
+
+        List<PlacingEntity> placings = placingService.getAllPlacingsByPersonId(person.getId());
+
+        List<UserPlacingsResponse> ret = new ArrayList<>();
+        placings.forEach(pla -> ret.add(
+                UserPlacingsResponse
+                        .builder()
+                        .placingId(pla.getId())
+                        .placingDate(pla.getPlacingDate())
+                        .totalPrice(pla.getTotalPrice())
+                        .placingDetails(pla.getGames().stream().map(det ->
+                                PlacingDetailsResponse
+                                        .builder()
+                                        .placingId(det.getPlacing().getId())
+                                        .title(det.getKeyCode().getGame().getTitle())
+                                        .ageRestriction(det.getKeyCode().getGame().getAgeRestriction())
+                                        .keyId(det.getKeyCode().getId())
+                                        .keyCode(det.getKeyCode().getKeyCode())
+                                        .gameId(det.getKeyCode().getGame().getId())
+                                        .build()).collect(Collectors.toList()))
+                        .build()));
+
+        return new ResponseEntity<>(ret, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PlacingManagementDataResponse> getPlacingDetailsForPlacingId(@PathVariable("id") Long placingId) {
+
+        PlacingEntity placing = placingService.getPlacingByPlacingId(placingId);
+
+        PlacingManagementDataResponse response = PlacingManagementDataResponse
+                .builder()
+                .placingId(placing.getId())
+                .placingDate(placing.getPlacingDate())
+                .totalPrice(placing.getTotalPrice())
+                .personId(placing.getPerson().getId())
+                .placingDetails(placing.getGames().stream().map(det -> PlacingDetailsResponse
+                        .builder()
+                        .placingId(det.getPlacing().getId())
+                        .title(det.getKeyCode().getGame().getTitle())
+                        .ageRestriction(det.getKeyCode().getGame().getAgeRestriction())
+                        .keyId(det.getKeyCode().getId())
+                        .keyCode(det.getKeyCode().getKeyCode())
+                        .gameId(det.getKeyCode().getGame().getId())
+                        .build()).collect(Collectors.toList()))
+                .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
