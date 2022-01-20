@@ -3,10 +3,7 @@ package at.vaaniicx.lap.controller;
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.request.profile.UpdateProfileRequest;
 import at.vaaniicx.lap.model.response.profile.ModifyProfileResponse;
-import at.vaaniicx.lap.service.AddressService;
-import at.vaaniicx.lap.service.PersonService;
-import at.vaaniicx.lap.service.ProfilePictureService;
-import at.vaaniicx.lap.service.UserService;
+import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -34,26 +31,46 @@ public class ProfileController {
     @Autowired
     private ProfilePictureService profilePictureService;
 
+    @Autowired
+    private CountryService countryService;
+
     @PostMapping("/update")
     public ModifyProfileResponse updateProfile(@RequestBody @Validated UpdateProfileRequest request) {
-        UserEntity entity = userService.getUserById(request.getId());
-        entity.setEmail(request.getEmail());
+        UserEntity user = userService.getUserById(request.getId());
+        PersonEntity person = user.getPerson();
+
+        person.setFirstName(request.getFirstName());
+        person.setLastName(request.getLastName());
+        person.setBirthDate(request.getBirthDate());
+        AddressEntity address = person.getAddress();
+        address.setStreet(request.getStreet());
+        address.setHouseNumber(request.getHouseNumber());
+        address.setDoor(request.getDoor());
+        address.setStair(request.getStair());
+        LocationEntity location = address.getLocation();
+        location.setLocation(request.getLocation());
+        CountryEntity country = countryService.getCountryById(request.getCountryId());
 
         if (request.getProfilePicture() != null) {
             Blob blob = ImageConversionHelper.byteArrayToBlob(request.getProfilePicture());
 
-            ProfilePictureEntity profilePicture = entity.getProfilePicture();
+            ProfilePictureEntity profilePicture = user.getProfilePicture();
             if (profilePicture != null) {
                 profilePicture.setPicture(blob);
             } else {
                 profilePicture = ProfilePictureEntity.builder().picture(blob).build();
             }
 
-            entity.setProfilePicture(profilePictureService.save(profilePicture));
+            user.setProfilePicture(profilePictureService.save(profilePicture));
         }
 
-        userService.saveUser(entity);
+        location.setCountry(country);
+        address.setLocation(location);
+        person.setAddress(address);
+        user.setPerson(person);
 
-        return ModifyProfileResponse.builder().id(entity.getId()).email(entity.getEmail()).build();
+        userService.saveUser(user);
+
+        return ModifyProfileResponse.builder().id(user.getId()).email(user.getEmail()).build();
     }
 }

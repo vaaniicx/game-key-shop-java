@@ -20,9 +20,6 @@ public class UpdateProfileRequest {
     @JsonProperty("last_name")
     private String lastName;
 
-    @JsonProperty("email")
-    private String email;
-
     @JsonProperty("birth_date")
     private Date birthDate;
 

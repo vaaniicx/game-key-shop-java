@@ -12,9 +12,6 @@ public class PlacingDetailsDTO {
     @JsonProperty("placing")
     private PlacingDTO placing;
 
-    @JsonProperty("game")
-    private GameDTO game;
-
     @JsonProperty("key_code")
     private KeyCodeDTO keyCode;
 

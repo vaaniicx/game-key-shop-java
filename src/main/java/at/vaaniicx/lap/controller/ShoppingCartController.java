@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -129,6 +130,11 @@ public class ShoppingCartController {
         List<ShoppingCartGameEntity> allEntries = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
         double totalPrice = 0;
         for (ShoppingCartGameEntity entry : allEntries) {
+            if (entry.getAmount() <= 0) {
+                shoppingCartGameService.deleteAllById(Collections.singletonList(entry));
+                cart.getGames().remove(entry);
+            }
+
             GameEntity g = entry.getGame();
             totalPrice += BigDecimal.valueOf(g.getPrice()).multiply(BigDecimal.valueOf(entry.getAmount())).doubleValue();
         }

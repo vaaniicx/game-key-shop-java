@@ -1,12 +1,11 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Entity(name = "placing")
@@ -26,8 +25,9 @@ public class PlacingEntity {
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "placing_date", nullable = false)
-    private Instant placingDate;
+    private Date placingDate;
 
     @OneToMany(
             mappedBy = "placing",

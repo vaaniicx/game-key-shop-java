@@ -15,6 +15,8 @@ import at.vaaniicx.lap.model.response.management.developer.RegisterDeveloperResp
 import at.vaaniicx.lap.model.response.management.key.GameFlatResponse;
 import at.vaaniicx.lap.model.response.management.key.GenerateCodeResponse;
 import at.vaaniicx.lap.model.response.management.key.RegisterCodeResponse;
+import at.vaaniicx.lap.model.response.management.placement.PlacingDetailsResponse;
+import at.vaaniicx.lap.model.response.management.placement.PlacingManagementDataResponse;
 import at.vaaniicx.lap.model.response.management.publisher.DataResponse;
 import at.vaaniicx.lap.model.response.management.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.model.response.management.role.UserByRoleResponse;
@@ -59,6 +61,9 @@ public class ManagementController {
     private PublisherService publisherService;
 
     @Autowired
+    private PlacingService placingService;
+
+    @Autowired
     private GameService gameService;
 
     @Autowired
@@ -86,6 +91,32 @@ public class ManagementController {
                 .forEach(r -> ret.add(new RoleManagementDataResponse(r.getId(), r.getRole())));
 
         return ret;
+    }
+
+    @GetMapping("/placing")
+    public ResponseEntity<List<PlacingManagementDataResponse>> getPlacingManagementData() {
+        List<PlacingManagementDataResponse> ret = new ArrayList<>();
+
+        placingService.getAllPlacings().forEach(pla -> {
+            ret.add(PlacingManagementDataResponse
+                    .builder()
+                    .placingId(pla.getId())
+                    .placingDate(pla.getPlacingDate())
+                    .totalPrice(pla.getTotalPrice())
+                    .personId(pla.getPerson().getId())
+                    .placingDetails(pla.getPlacingDetails().stream().map(det -> PlacingDetailsResponse
+                            .builder()
+                            .placingId(det.getPlacing().getId())
+                            .title(det.getKeyCode().getGame().getTitle())
+                            .ageRestriction(det.getKeyCode().getGame().getAgeRestriction())
+                            .keyId(det.getKeyCode().getId())
+                            .keyCode(det.getKeyCode().getKeyCode())
+                            .gameId(det.getKeyCode().getGame().getId())
+                            .build()).collect(Collectors.toList()))
+                    .build());
+        });
+
+        return new ResponseEntity<>(ret, HttpStatus.OK);
     }
 
     @GetMapping("/role/{id}/user")
@@ -247,7 +278,7 @@ public class ManagementController {
                         .id(new CategoryGamePk(cat, gameEntity.getId()))
                         .game(gameEntity)
                         .category(categoryService.getCategoryById(cat))
-                .build()));
+                        .build()));
 
         return new RegisterGameResponse(gameEntity.getId(), gameEntity.getTitle(), gameEntity.getReleaseDate(),
                 gameEntity.getDeveloper().getId(), gameEntity.getPublisher().getId(), request.getAgeRestriction());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -19,7 +20,7 @@ public class PlacingDTO {
     private double totalPrice;
 
     @JsonProperty("placing_date")
-    private Instant placingDate;
+    private Date placingDate;
 
     @JsonProperty("placing_details")
     private List<PlacingDetailsDTO> placingDetails;
