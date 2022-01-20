@@ -31,6 +31,9 @@ public class PlacingController {
     private ShoppingCartService shoppingCartService;
 
     @Autowired
+    private ShoppingCartGameService shoppingCartGameService;
+
+    @Autowired
     private PlacingDetailsService placingDetailsService;
 
     @Autowired
@@ -60,7 +63,7 @@ public class PlacingController {
 
         // Create placing
         PlacingEntity placing = new PlacingEntity();
-        placing.setPlacingDate(Date.from(Instant.now()));
+        placing.setPlacingDate(Instant.now());
         placing.setTotalPrice(cart.getTotalPrice());
         placing.setPerson(person);
 
@@ -97,6 +100,11 @@ public class PlacingController {
                 placingDetails.add(savedDetails);
             }
         });
+
+        cart.setTotalPrice(0);
+        shoppingCartGameService.deleteAllById(cart.getGames());
+        cart.getGames().removeAll(cart.getGames());
+        shoppingCartService.saveShoppingCart(cart);
 
         return new ResponseEntity(placing, HttpStatus.OK);
     }

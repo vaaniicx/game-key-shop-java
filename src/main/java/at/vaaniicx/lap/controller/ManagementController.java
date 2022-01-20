@@ -104,7 +104,7 @@ public class ManagementController {
                     .placingDate(pla.getPlacingDate())
                     .totalPrice(pla.getTotalPrice())
                     .personId(pla.getPerson().getId())
-                    .placingDetails(pla.getPlacingDetails().stream().map(det -> PlacingDetailsResponse
+                    .placingDetails(pla.getGames().stream().map(det -> PlacingDetailsResponse
                             .builder()
                             .placingId(det.getPlacing().getId())
                             .title(det.getKeyCode().getGame().getTitle())
