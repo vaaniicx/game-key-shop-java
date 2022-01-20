@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class ShoppingCartGamePk implements Serializable {
 
     @Column(name = "shopping_cart_id")

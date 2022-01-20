@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class PlacingDetailsPk implements Serializable {
 
     @Column(name = "placing_id")
