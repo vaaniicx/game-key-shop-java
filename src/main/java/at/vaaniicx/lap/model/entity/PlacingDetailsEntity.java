@@ -1,7 +1,6 @@
 package at.vaaniicx.lap.model.entity;
 
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,12 +20,8 @@ public class PlacingDetailsEntity {
     @MapsId("placingId")
     private PlacingEntity placing;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId("gameId")
-    private GameEntity game;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "key_code_id", nullable = false)
     private KeyCodeEntity keyCode;
 
     @Column(name = "price", nullable = false)

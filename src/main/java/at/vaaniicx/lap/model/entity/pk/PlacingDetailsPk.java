@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Embeddable
@@ -11,12 +12,11 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
 public class PlacingDetailsPk implements Serializable {
 
     @Column(name = "placing_id")
     private Long placingId;
 
-    @Column(name = "game_id")
-    private Long gameId;
+    @Column(name = "key_code_id")
+    private Long keyCodeId;
 }

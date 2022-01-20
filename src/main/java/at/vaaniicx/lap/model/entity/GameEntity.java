@@ -79,14 +79,4 @@ public class GameEntity {
     )
     @ToString.Exclude
     private List<ShoppingCartGameEntity> shoppingCarts;
-
-
-    @OneToMany(
-            mappedBy = "game",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    @ToString.Exclude
-    private List<PlacingDetailsEntity> placings;
-
 }

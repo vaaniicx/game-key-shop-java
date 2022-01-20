@@ -1,6 +1,5 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
