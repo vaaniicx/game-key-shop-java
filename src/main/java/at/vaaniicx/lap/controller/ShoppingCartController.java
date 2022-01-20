@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -151,6 +152,27 @@ public class ShoppingCartController {
                                                 .amount(scg.getAmount())
                                                 .build())
                                 .collect(Collectors.toList()))
+                        .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/person/{id}/clear")
+    public ResponseEntity<ShoppingCartResponse> clearShoppingCartForPerson(@PathVariable("id") Long personId) {
+        ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
+
+        cart.setTotalPrice(0);
+        shoppingCartGameService.deleteAllById(cart.getGames());
+        cart.getGames().removeAll(cart.getGames());
+        shoppingCartService.saveShoppingCart(cart);
+
+        ShoppingCartResponse response =
+                ShoppingCartResponse
+                        .builder()
+                        .shoppingCartId(cart.getId())
+                        .personId(cart.getPerson().getId())
+                        .totalPrice(cart.getTotalPrice())
+                        .shoppingCartGames(new ArrayList<>())
                         .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);

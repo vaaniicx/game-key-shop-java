@@ -37,4 +37,8 @@ public class ShoppingCartGameService {
     public void save(ShoppingCartGameEntity e) {
         repository.save(e);
     }
+
+    public void deleteAllById(List<ShoppingCartGameEntity> e) {
+        e.forEach(scg -> repository.deleteById(scg.getId()));
+    }
 }
