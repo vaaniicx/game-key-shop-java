@@ -20,7 +20,7 @@ public class PlacingDTO {
     private double totalPrice;
 
     @JsonProperty("placing_date")
-    private Date placingDate;
+    private Instant placingDate;
 
     @JsonProperty("placing_details")
     private List<PlacingDetailsDTO> placingDetails;

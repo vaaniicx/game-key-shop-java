@@ -9,6 +9,6 @@ public class PlacingMapper {
 
     public static PlacingDTO toDto(PlacingEntity e) {
         return new PlacingDTO(e.getId(), e.getTotalPrice(), e.getPlacingDate(),
-                e.getPlacingDetails().stream().map(PlacingDetailsMapper::toDto).collect(Collectors.toList()));
+                e.getGames().stream().map(PlacingDetailsMapper::toDto).collect(Collectors.toList()));
     }
 }
