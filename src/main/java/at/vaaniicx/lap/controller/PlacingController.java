@@ -2,17 +2,18 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
+import at.vaaniicx.lap.model.response.management.placement.CreatePlacingResponse;
+import at.vaaniicx.lap.model.response.management.placement.PlacingDetailsResponse;
 import at.vaaniicx.lap.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/placing")
@@ -40,25 +41,19 @@ public class PlacingController {
     private KeyCodeService keyCodeService;
 
     @GetMapping("/{id}/create")
-    public ResponseEntity<PlacingEntity> createPlacingForUser(@PathVariable("id") Long userId) {
+    public ResponseEntity<CreatePlacingResponse> createPlacingForUser(@PathVariable("id") Long userId) {
 
         UserEntity user = userService.getUserById(userId);
         PersonEntity person = user.getPerson();
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(person.getId());
 
         // Check for available keys
-        AtomicBoolean available = new AtomicBoolean(true);
-        cart.getGames().forEach(game -> {
-            byte amount = game.getAmount();
-            Long keysAvailable = keyCodeService.getKeyCountByGameIdAndSold(game.getGame().getId(), false);
+        boolean available = cart.getGames().stream().noneMatch(game ->
+                keyCodeService.getKeyCountByGameIdAndSold(game.getGame().getId(), false) < game.getAmount());
 
-            if (keysAvailable < amount) {
-                available.set(false);
-            }
-        });
-
-        if (!available.get()) {
-            return new ResponseEntity(null, HttpStatus.NOT_ACCEPTABLE);
+        if (!available) {
+            // no keys for selling available
+            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
         }
 
         // Create placing
@@ -101,11 +96,33 @@ public class PlacingController {
             }
         });
 
+        // create response
+        CreatePlacingResponse response =
+                CreatePlacingResponse
+                        .builder()
+                        .placingId(savedPlacing.getId())
+                        .placingDate(savedPlacing.getPlacingDate())
+                        .personId(person.getId())
+                        .totalPrice(cart.getTotalPrice())
+                        .placingDetails(placingDetails.stream().map(details ->
+                                        PlacingDetailsResponse
+                                                .builder()
+                                                .placingId(details.getPlacing().getId())
+                                                .title(details.getKeyCode().getGame().getTitle())
+                                                .ageRestriction(details.getKeyCode().getGame().getAgeRestriction())
+                                                .keyId(details.getKeyCode().getId())
+                                                .keyCode(details.getKeyCode().getKeyCode())
+                                                .gameId(details.getKeyCode().getGame().getId())
+                                                .build())
+                                .collect(Collectors.toList()))
+                        .build();
+
+        // clear shoppingcart
         cart.setTotalPrice(0);
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
         shoppingCartService.saveShoppingCart(cart);
 
-        return new ResponseEntity(placing, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

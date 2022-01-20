@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlacingManagementDataResponse {
+public class CreatePlacingResponse {
 
     @JsonProperty("placing_id")
     private Long placingId;
@@ -19,11 +19,11 @@ public class PlacingManagementDataResponse {
     @JsonProperty("placing_date")
     private Instant placingDate;
 
-    @JsonProperty("total_price")
-    private double totalPrice;
-
     @JsonProperty("person_id")
     private Long personId;
+
+    @JsonProperty("total_price")
+    private double totalPrice;
 
     @JsonProperty("placing_details")
     private List<PlacingDetailsResponse> placingDetails;
