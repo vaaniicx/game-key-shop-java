@@ -34,6 +34,10 @@ public class KeyCodeService {
         return keyCodeRepository.findByGameId(id);
     }
 
+    public List<KeyCodeEntity> getAllAvailableKeyCodesByGameId(Long gameId) {
+        return keyCodeRepository.findByGameIdAndSold(gameId, false);
+    }
+
     public KeyCodeEntity saveKeyCode(KeyCodeEntity entity) {
         return keyCodeRepository.save(entity);
     }

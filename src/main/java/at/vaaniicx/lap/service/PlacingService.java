@@ -20,4 +20,8 @@ public class PlacingService {
     public List<PlacingEntity> getAllPlacingsByPersonId(Long personId) {
         return placingRepository.findAllByPersonId(personId);
     }
+
+    public PlacingEntity save(PlacingEntity e) {
+        return placingRepository.save(e);
+    }
 }
