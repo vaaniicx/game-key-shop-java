@@ -115,7 +115,9 @@ public class ShoppingCartController {
                     .filter(Objects::nonNull)
                     .filter(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId()))
                     .findFirst().get();
-            game.setAmount((byte) (game.getAmount() + request.getAmount()));
+
+            byte newAmount = (byte) (game.getAmount() + request.getAmount());
+            game.setAmount(newAmount < 0 ? 0 : newAmount);
         } else {
             // Neuen Eintrag
             game = new ShoppingCartGameEntity();
@@ -136,6 +138,7 @@ public class ShoppingCartController {
             }
 
             GameEntity g = entry.getGame();
+            System.out.println("entry amount: " + entry.getAmount());
             totalPrice += BigDecimal.valueOf(g.getPrice()).multiply(BigDecimal.valueOf(entry.getAmount())).doubleValue();
         }
 
