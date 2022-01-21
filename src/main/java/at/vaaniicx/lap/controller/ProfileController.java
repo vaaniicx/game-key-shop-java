@@ -6,11 +6,10 @@ import at.vaaniicx.lap.model.response.profile.ModifyProfileResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Blob;
 
@@ -72,5 +71,16 @@ public class ProfileController {
         userService.saveUser(user);
 
         return ModifyProfileResponse.builder().id(user.getId()).email(user.getEmail()).build();
+    }
+
+    @GetMapping("/{id}/deactivate")
+    public ResponseEntity<Boolean> deactivateAccount(@PathVariable("id") Long userId) {
+
+        UserEntity user = userService.getUserById(userId);
+        user.setActive(false);
+
+        userService.saveUser(user);
+
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 }

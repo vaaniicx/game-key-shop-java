@@ -53,6 +53,10 @@ public class UserService {
         return entity.get();
     }
 
+    public boolean isUserActive(String email) {
+        return getUserByEmail(email).isActive();
+    }
+
     public UserEntity getUserByEmail(String email) {
         Optional<UserEntity> entity = userRepository.findByEmail(email);
 

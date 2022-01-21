@@ -2,6 +2,7 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.exception.InvalidTokenException;
 import at.vaaniicx.lap.exception.UserExistsException;
+import at.vaaniicx.lap.exception.UserInactiveException;
 import at.vaaniicx.lap.exception.UserNotFoundException;
 import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.mapper.UserMapper;
@@ -43,6 +44,10 @@ public class AuthController {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtTokenUtil.generateToken(userDetails);
+
+        if (!userService.isUserActive(userDetails.getUsername())) {
+            throw new UserInactiveException();
+        }
 
         userService.updateLastLogin(userDetails.getUsername());
 
