@@ -29,8 +29,8 @@ public class CategoryController {
     private CategoryGameService categoryGameService;
 
     @GetMapping
-    public List<CategoryEntity> getAll() {
-        return new ArrayList<>(categoryService.getAllCategories());
+    public List<CategoryDTO> getAll() {
+        return categoryService.getAllCategories().stream().map(c -> new CategoryDTO(c.getId(), c.getCategory(), c.getDescription())).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
