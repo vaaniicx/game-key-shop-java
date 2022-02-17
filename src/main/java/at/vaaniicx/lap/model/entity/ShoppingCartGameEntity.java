@@ -1,7 +1,10 @@
 package at.vaaniicx.lap.model.entity;
 
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 

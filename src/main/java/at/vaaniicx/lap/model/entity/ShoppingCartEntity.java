@@ -1,9 +1,12 @@
 package at.vaaniicx.lap.model.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "shopping_cart")
 @Getter
@@ -29,7 +32,7 @@ public class ShoppingCartEntity {
             orphanRemoval = true
     )
     @ToString.Exclude
-    private List<ShoppingCartGameEntity> games;
+    private Set<ShoppingCartGameEntity> games;
 
     public ShoppingCartEntity(PersonEntity person, double totalPrice) {
         this.person = person;

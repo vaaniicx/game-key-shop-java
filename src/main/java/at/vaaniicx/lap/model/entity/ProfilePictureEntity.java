@@ -2,9 +2,8 @@ package at.vaaniicx.lap.model.entity;
 
 import lombok.*;
 
-import java.sql.Blob;
-
 import javax.persistence.*;
+import java.sql.Blob;
 
 @Entity(name = "profile_picture")
 @Getter

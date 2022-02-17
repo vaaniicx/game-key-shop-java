@@ -3,7 +3,7 @@ package at.vaaniicx.lap.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "publisher")
 @Getter
@@ -24,5 +24,5 @@ public class PublisherEntity {
             fetch = FetchType.LAZY,
             mappedBy = "publisher"
     )
-    private List<GameEntity> games;
+    private Set<GameEntity> games;
 }

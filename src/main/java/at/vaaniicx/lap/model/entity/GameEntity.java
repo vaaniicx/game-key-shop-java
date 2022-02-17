@@ -4,14 +4,14 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "game")
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameEntity {
 
     @Id
@@ -58,11 +58,11 @@ public class GameEntity {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
     @ToString.Exclude
-    private List<GamePictureEntity> gamePictures;
+    private Set<GamePictureEntity> gamePictures;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "game")
     @ToString.Exclude
-    private List<KeyCodeEntity> keys;
+    private Set<KeyCodeEntity> keys;
 
     @OneToMany(
             mappedBy = "game",
@@ -70,7 +70,7 @@ public class GameEntity {
             orphanRemoval = true
     )
     @ToString.Exclude
-    private List<CategoryGameEntity> categories;
+    private Set<CategoryGameEntity> categories;
 
     @OneToMany(
             mappedBy = "game",
@@ -78,5 +78,5 @@ public class GameEntity {
             orphanRemoval = true
     )
     @ToString.Exclude
-    private List<ShoppingCartGameEntity> shoppingCarts;
+    private Set<ShoppingCartGameEntity> shoppingCarts;
 }

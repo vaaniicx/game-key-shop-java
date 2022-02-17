@@ -3,7 +3,7 @@ package at.vaaniicx.lap.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "country")
 @Getter
@@ -26,5 +26,5 @@ public class CountryEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<LocationEntity> locations;
+    private Set<LocationEntity> locations;
 }

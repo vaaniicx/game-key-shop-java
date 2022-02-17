@@ -3,7 +3,7 @@ package at.vaaniicx.lap.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "category")
 @Getter
@@ -28,5 +28,5 @@ public class CategoryEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<CategoryGameEntity> games;
+    private Set<CategoryGameEntity> games;
 }

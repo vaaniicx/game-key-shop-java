@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 @Entity(name = "person")
 @Getter
@@ -37,7 +37,7 @@ public class PersonEntity {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<PlacingEntity> placings;
+    private Set<PlacingEntity> placings;
 
     public PersonEntity(String firstName, String lastName, Date birthDate) {
         this.firstName = firstName;
