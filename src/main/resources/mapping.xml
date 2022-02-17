@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <configuration>
+        <stop-on-errors>true</stop-on-errors>
+        <date-format>MM/dd/yyyy HH:mm</date-format>
+        <wildcard>false</wildcard>
+    </configuration>
+
+    <mapping>
+        <class-a>at.vaaniicx.lap.model.entity.CategoryEntity</class-a>
+        <class-b>at.vaaniicx.lap.model.dto.CategoryDTO</class-b>
+        <field>
+            <a>id</a>
+            <b>id</b>
+        </field>
+        <field>
+            <a>category</a>
+            <b>category</b>
+        </field>
+        <field>
+            <a>description</a>
+            <b>description</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>at.vaaniicx.lap.model.entity.CategoryGameEntity</class-a>
+        <class-b>at.vaaniicx.lap.model.response.management.category.GamesByCategoryResponse</class-b>
+        <field>
+            <a>id.gameId</a>
+            <b>gameId</b>
+        </field>
+        <field>
+            <a>game.title</a>
+            <b>title</b>
+        </field>
+    </mapping>
+</mappings>
