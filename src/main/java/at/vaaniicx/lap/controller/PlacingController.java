@@ -2,12 +2,11 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
-import at.vaaniicx.lap.model.response.management.placement.CreatePlacingResponse;
-import at.vaaniicx.lap.model.response.management.placement.PlacingDetailsResponse;
-import at.vaaniicx.lap.model.response.management.placement.PlacingManagementDataResponse;
-import at.vaaniicx.lap.model.response.management.placement.UserPlacingsResponse;
+import at.vaaniicx.lap.model.response.placing.CreatePlacingResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingDetailsResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingManagementDataResponse;
+import at.vaaniicx.lap.model.response.placing.UserPlacingsResponse;
 import at.vaaniicx.lap.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,26 +20,23 @@ import java.util.stream.Collectors;
 @RequestMapping("/placing")
 public class PlacingController {
 
-    @Autowired
-    private PlacingService placingService;
+    private final PlacingService placingService;
+    private final UserService userService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartGameService shoppingCartGameService;
+    private final PlacingDetailsService placingDetailsService;
+    private final KeyCodeService keyCodeService;
 
-    @Autowired
-    private PersonService personService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private ShoppingCartService shoppingCartService;
-
-    @Autowired
-    private ShoppingCartGameService shoppingCartGameService;
-
-    @Autowired
-    private PlacingDetailsService placingDetailsService;
-
-    @Autowired
-    private KeyCodeService keyCodeService;
+    public PlacingController (PlacingService placingService, UserService userService,
+                              ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
+                              PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
+        this.placingService = placingService;
+        this.userService = userService;
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartGameService = shoppingCartGameService;
+        this.placingDetailsService = placingDetailsService;
+        this.keyCodeService = keyCodeService;
+    }
 
     @GetMapping("/{id}/create")
     public ResponseEntity<CreatePlacingResponse> createPlacingForUser(@PathVariable("id") Long userId) {

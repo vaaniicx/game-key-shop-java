@@ -1,11 +1,12 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.RoleDTO;
+import at.vaaniicx.lap.mapper.role.RoleResponseMapper;
 import at.vaaniicx.lap.model.entity.RoleEntity;
-import at.vaaniicx.lap.model.mapper.RoleMapper;
 import at.vaaniicx.lap.model.request.management.role.RegisterRoleRequest;
 import at.vaaniicx.lap.model.request.management.role.UpdateRoleRequest;
+import at.vaaniicx.lap.model.response.role.RoleResponse;
 import at.vaaniicx.lap.service.RoleService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,17 +23,16 @@ public class RoleController {
     @Autowired
     private RoleService roleService;
 
-    @Autowired
-    private RoleMapper mapper;
+    private RoleResponseMapper roleMapper = Mappers.getMapper(RoleResponseMapper.class);
 
     @GetMapping
-    public List<RoleDTO> getAll() {
-        return roleService.getAllRoles().stream().map(RoleMapper::toDto).collect(Collectors.toList());
+    public List<RoleResponse> getAll() {
+        return roleService.getAllRoles().stream().map(roleMapper::entityToResponse).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public RoleDTO getById(@PathVariable("id") Long roleId) {
-        return RoleMapper.toDto(roleService.getRoleById(roleId));
+    public RoleResponse getById(@PathVariable("id") Long roleId) {
+        return roleMapper.entityToResponse(roleService.getRoleById(roleId));
     }
 
     @PostMapping("/register")

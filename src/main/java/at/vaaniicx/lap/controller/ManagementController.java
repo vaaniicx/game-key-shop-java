@@ -9,17 +9,17 @@ import at.vaaniicx.lap.model.request.management.developer.RegisterDeveloperReque
 import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
 import at.vaaniicx.lap.model.request.management.publisher.RegisterPublisherRequest;
 import at.vaaniicx.lap.model.response.RegisterGameResponse;
+import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.management.*;
-import at.vaaniicx.lap.model.response.management.category.RegisterCategoryResponse;
-import at.vaaniicx.lap.model.response.management.developer.RegisterDeveloperResponse;
-import at.vaaniicx.lap.model.response.management.key.GameFlatResponse;
-import at.vaaniicx.lap.model.response.management.key.GenerateCodeResponse;
-import at.vaaniicx.lap.model.response.management.key.RegisterCodeResponse;
-import at.vaaniicx.lap.model.response.management.placement.PlacingDetailsResponse;
-import at.vaaniicx.lap.model.response.management.placement.PlacingManagementDataResponse;
-import at.vaaniicx.lap.model.response.management.publisher.DataResponse;
-import at.vaaniicx.lap.model.response.management.publisher.RegisterPublisherResponse;
-import at.vaaniicx.lap.model.response.management.role.UserByRoleResponse;
+import at.vaaniicx.lap.model.response.developer.RegisterDeveloperResponse;
+import at.vaaniicx.lap.model.response.key.GameFlatResponse;
+import at.vaaniicx.lap.model.response.key.GenerateCodeResponse;
+import at.vaaniicx.lap.model.response.key.RegisterCodeResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingDetailsResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingManagementDataResponse;
+import at.vaaniicx.lap.model.response.publisher.DataResponse;
+import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;
+import at.vaaniicx.lap.model.response.role.UserByRoleResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
@@ -151,11 +151,11 @@ public class ManagementController {
     }
 
     @GetMapping("/developer")
-    public List<at.vaaniicx.lap.model.response.management.developer.DataResponse> getDeveloperManagementData() {
-        List<at.vaaniicx.lap.model.response.management.developer.DataResponse> ret = new ArrayList<>();
+    public List<at.vaaniicx.lap.model.response.developer.DataResponse> getDeveloperManagementData() {
+        List<at.vaaniicx.lap.model.response.developer.DataResponse> ret = new ArrayList<>();
 
         developerService.getAllDeveloper().stream().filter(Objects::nonNull)
-                .forEach(d -> ret.add(new at.vaaniicx.lap.model.response.management.developer.DataResponse(d.getId(), d.getDeveloper())));
+                .forEach(d -> ret.add(new at.vaaniicx.lap.model.response.developer.DataResponse(d.getId(), d.getDeveloper())));
 
         return ret;
     }
@@ -189,8 +189,8 @@ public class ManagementController {
     }
 
     @GetMapping("/game/key/{id}")
-    public List<at.vaaniicx.lap.model.response.management.key.DataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
-        List<at.vaaniicx.lap.model.response.management.key.DataResponse> ret = new ArrayList<>();
+    public List<at.vaaniicx.lap.model.response.key.DataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
+        List<at.vaaniicx.lap.model.response.key.DataResponse> ret = new ArrayList<>();
 
         keyCodeService.getAllKeyCodesByGameId(gameId).stream().filter(Objects::nonNull)
                 .forEach(k -> {
@@ -199,7 +199,7 @@ public class ManagementController {
                         user = userService.getUserByPersonId(k.getPerson().getId());
                     }
 
-                    ret.add(new at.vaaniicx.lap.model.response.management.key.DataResponse(k.getId(), k.getKeyCode(), k.isSold(),
+                    ret.add(new at.vaaniicx.lap.model.response.key.DataResponse(k.getId(), k.getKeyCode(), k.isSold(),
                             user != null ? user.getId() : null,
                             user != null ? user.getEmail() : null));
                 });
@@ -299,9 +299,9 @@ public class ManagementController {
     }
 
     @PostMapping("/category/register")
-    public RegisterCategoryResponse registerCategory(@RequestBody @Validated RegisterCategoryRequest request) {
+    public CategoryResponse registerCategory(@RequestBody @Validated RegisterCategoryRequest request) {
         CategoryEntity categoryEntity = categoryService.registerCategory(request.getCategory(), request.getDescription());
 
-        return new RegisterCategoryResponse(categoryEntity.getId(), categoryEntity.getCategory(), categoryEntity.getDescription());
+        return new CategoryResponse(categoryEntity.getId(), categoryEntity.getCategory(), categoryEntity.getDescription());
     }
 }

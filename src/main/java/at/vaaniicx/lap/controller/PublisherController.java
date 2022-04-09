@@ -1,12 +1,13 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.PublisherDTO;
+import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
-import at.vaaniicx.lap.model.mapper.PublisherMapper;
 import at.vaaniicx.lap.model.request.management.publisher.UpdatePublisherRequest;
-import at.vaaniicx.lap.model.response.management.game.GamesByPublisherResponse;
+import at.vaaniicx.lap.model.response.game.GamesByPublisherResponse;
+import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +27,17 @@ public class PublisherController {
     @Autowired
     private GameService gameService;
 
+    private PublisherResponseMapper publisherMapper = Mappers.getMapper(PublisherResponseMapper.class);
+
     @GetMapping
     @ResponseBody
-    public List<PublisherDTO> getAll() {
-        return publisherService.getAllPublisher().stream().map(PublisherMapper::toDto).collect(Collectors.toList());
+    public List<PublisherResponse> getAll() {
+        return publisherService.getAllPublisher().stream().map(publisherMapper::entityToResponse).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public PublisherDTO getById(@PathVariable("id") Long publisherId) {
-        return PublisherMapper.toDto(publisherService.getPublisherById(publisherId));
+    public PublisherResponse getById(@PathVariable("id") Long publisherId) {
+        return publisherMapper.entityToResponse(publisherService.getPublisherById(publisherId));
     }
 
     @PostMapping("/update")

@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.DeveloperNotFoundException;
+import at.vaaniicx.lap.exception.developer.DeveloperNotFoundException;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.repository.DeveloperRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +28,6 @@ public class DeveloperService {
 
     public DeveloperEntity getDeveloperById(Long id) {
         Optional<DeveloperEntity> entity = developerRepository.findById(id);
-
-        if (!entity.isPresent()) {
-            throw new DeveloperNotFoundException();
-        }
-
-        return entity.get();
-    }
-
-    public DeveloperEntity getDeveloperByDeveloper(String name) {
-        Optional<DeveloperEntity> entity = developerRepository.findByDeveloper(name);
 
         if (!entity.isPresent()) {
             throw new DeveloperNotFoundException();

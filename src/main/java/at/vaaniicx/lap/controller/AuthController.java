@@ -1,11 +1,11 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.exception.InvalidTokenException;
-import at.vaaniicx.lap.exception.UserExistsException;
-import at.vaaniicx.lap.exception.UserInactiveException;
-import at.vaaniicx.lap.exception.UserNotFoundException;
+import at.vaaniicx.lap.exception.auth.InvalidTokenException;
+import at.vaaniicx.lap.exception.user.UserExistsException;
+import at.vaaniicx.lap.exception.user.UserInactiveException;
+import at.vaaniicx.lap.exception.user.UserNotFoundException;
+import at.vaaniicx.lap.mapper.user.UserResponseMapper;
 import at.vaaniicx.lap.model.entity.UserEntity;
-import at.vaaniicx.lap.model.mapper.UserMapper;
 import at.vaaniicx.lap.model.request.JwtLoginRequest;
 import at.vaaniicx.lap.model.request.RegisterRequest;
 import at.vaaniicx.lap.model.response.auth.AuthResponse;
@@ -13,6 +13,7 @@ import at.vaaniicx.lap.model.response.auth.JwtLoginResponse;
 import at.vaaniicx.lap.model.response.auth.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +38,8 @@ public class AuthController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    private UserResponseMapper userMapper = Mappers.getMapper(UserResponseMapper.class);
 
     @PostMapping("/login")
     public ResponseEntity<JwtLoginResponse> login(@RequestBody @Validated JwtLoginRequest request) {
@@ -73,6 +76,6 @@ public class AuthController {
             throw new InvalidTokenException();
         }
 
-        return ResponseEntity.ok(new AuthResponse(UserMapper.toDto(userEntity)));
+        return ResponseEntity.ok(new AuthResponse(userMapper.entityToResponse(userEntity)));
     }
 }

@@ -1,13 +1,13 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.DeveloperDTO;
+import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
-import at.vaaniicx.lap.model.mapper.DeveloperMapper;
 import at.vaaniicx.lap.model.request.management.developer.UpdateDeveloperRequest;
-import at.vaaniicx.lap.model.response.management.developer.GamesByDeveloperResponse;
-import at.vaaniicx.lap.model.response.management.game.GamesByPublisherResponse;
+import at.vaaniicx.lap.model.response.developer.DeveloperResponse;
+import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.service.DeveloperService;
 import at.vaaniicx.lap.service.GameService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +27,17 @@ public class DeveloperController {
     @Autowired
     private GameService gameService;
 
+    private DeveloperResponseMapper developerMapper = Mappers.getMapper(DeveloperResponseMapper.class);
+
     @GetMapping
     @ResponseBody
-    public List<DeveloperDTO> getAll() {
-        return developerService.getAllDeveloper().stream().map(DeveloperMapper::toDto).collect(Collectors.toList());
+    public List<DeveloperResponse> getAll() {
+        return developerService.getAllDeveloper().stream().map(developerMapper::entityToResponse).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public DeveloperDTO getById(@PathVariable("id") Long developerId) {
-        return DeveloperMapper.toDto(developerService.getDeveloperById(developerId));
+    public DeveloperResponse getById(@PathVariable("id") Long developerId) {
+        return developerMapper.entityToResponse(developerService.getDeveloperById(developerId));
     }
 
     @PostMapping("/update")

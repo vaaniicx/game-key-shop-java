@@ -1,16 +1,16 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.GameDTO;
+import at.vaaniicx.lap.mapper.game.GameResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
-import at.vaaniicx.lap.model.mapper.GameMapper;
+import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.KeyCodeService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,18 +29,20 @@ public class GameController {
     @Autowired
     private CategoryGameService categoryGameService;
 
+    private GameResponseMapper gameMapper = Mappers.getMapper(GameResponseMapper.class);
+
     @GetMapping
     @ResponseBody
-    public List<GameDTO> getAll() {
+    public List<GameResponse> getAll() {
         return gameService.getAllGamesOrderByTitle()
                 .stream()
-                .map(GameMapper::toDto)
+                .map(gameMapper::entityToResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public GameDTO getById(@PathVariable("id") Long gameId) {
-        return GameMapper.toDto(gameService.getGameById(gameId));
+    public GameResponse getById(@PathVariable("id") Long gameId) {
+        return gameMapper.entityToResponse(gameService.getGameById(gameId));
     }
 
     @DeleteMapping("/{id}/remove/category/{catId}")

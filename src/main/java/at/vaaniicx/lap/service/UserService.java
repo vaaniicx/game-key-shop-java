@@ -1,11 +1,7 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.UserNotFoundException;
+import at.vaaniicx.lap.exception.user.UserNotFoundException;
 import at.vaaniicx.lap.model.entity.*;
-import at.vaaniicx.lap.model.mapper.AddressMapper;
-import at.vaaniicx.lap.model.mapper.LocationMapper;
-import at.vaaniicx.lap.model.mapper.PersonMapper;
-import at.vaaniicx.lap.model.mapper.UserMapper;
 import at.vaaniicx.lap.model.request.RegisterRequest;
 import at.vaaniicx.lap.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +10,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

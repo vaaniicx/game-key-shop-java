@@ -1,19 +1,18 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.ShoppingCartDTO;
+import at.vaaniicx.lap.mapper.shoppingcart.ShoppingCartResponseMapper;
+import at.vaaniicx.lap.mapper.shoppingcartgame.ShoppingCartGameResponseMapper;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
-import at.vaaniicx.lap.model.mapper.ShoppingCartMapper;
 import at.vaaniicx.lap.model.request.shoppingcart.AddToShoppingCartRequest;
 import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
-import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartGameResponse;
 import at.vaaniicx.lap.service.GamePictureService;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
-import at.vaaniicx.lap.util.ImageConversionHelper;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -43,59 +39,25 @@ public class ShoppingCartController {
     @Autowired
     private GamePictureService gamePictureService;
 
+    private ShoppingCartResponseMapper shoppingCartMapper = Mappers.getMapper(ShoppingCartResponseMapper.class);
+
     @GetMapping
-    public List<ShoppingCartDTO> getAll() {
-        return shoppingCartService.getAllShoppingCarts().stream().map(ShoppingCartMapper::toDto).collect(Collectors.toList());
+    public Set<ShoppingCartResponse> getAll() {
+        return shoppingCartService.getAllShoppingCarts().stream().map(shoppingCartMapper::entityToResponse).collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ShoppingCartResponse> getById(@PathVariable("id") Long shoppingCartId) {
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartById(shoppingCartId);
 
-        ShoppingCartResponse response =
-                ShoppingCartResponse
-                        .builder()
-                        .shoppingCartId(shoppingCartId)
-                        .personId(cart.getPerson().getId())
-                        .totalPrice(cart.getTotalPrice())
-                        .shoppingCartGames(cart.getGames().stream().map(scg ->
-                                        ShoppingCartGameResponse
-                                                .builder()
-                                                .gameId(scg.getGame().getId())
-                                                .title(scg.getGame().getTitle())
-                                                .thumb(ImageConversionHelper.blobToByteArray(gamePictureService.getThumbPictureForGameId(scg.getGame().getId()).getImage()))
-                                                .price(scg.getGame().getPrice())
-                                                .amount(scg.getAmount())
-                                                .build())
-                                .collect(Collectors.toList()))
-                        .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
     }
 
     @GetMapping("/person/{id}")
     public ResponseEntity<ShoppingCartResponse> getByPersonId(@PathVariable("id") Long personId) {
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
 
-        ShoppingCartResponse response =
-                ShoppingCartResponse
-                        .builder()
-                        .shoppingCartId(cart.getId())
-                        .personId(personId)
-                        .totalPrice(cart.getTotalPrice())
-                        .shoppingCartGames(cart.getGames().stream().map(scg ->
-                                        ShoppingCartGameResponse
-                                                .builder()
-                                                .gameId(scg.getGame().getId())
-                                                .title(scg.getGame().getTitle())
-                                                .thumb(ImageConversionHelper.blobToByteArray(gamePictureService.getThumbPictureForGameId(scg.getGame().getId()).getImage()))
-                                                .price(scg.getGame().getPrice())
-                                                .amount(scg.getAmount())
-                                                .build())
-                                .collect(Collectors.toList()))
-                        .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
     }
 
     @PostMapping("/person/add")
@@ -133,7 +95,7 @@ public class ShoppingCartController {
         double totalPrice = 0;
         for (ShoppingCartGameEntity entry : allEntries) {
             if (entry.getAmount() <= 0) {
-                shoppingCartGameService.deleteAllById(Collections.singletonList(entry));
+                shoppingCartGameService.deleteAllById(Collections.singleton(entry));
                 cart.getGames().remove(entry);
             }
 
@@ -145,25 +107,7 @@ public class ShoppingCartController {
         cart.setTotalPrice(totalPrice);
         shoppingCartService.saveShoppingCart(cart);
 
-        ShoppingCartResponse response =
-                ShoppingCartResponse
-                        .builder()
-                        .shoppingCartId(cart.getId())
-                        .personId(cart.getPerson().getId())
-                        .totalPrice(cart.getTotalPrice())
-                        .shoppingCartGames(cart.getGames().stream().map(scg ->
-                                        ShoppingCartGameResponse
-                                                .builder()
-                                                .gameId(scg.getGame().getId())
-                                                .title(scg.getGame().getTitle())
-                                                .thumb(ImageConversionHelper.blobToByteArray(gamePictureService.getThumbPictureForGameId(scg.getGame().getId()).getImage()))
-                                                .price(scg.getGame().getPrice())
-                                                .amount(scg.getAmount())
-                                                .build())
-                                .collect(Collectors.toList()))
-                        .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
     }
 
     @DeleteMapping("/person/{id}/clear")

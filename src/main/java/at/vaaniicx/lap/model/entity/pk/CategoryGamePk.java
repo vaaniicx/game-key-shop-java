@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class CategoryGamePk  implements Serializable {
+public class CategoryGamePk implements Serializable {
 
     @Column(name = "category_id")
     private Long categoryId;

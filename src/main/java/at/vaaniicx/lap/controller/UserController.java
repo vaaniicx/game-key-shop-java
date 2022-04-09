@@ -1,9 +1,10 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.UserDTO;
+import at.vaaniicx.lap.mapper.user.UserResponseMapper;
 import at.vaaniicx.lap.model.entity.UserEntity;
-import at.vaaniicx.lap.model.mapper.UserMapper;
+import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.service.UserService;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +20,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    private UserResponseMapper userMapper = Mappers.getMapper(UserResponseMapper.class);
+
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable("id") Long userId) {
+    public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long userId) {
 
         UserEntity user = userService.getUserById(userId);
 
-        return new ResponseEntity<>(UserMapper.toDto(user), HttpStatus.OK);
+        return new ResponseEntity<>(userMapper.entityToResponse(user), HttpStatus.OK);
     }
 }

@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.GameNotFoundException;
+import at.vaaniicx.lap.exception.game.GameNotFoundException;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.repository.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,20 +1,19 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.model.dto.CategoryDTO;
+import at.vaaniicx.lap.mapper.category.CategoryResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryEntity;
 import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.request.UpdateCategoryRequest;
-import at.vaaniicx.lap.model.response.management.category.GamesByCategoryResponse;
+import at.vaaniicx.lap.model.response.category.CategoryResponse;
+import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.CategoryService;
-import at.vaaniicx.lap.service.GameService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,33 +21,38 @@ import java.util.stream.Collectors;
 @RequestMapping("/category")
 public class CategoryController {
 
-    @Autowired
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
+    private final CategoryGameService categoryGameService;
+    private final CategoryResponseMapper categoryMapper = Mappers.getMapper(CategoryResponseMapper.class);
 
-    @Autowired
-    private CategoryGameService categoryGameService;
+    public CategoryController(CategoryService categoryService, CategoryGameService categoryGameService) {
+        this.categoryService = categoryService;
+        this.categoryGameService = categoryGameService;
+    }
 
     @GetMapping
-    public List<CategoryDTO> getAll() {
-        return categoryService.getAllCategories().stream().map(c -> new CategoryDTO(c.getId(), c.getCategory(), c.getDescription())).collect(Collectors.toList());
+    public List<CategoryResponse> getAll() {
+        List<CategoryEntity> categories = categoryService.getAllCategories();
+
+        return categories.stream().map(categoryMapper::entityToResponse).collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public CategoryDTO getById(@PathVariable("id") Long id) {
+    public CategoryResponse getById(@PathVariable("id") Long id) {
         CategoryEntity category = categoryService.getCategoryById(id);
 
-        return CategoryDTO.builder().id(category.getId()).category(category.getCategory())
-                .description(category.getDescription()).build();
+        return categoryMapper.entityToResponse(category);
     }
 
-    @PostMapping("/update")
-    public CategoryEntity updateCategory(@RequestBody @Validated UpdateCategoryRequest request) {
-        CategoryEntity category = categoryService.getCategoryById(request.getId());
+    @PutMapping("/update")
+    public CategoryResponse updateCategory(@RequestBody @Validated UpdateCategoryRequest request) {
+        CategoryEntity categoryById = categoryService.getCategoryById(request.getId());
+        categoryById.setCategory(request.getCategory());
+        categoryById.setDescription(request.getDescription());
 
-        category.setCategory(request.getCategory());
-        category.setDescription(request.getDescription());
+        CategoryEntity updatedCategory = categoryService.updateCategory(categoryById);
 
-        return categoryService.updateCategory(category);
+        return categoryMapper.entityToResponse(updatedCategory);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -60,11 +64,11 @@ public class CategoryController {
 
     @GetMapping("/{id}/game")
     public ResponseEntity<List<GamesByCategoryResponse>> getGamesByCategory(@PathVariable("id") Long id) {
-        return new ResponseEntity<>(categoryGameService.getGamesByCategoryId(id).stream().map(g ->
-                        GamesByCategoryResponse.builder()
-                                .gameId(g.getId().getGameId())
-                                .title(g.getGame().getTitle())
-                                .build())
-                .collect(Collectors.toList()), HttpStatus.OK);
+        List<CategoryGameEntity> gamesByCategoryId = categoryGameService.getGamesByCategoryId(id);
+
+        List<GamesByCategoryResponse> response = gamesByCategoryId.stream().map(game ->
+                new GamesByCategoryResponse(game.getGame().getId(), game.getGame().getTitle())).collect(Collectors.toList());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

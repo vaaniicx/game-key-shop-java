@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.CountryNotFoundException;
+import at.vaaniicx.lap.exception.country.CountryNotFoundException;
 import at.vaaniicx.lap.model.entity.CountryEntity;
 import at.vaaniicx.lap.repository.CountryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,15 +14,6 @@ public class CountryService {
 
     @Autowired
     private CountryRepository countryRepository;
-
-    public CountryEntity getCountryByName(String country) {
-        Optional<CountryEntity> entity = countryRepository.findByCountry(country);
-
-        if (!entity.isPresent()) {
-            throw new CountryNotFoundException();
-        }
-        return entity.get();
-    }
 
     public CountryEntity getCountryById(Long id) {
         Optional<CountryEntity> entity = countryRepository.findById(id);

@@ -1,17 +1,10 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.KeyCodeNotFoundException;
-import at.vaaniicx.lap.exception.RoleNotFoundException;
+import at.vaaniicx.lap.exception.category.CategoryNotFoundException;
 import at.vaaniicx.lap.model.entity.CategoryEntity;
-import at.vaaniicx.lap.model.entity.KeyCodeEntity;
 import at.vaaniicx.lap.repository.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,8 +12,11 @@ import java.util.Optional;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
@@ -30,7 +26,7 @@ public class CategoryService {
         Optional<CategoryEntity> entity = categoryRepository.findById(id);
 
         if (!entity.isPresent()) {
-            throw new KeyCodeNotFoundException();
+            throw new CategoryNotFoundException();
         }
 
         return entity.get();
@@ -48,7 +44,7 @@ public class CategoryService {
         try {
             categoryRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
-            throw new RoleNotFoundException();
+            throw new CategoryNotFoundException();
         }
 
         return !categoryRepository.existsById(id);

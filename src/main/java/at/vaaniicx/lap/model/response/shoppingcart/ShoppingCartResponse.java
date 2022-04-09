@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.model.response.shoppingcart;
 
+import at.vaaniicx.lap.model.response.shoppingcartgame.ShoppingCartGameResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Builder
 public class ShoppingCartResponse {
 
-    @JsonProperty("cart_id")
+    @JsonProperty("id")
     private Long shoppingCartId;
 
     @JsonProperty("person_id")
@@ -21,6 +22,6 @@ public class ShoppingCartResponse {
     @JsonProperty("total_price")
     private double totalPrice;
 
-    @JsonProperty("cart_games")
+    @JsonProperty("games")
     private List<ShoppingCartGameResponse> shoppingCartGames;
 }

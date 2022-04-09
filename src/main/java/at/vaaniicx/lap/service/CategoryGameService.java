@@ -1,10 +1,9 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.CategoryGameNotFoundException;
+import at.vaaniicx.lap.exception.category.CategoryGameNotFoundException;
 import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
 import at.vaaniicx.lap.repository.CategoryGameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,15 +12,18 @@ import java.util.Optional;
 @Component
 public class CategoryGameService {
 
-    @Autowired
-    private CategoryGameRepository repository;
+    private final CategoryGameRepository categoryGameRepository;
+
+    public CategoryGameService(CategoryGameRepository categoryGameRepository) {
+        this.categoryGameRepository = categoryGameRepository;
+    }
 
     public List<CategoryGameEntity> getAllCategoryGames() {
-        return repository.findAll();
+        return categoryGameRepository.findAll();
     }
 
     public CategoryGameEntity getCategoryGameById(CategoryGamePk pk) {
-        Optional<CategoryGameEntity> entity = repository.findById(pk);
+        Optional<CategoryGameEntity> entity = categoryGameRepository.findById(pk);
 
         if (!entity.isPresent()) {
             throw new CategoryGameNotFoundException();
@@ -30,18 +32,18 @@ public class CategoryGameService {
     }
 
     public List<CategoryGameEntity> getCategoriesByGameId(Long id) {
-        return repository.findByGameId(id);
+        return categoryGameRepository.findByGameId(id);
     }
 
     public CategoryGameEntity save(CategoryGameEntity e) {
-        return repository.save(e);
+        return categoryGameRepository.save(e);
     }
 
     public List<CategoryGameEntity> getGamesByCategoryId(Long id) {
-        return repository.findByCategoryId(id);
+        return categoryGameRepository.findByCategoryId(id);
     }
 
     public void delete(CategoryGameEntity e) {
-        repository.delete(e);
+        categoryGameRepository.delete(e);
     }
 }
