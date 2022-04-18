@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.KeyCodeNotFoundException;
+import at.vaaniicx.lap.exception.key.KeyCodeNotFoundException;
 import at.vaaniicx.lap.model.entity.KeyCodeEntity;
 import at.vaaniicx.lap.repository.KeyCodeRepository;
 import org.springframework.dao.EmptyResultDataAccessException;

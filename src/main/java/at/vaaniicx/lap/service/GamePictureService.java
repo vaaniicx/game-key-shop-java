@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.GamePictureNotFoundException;
+import at.vaaniicx.lap.exception.gamepicture.GamePictureNotFoundException;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.repository.GamePictureRepository;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.KeyCodeNotFoundException;
+import at.vaaniicx.lap.exception.key.KeyCodeNotFoundException;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
 import at.vaaniicx.lap.repository.PublisherRepository;
 import org.springframework.stereotype.Service;

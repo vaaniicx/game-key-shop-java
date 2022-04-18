@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.PersonNotFoundException;
+import at.vaaniicx.lap.exception.person.PersonNotFoundException;
 import at.vaaniicx.lap.model.entity.PersonEntity;
 import at.vaaniicx.lap.repository.PersonRepository;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.PlacingNotFoundException;
+import at.vaaniicx.lap.exception.placing.PlacingNotFoundException;
 import at.vaaniicx.lap.model.entity.PlacingEntity;
 import at.vaaniicx.lap.repository.PlacingRepository;
 import org.springframework.stereotype.Service;

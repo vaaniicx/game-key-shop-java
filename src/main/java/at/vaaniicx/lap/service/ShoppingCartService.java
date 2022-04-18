@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.ShoppingCartNotFoundException;
+import at.vaaniicx.lap.exception.shoppingcart.ShoppingCartNotFoundException;
 import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
 import at.vaaniicx.lap.repository.ShoppingCartRepository;
 import org.springframework.stereotype.Service;

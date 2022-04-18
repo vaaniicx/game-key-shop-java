@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.RoleNotFoundException;
+import at.vaaniicx.lap.exception.role.RoleNotFoundException;
 import at.vaaniicx.lap.model.entity.RoleEntity;
 import at.vaaniicx.lap.repository.RoleRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
