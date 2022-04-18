@@ -3,7 +3,6 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.GamePictureNotFoundException;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.repository.GamePictureRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.Optional;
 @Service
 public class GamePictureService {
 
-    @Autowired
-    private GamePictureRepository gamePictureRepository;
+    private final GamePictureRepository gamePictureRepository;
+
+    public GamePictureService(GamePictureRepository gamePictureRepository) {
+        this.gamePictureRepository = gamePictureRepository;
+    }
 
     public List<GamePictureEntity> getAllGamePictures() {
         return gamePictureRepository.findAll();

@@ -1,10 +1,8 @@
 package at.vaaniicx.lap.service;
 
-import at.vaaniicx.lap.exception.KeyCodeNotFoundException;
 import at.vaaniicx.lap.exception.RoleNotFoundException;
 import at.vaaniicx.lap.model.entity.RoleEntity;
 import at.vaaniicx.lap.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +12,11 @@ import java.util.Optional;
 @Service
 public class RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+
+    public RoleService(RoleRepository roleRepository) {
+        this.roleRepository = roleRepository;
+    }
 
     public List<RoleEntity> getAllRoles() {
         return roleRepository.findAll();

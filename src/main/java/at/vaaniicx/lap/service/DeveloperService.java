@@ -3,7 +3,6 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.developer.DeveloperNotFoundException;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.repository.DeveloperRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,8 +12,11 @@ import java.util.Optional;
 @Service
 public class DeveloperService {
 
-    @Autowired
-    private DeveloperRepository developerRepository;
+    private final DeveloperRepository developerRepository;
+
+    public DeveloperService(DeveloperRepository developerRepository) {
+        this.developerRepository = developerRepository;
+    }
 
     public List<DeveloperEntity> getAllDeveloper() {
         List<DeveloperEntity> entities = developerRepository.findAll();

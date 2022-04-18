@@ -3,7 +3,6 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.KeyCodeNotFoundException;
 import at.vaaniicx.lap.model.entity.KeyCodeEntity;
 import at.vaaniicx.lap.repository.KeyCodeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,11 @@ import java.util.List;
 @Service
 public class KeyCodeService {
 
-    @Autowired
-    private KeyCodeRepository keyCodeRepository;
+    private final KeyCodeRepository keyCodeRepository;
+
+    public KeyCodeService(KeyCodeRepository keyCodeRepository) {
+        this.keyCodeRepository = keyCodeRepository;
+    }
 
     public List<KeyCodeEntity> getAllKeyCodesByGameId(Long id) {
         return keyCodeRepository.findByGameId(id);

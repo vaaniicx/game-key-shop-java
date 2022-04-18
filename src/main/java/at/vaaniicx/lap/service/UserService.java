@@ -4,7 +4,6 @@ import at.vaaniicx.lap.exception.user.UserNotFoundException;
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.request.RegisterRequest;
 import at.vaaniicx.lap.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,23 +16,23 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final CountryService countryService;
+    private final RoleService roleService;
+    private final PersonService personService;
+    private final ShoppingCartService shoppingCartService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private CountryService countryService;
-
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private PersonService personService;
-
-    @Autowired
-    private ShoppingCartService shoppingCartService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public UserService(UserRepository userRepository, CountryService countryService, RoleService roleService,
+                       PersonService personService, ShoppingCartService shoppingCartService,
+                       PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.countryService = countryService;
+        this.roleService = roleService;
+        this.personService = personService;
+        this.shoppingCartService = shoppingCartService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public List<UserEntity> getAllUsers() {
         return userRepository.findAll();

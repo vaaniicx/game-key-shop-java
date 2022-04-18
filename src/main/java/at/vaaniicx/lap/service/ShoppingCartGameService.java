@@ -2,7 +2,6 @@ package at.vaaniicx.lap.service;
 
 import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import at.vaaniicx.lap.repository.ShoppingCartGameRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,18 +10,21 @@ import java.util.Set;
 @Service
 public class ShoppingCartGameService {
 
-    @Autowired
-    private ShoppingCartGameRepository repository;
+    private final ShoppingCartGameRepository shoppingCartGameRepository;
+
+    public ShoppingCartGameService(ShoppingCartGameRepository shoppingCartGameRepository) {
+        this.shoppingCartGameRepository = shoppingCartGameRepository;
+    }
 
     public List<ShoppingCartGameEntity> getShoppingCartGameByShoppingCartId(long id) {
-        return repository.findByShoppingCartId(id);
+        return shoppingCartGameRepository.findByShoppingCartId(id);
     }
 
     public void save(ShoppingCartGameEntity e) {
-        repository.save(e);
+        shoppingCartGameRepository.save(e);
     }
 
     public void deleteAllById(Set<ShoppingCartGameEntity> e) {
-        e.forEach(scg -> repository.deleteById(scg.getId()));
+        e.forEach(scg -> shoppingCartGameRepository.deleteById(scg.getId()));
     }
 }
