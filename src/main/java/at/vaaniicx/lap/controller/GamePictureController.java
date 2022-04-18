@@ -4,7 +4,6 @@ import at.vaaniicx.lap.mapper.gamepicture.GamePictureResponseMapper;
 import at.vaaniicx.lap.model.response.gamepicture.GamePictureResponse;
 import at.vaaniicx.lap.service.GamePictureService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +13,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/gamepicture")
 public class GamePictureController {
 
-    @Autowired
-    private GamePictureService gamePictureService;
+    private final GamePictureService gamePictureService;
+    private final GamePictureResponseMapper gamePictureMapper;
 
-    private GamePictureResponseMapper gamePictureMapper = Mappers.getMapper(GamePictureResponseMapper.class);
+    public GamePictureController(GamePictureService gamePictureService) {
+        this.gamePictureService = gamePictureService;
+        this.gamePictureMapper = Mappers.getMapper(GamePictureResponseMapper.class);
+    }
 
     @GetMapping
     @ResponseBody

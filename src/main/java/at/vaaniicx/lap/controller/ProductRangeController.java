@@ -5,7 +5,6 @@ import at.vaaniicx.lap.model.response.GamePreviewDataResponse;
 import at.vaaniicx.lap.service.GamePictureService;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,11 +17,13 @@ import java.util.Objects;
 @RequestMapping("/productrange")
 public class ProductRangeController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+    private final GamePictureService gamePictureService;
 
-    @Autowired
-    private GamePictureService gamePictureService;
+    public ProductRangeController(GameService gameService, GamePictureService gamePictureService) {
+        this.gameService = gameService;
+        this.gamePictureService = gamePictureService;
+    }
 
     @GetMapping("/preview")
     public List<GamePreviewDataResponse> getGamePreviewData() {

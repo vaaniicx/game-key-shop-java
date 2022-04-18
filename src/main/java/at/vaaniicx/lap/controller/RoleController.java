@@ -7,7 +7,6 @@ import at.vaaniicx.lap.model.request.management.role.UpdateRoleRequest;
 import at.vaaniicx.lap.model.response.role.RoleResponse;
 import at.vaaniicx.lap.service.RoleService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,10 +19,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/role")
 public class RoleController {
 
-    @Autowired
-    private RoleService roleService;
+    private final RoleService roleService;
+    private final RoleResponseMapper roleMapper;
 
-    private RoleResponseMapper roleMapper = Mappers.getMapper(RoleResponseMapper.class);
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+        this.roleMapper = Mappers.getMapper(RoleResponseMapper.class);
+    }
 
     @GetMapping
     public List<RoleResponse> getAll() {

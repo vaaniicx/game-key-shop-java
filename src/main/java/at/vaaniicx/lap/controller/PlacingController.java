@@ -9,7 +9,10 @@ import at.vaaniicx.lap.model.response.placing.UserPlacingsResponse;
 import at.vaaniicx.lap.service.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -27,9 +30,9 @@ public class PlacingController {
     private final PlacingDetailsService placingDetailsService;
     private final KeyCodeService keyCodeService;
 
-    public PlacingController (PlacingService placingService, UserService userService,
-                              ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
-                              PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
+    public PlacingController(PlacingService placingService, UserService userService,
+                             ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
+                             PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
         this.placingService = placingService;
         this.userService = userService;
         this.shoppingCartService = shoppingCartService;

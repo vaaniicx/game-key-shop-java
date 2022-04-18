@@ -5,7 +5,6 @@ import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.service.UserService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,10 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final UserResponseMapper userMapper;
 
-    private UserResponseMapper userMapper = Mappers.getMapper(UserResponseMapper.class);
+    public UserController(UserService userService) {
+        this.userService = userService;
+        this.userMapper = Mappers.getMapper(UserResponseMapper.class);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long userId) {

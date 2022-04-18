@@ -8,7 +8,6 @@ import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.service.DeveloperService;
 import at.vaaniicx.lap.service.GameService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,13 +20,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/developer")
 public class DeveloperController {
 
-    @Autowired
-    private DeveloperService developerService;
+    private final DeveloperService developerService;
+    private final GameService gameService;
 
-    @Autowired
-    private GameService gameService;
+    private final DeveloperResponseMapper developerMapper;
 
-    private DeveloperResponseMapper developerMapper = Mappers.getMapper(DeveloperResponseMapper.class);
+    public DeveloperController(DeveloperService developerService, GameService gameService) {
+        this.developerService = developerService;
+        this.gameService = gameService;
+        this.developerMapper = Mappers.getMapper(DeveloperResponseMapper.class);
+    }
 
     @GetMapping
     @ResponseBody

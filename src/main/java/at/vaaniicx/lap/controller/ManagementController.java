@@ -23,7 +23,6 @@ import at.vaaniicx.lap.model.response.role.UserByRoleResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -39,38 +38,35 @@ import java.util.stream.Collectors;
 @RequestMapping("/management")
 public class ManagementController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final AddressService addressService;
+    private final CategoryService categoryService;
+    private final CategoryGameService categoryGameService;
+    private final DeveloperService developerService;
+    private final PublisherService publisherService;
+    private final PlacingService placingService;
+    private final GameService gameService;
+    private final KeyCodeService keyCodeService;
+    private final GamePictureService gamePictureService;
 
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private AddressService addressService;
-
-    @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private CategoryGameService categoryGameService;
-
-    @Autowired
-    private DeveloperService developerService;
-
-    @Autowired
-    private PublisherService publisherService;
-
-    @Autowired
-    private PlacingService placingService;
-
-    @Autowired
-    private GameService gameService;
-
-    @Autowired
-    private KeyCodeService keyCodeService;
-
-    @Autowired
-    private GamePictureService gamePictureService;
+    public ManagementController(UserService userService, RoleService roleService, AddressService addressService,
+                                CategoryService categoryService, CategoryGameService categoryGameService,
+                                DeveloperService developerService, PublisherService publisherService,
+                                PlacingService placingService, GameService gameService, KeyCodeService keyCodeService,
+                                GamePictureService gamePictureService) {
+        this.userService = userService;
+        this.roleService = roleService;
+        this.addressService = addressService;
+        this.categoryService = categoryService;
+        this.categoryGameService = categoryGameService;
+        this.developerService = developerService;
+        this.publisherService = publisherService;
+        this.placingService = placingService;
+        this.gameService = gameService;
+        this.keyCodeService = keyCodeService;
+        this.gamePictureService = gamePictureService;
+    }
 
     @GetMapping("/user")
     public List<UserManagementDataResponse> getUserManagementData() {

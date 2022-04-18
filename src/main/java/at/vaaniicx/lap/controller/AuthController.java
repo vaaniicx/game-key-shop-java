@@ -14,7 +14,6 @@ import at.vaaniicx.lap.model.response.auth.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,19 +26,20 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserResponseMapper userMapper;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    private UserResponseMapper userMapper = Mappers.getMapper(UserResponseMapper.class);
+    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
+                          UserService userService, JwtTokenUtil jwtTokenUtil) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userMapper = Mappers.getMapper(UserResponseMapper.class);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<JwtLoginResponse> login(@RequestBody @Validated JwtLoginRequest request) {

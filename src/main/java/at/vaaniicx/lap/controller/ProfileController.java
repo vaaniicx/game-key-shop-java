@@ -3,9 +3,10 @@ package at.vaaniicx.lap.controller;
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.request.profile.UpdateProfileRequest;
 import at.vaaniicx.lap.model.response.profile.ModifyProfileResponse;
-import at.vaaniicx.lap.service.*;
+import at.vaaniicx.lap.service.CountryService;
+import at.vaaniicx.lap.service.ProfilePictureService;
+import at.vaaniicx.lap.service.UserService;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,20 +19,16 @@ import java.sql.Blob;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    private final ProfilePictureService profilePictureService;
+    private final CountryService countryService;
 
-    @Autowired
-    private PersonService personService;
-
-    @Autowired
-    private AddressService addressService;
-
-    @Autowired
-    private ProfilePictureService profilePictureService;
-
-    @Autowired
-    private CountryService countryService;
+    public ProfileController(UserService userService, ProfilePictureService profilePictureService,
+                             CountryService countryService) {
+        this.userService = userService;
+        this.profilePictureService = profilePictureService;
+        this.countryService = countryService;
+    }
 
     @PostMapping("/update")
     public ModifyProfileResponse updateProfile(@RequestBody @Validated UpdateProfileRequest request) {

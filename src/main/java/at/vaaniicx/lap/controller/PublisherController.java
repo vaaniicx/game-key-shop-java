@@ -8,7 +8,6 @@ import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,13 +20,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/publisher")
 public class PublisherController {
 
-    @Autowired
-    private PublisherService publisherService;
+    private final PublisherService publisherService;
+    private final GameService gameService;
+    private final PublisherResponseMapper publisherMapper;
 
-    @Autowired
-    private GameService gameService;
-
-    private PublisherResponseMapper publisherMapper = Mappers.getMapper(PublisherResponseMapper.class);
+    public PublisherController(PublisherService publisherService, GameService gameService) {
+        this.publisherService = publisherService;
+        this.gameService = gameService;
+        this.publisherMapper = Mappers.getMapper(PublisherResponseMapper.class);
+    }
 
     @GetMapping
     @ResponseBody

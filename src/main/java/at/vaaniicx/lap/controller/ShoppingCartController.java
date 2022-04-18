@@ -1,19 +1,16 @@
 package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.shoppingcart.ShoppingCartResponseMapper;
-import at.vaaniicx.lap.mapper.shoppingcartgame.ShoppingCartGameResponseMapper;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
 import at.vaaniicx.lap.model.request.shoppingcart.AddToShoppingCartRequest;
 import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
-import at.vaaniicx.lap.service.GamePictureService;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -27,19 +24,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/shoppingcart")
 public class ShoppingCartController {
 
-    @Autowired
-    private ShoppingCartService shoppingCartService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartGameService shoppingCartGameService;
+    private final GameService gameService;
+    private final ShoppingCartResponseMapper shoppingCartMapper;
 
-    @Autowired
-    private ShoppingCartGameService shoppingCartGameService;
-
-    @Autowired
-    private GameService gameService;
-
-    @Autowired
-    private GamePictureService gamePictureService;
-
-    private ShoppingCartResponseMapper shoppingCartMapper = Mappers.getMapper(ShoppingCartResponseMapper.class);
+    public ShoppingCartController(ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
+                                  GameService gameService) {
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartGameService = shoppingCartGameService;
+        this.gameService = gameService;
+        this.shoppingCartMapper = Mappers.getMapper(ShoppingCartResponseMapper.class);
+    }
 
     @GetMapping
     public Set<ShoppingCartResponse> getAll() {

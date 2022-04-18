@@ -6,9 +6,7 @@ import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.GameService;
-import at.vaaniicx.lap.service.KeyCodeService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,16 +18,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/game")
 public class GameController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+    private final CategoryGameService categoryGameService;
+    private final GameResponseMapper gameMapper;
 
-    @Autowired
-    private KeyCodeService keyCodeService;
-
-    @Autowired
-    private CategoryGameService categoryGameService;
-
-    private GameResponseMapper gameMapper = Mappers.getMapper(GameResponseMapper.class);
+    public GameController(GameService gameService, CategoryGameService categoryGameService) {
+        this.gameService = gameService;
+        this.categoryGameService = categoryGameService;
+        this.gameMapper = Mappers.getMapper(GameResponseMapper.class);
+    }
 
     @GetMapping
     @ResponseBody
