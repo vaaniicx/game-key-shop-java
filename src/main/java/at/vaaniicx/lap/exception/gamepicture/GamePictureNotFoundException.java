@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.exception;
+package at.vaaniicx.lap.exception.gamepicture;
 
 
 import org.springframework.http.HttpStatus;
