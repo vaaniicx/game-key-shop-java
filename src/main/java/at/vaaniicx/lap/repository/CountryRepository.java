@@ -13,6 +13,4 @@ public interface CountryRepository extends CrudRepository<CountryEntity, Long> {
 
     @Override
     Optional<CountryEntity> findById(Long id);
-
-    Optional<CountryEntity> findByCountry(String country);
 }

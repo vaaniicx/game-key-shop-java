@@ -19,6 +19,4 @@ public interface KeyCodeRepository extends CrudRepository<KeyCodeEntity, Long> {
     List<KeyCodeEntity> findByGameId(Long id);
 
     List<KeyCodeEntity> findByGameIdAndSold(Long id, boolean sold);
-
-    Long countByGameId(Long id);
 }

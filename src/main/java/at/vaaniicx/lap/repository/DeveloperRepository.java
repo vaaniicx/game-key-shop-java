@@ -13,6 +13,4 @@ public interface DeveloperRepository extends CrudRepository<DeveloperEntity, Lon
 
     @Override
     Optional<DeveloperEntity> findById(Long id);
-
-    Optional<DeveloperEntity> findByDeveloper(String name);
 }

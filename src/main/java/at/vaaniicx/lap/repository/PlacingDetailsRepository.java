@@ -14,6 +14,4 @@ public interface PlacingDetailsRepository extends CrudRepository<PlacingDetailsE
 
     @Override
     Optional<PlacingDetailsEntity> findById(PlacingDetailsPk placingDetailsPk);
-
-    List<PlacingDetailsEntity> findAllByPlacingId(Long id);
 }
