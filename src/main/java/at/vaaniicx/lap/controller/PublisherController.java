@@ -2,13 +2,14 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
+import at.vaaniicx.lap.model.request.management.publisher.RegisterPublisherRequest;
 import at.vaaniicx.lap.model.request.management.publisher.UpdatePublisherRequest;
 import at.vaaniicx.lap.model.response.game.GamesByPublisherResponse;
 import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
+import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -32,40 +33,62 @@ public class PublisherController {
 
     @GetMapping
     @ResponseBody
-    public List<PublisherResponse> getAll() {
-        return publisherService.getAllPublisher().stream().map(publisherMapper::entityToResponse).collect(Collectors.toList());
+    public ResponseEntity<List<PublisherResponse>> getAllPublisher() {
+
+        List<PublisherResponse> publisherResponses = publisherService.getAllPublisher()
+                .stream()
+                .map(publisherMapper::entityToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(publisherResponses);
     }
 
     @GetMapping("/{id}")
-    public PublisherResponse getById(@PathVariable("id") Long publisherId) {
-        return publisherMapper.entityToResponse(publisherService.getPublisherById(publisherId));
+    public ResponseEntity<PublisherResponse> getPublisherById(@PathVariable("id") Long publisherId) {
+
+        PublisherEntity publisherById = publisherService.getPublisherById(publisherId);
+
+        return ResponseEntity.ok(publisherMapper.entityToResponse(publisherById));
     }
 
     @PostMapping("/update")
-    public PublisherEntity updatePublisher(@RequestBody @Validated UpdatePublisherRequest request) {
-        PublisherEntity publisher = publisherService.getPublisherById(request.getId());
+    public ResponseEntity<PublisherResponse> updatePublisher(@RequestBody @Validated UpdatePublisherRequest request) {
 
+        PublisherEntity publisher = publisherService.getPublisherById(request.getId());
         publisher.setPublisher(request.getPublisher());
 
-        return publisherService.updatePublisher(publisher);
+        PublisherEntity persistedPublisher = publisherService.savePublisher(publisher);
+
+        return ResponseEntity.ok(publisherMapper.entityToResponse(persistedPublisher));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterPublisherResponse> registerPublisher(@RequestBody @Validated RegisterPublisherRequest request) {
+
+        PublisherEntity publisher = new PublisherEntity();
+        publisher.setPublisher(request.getPublisher());
+
+        PublisherEntity persistedPublisher = publisherService.savePublisher(publisher);
+
+        return ResponseEntity.ok(new RegisterPublisherResponse(persistedPublisher.getId(), persistedPublisher.getPublisher()));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deletePublisher(@PathVariable("id") Long id) {
+
         publisherService.deletePublisherById(id);
 
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 
     @GetMapping("/{id}/game")
     public ResponseEntity<List<GamesByPublisherResponse>> getGamesByPublisher(@PathVariable("id") Long id) {
-        List<GamesByPublisherResponse> ret = gameService.getAllGamesByPublisherId(id).stream().map(g ->
-                GamesByPublisherResponse.builder()
-                        .gameId(g.getId())
-                        .title(g.getTitle())
-                        .ageRestriction(g.getAgeRestriction())
-                        .build())
+
+        List<GamesByPublisherResponse> gamesByPublisherResponses = gameService.getAllGamesByPublisherId(id)
+                .stream()
+                .map(e -> new GamesByPublisherResponse(e.getId(), e.getTitle(), e.getAgeRestriction()))
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(ret, HttpStatus.OK);
+
+        return ResponseEntity.ok(gamesByPublisherResponses);
     }
 }

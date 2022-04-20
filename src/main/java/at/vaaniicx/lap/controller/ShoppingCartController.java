@@ -11,13 +11,14 @@ import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
 import org.mapstruct.factory.Mappers;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,6 +28,7 @@ public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
     private final ShoppingCartGameService shoppingCartGameService;
     private final GameService gameService;
+
     private final ShoppingCartResponseMapper shoppingCartMapper;
 
     public ShoppingCartController(ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
@@ -38,26 +40,35 @@ public class ShoppingCartController {
     }
 
     @GetMapping
-    public Set<ShoppingCartResponse> getAll() {
-        return shoppingCartService.getAllShoppingCarts().stream().map(shoppingCartMapper::entityToResponse).collect(Collectors.toSet());
+    public ResponseEntity<List<ShoppingCartResponse>> getAllCarts() {
+
+        List<ShoppingCartResponse> shoppingCartResponses = shoppingCartService.getAllShoppingCarts()
+                .stream()
+                .map(shoppingCartMapper::entityToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(shoppingCartResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShoppingCartResponse> getById(@PathVariable("id") Long shoppingCartId) {
+    public ResponseEntity<ShoppingCartResponse> getCartById(@PathVariable("id") Long shoppingCartId) {
+
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartById(shoppingCartId);
 
-        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
+        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
     }
 
     @GetMapping("/person/{id}")
-    public ResponseEntity<ShoppingCartResponse> getByPersonId(@PathVariable("id") Long personId) {
+    public ResponseEntity<ShoppingCartResponse> getCartByPersonId(@PathVariable("id") Long personId) {
+
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
 
-        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
+        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
     }
 
     @PostMapping("/person/add")
     public ResponseEntity<ShoppingCartResponse> addItemToShoppingCart(@RequestBody @Validated AddToShoppingCartRequest request) {
+
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(request.getPersonId());
         List<ShoppingCartGameEntity> shoppingCartGames = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
 
@@ -103,11 +114,12 @@ public class ShoppingCartController {
         cart.setTotalPrice(totalPrice);
         shoppingCartService.saveShoppingCart(cart);
 
-        return new ResponseEntity<>(shoppingCartMapper.entityToResponse(cart), HttpStatus.OK);
+        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
     }
 
     @DeleteMapping("/person/{id}/clear")
     public ResponseEntity<ShoppingCartResponse> clearShoppingCartForPerson(@PathVariable("id") Long personId) {
+
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
 
         cart.setTotalPrice(0);
@@ -115,15 +127,6 @@ public class ShoppingCartController {
         cart.getGames().removeAll(cart.getGames());
         shoppingCartService.saveShoppingCart(cart);
 
-        ShoppingCartResponse response =
-                ShoppingCartResponse
-                        .builder()
-                        .shoppingCartId(cart.getId())
-                        .personId(cart.getPerson().getId())
-                        .totalPrice(cart.getTotalPrice())
-                        .shoppingCartGames(new ArrayList<>())
-                        .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
     }
 }

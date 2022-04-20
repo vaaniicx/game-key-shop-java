@@ -2,6 +2,7 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
+import at.vaaniicx.lap.model.request.management.developer.RegisterDeveloperRequest;
 import at.vaaniicx.lap.model.request.management.developer.UpdateDeveloperRequest;
 import at.vaaniicx.lap.model.response.developer.DeveloperResponse;
 import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
@@ -33,39 +34,62 @@ public class DeveloperController {
 
     @GetMapping
     @ResponseBody
-    public List<DeveloperResponse> getAll() {
-        return developerService.getAllDeveloper().stream().map(developerMapper::entityToResponse).collect(Collectors.toList());
+    public ResponseEntity<List<DeveloperResponse>> getAllDeveloper() {
+
+        List<DeveloperResponse> developerResponses = developerService.getAllDeveloper()
+                .stream()
+                .map(developerMapper::entityToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(developerResponses);
     }
 
     @GetMapping("/{id}")
-    public DeveloperResponse getById(@PathVariable("id") Long developerId) {
-        return developerMapper.entityToResponse(developerService.getDeveloperById(developerId));
+    public ResponseEntity<DeveloperResponse> getDeveloperById(@PathVariable("id") Long id) {
+
+        DeveloperResponse developerResponse = developerMapper.entityToResponse(developerService.getDeveloperById(id));
+
+        return ResponseEntity.ok(developerResponse);
     }
 
     @PostMapping("/update")
-    public DeveloperEntity updateDeveloper(@RequestBody @Validated UpdateDeveloperRequest request) {
+    public ResponseEntity<DeveloperEntity> updateDeveloper(@RequestBody @Validated UpdateDeveloperRequest request) {
+
         DeveloperEntity developer = developerService.getDeveloperById(request.getId());
         developer.setDeveloper(request.getDeveloper());
 
-        return developerService.updateDeveloper(developer);
+        DeveloperEntity persistedDeveloper = developerService.saveDeveloper(developer);
+
+        return ResponseEntity.ok(persistedDeveloper);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<DeveloperResponse> registerDeveloper(@RequestBody @Validated RegisterDeveloperRequest request) {
+
+        DeveloperEntity developer = new DeveloperEntity();
+        developer.setDeveloper(request.getDeveloper());
+
+        DeveloperEntity persistedDeveloper = developerService.saveDeveloper(developer);
+
+        return ResponseEntity.ok(developerMapper.entityToResponse(persistedDeveloper));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteDeveloper(@PathVariable("id") Long id) {
+
         developerService.deleteDeveloperById(id);
 
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
     @GetMapping("/{id}/game")
-    public ResponseEntity<List<GamesByDeveloperResponse>> getGamesByDeveloperId(@PathVariable("id") Long id) {
-        List<GamesByDeveloperResponse> ret = gameService.getAllGamesByDeveloperId(id).stream().map(g ->
-                        GamesByDeveloperResponse.builder()
-                                .gameId(g.getId())
-                                .title(g.getTitle())
-                                .ageRestriction(g.getAgeRestriction())
-                                .build())
+    public ResponseEntity<List<GamesByDeveloperResponse>> getGamesByDeveloper(@PathVariable("id") Long id) {
+
+        List<GamesByDeveloperResponse> gamesByDeveloperResponses = gameService.getAllGamesByDeveloperId(id)
+                .stream()
+                .map(e -> new GamesByDeveloperResponse(e.getId(), e.getTitle(), e.getAgeRestriction()))
                 .collect(Collectors.toList());
-        return new ResponseEntity<>(ret, HttpStatus.OK);
+
+        return ResponseEntity.ok(gamesByDeveloperResponses);
     }
 }

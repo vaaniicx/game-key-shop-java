@@ -27,9 +27,11 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+
     private final UserDetailsService userDetailsService;
     private final UserService userService;
-    private final JwtTokenUtil jwtTokenUtil;
+
     private final UserResponseMapper userMapper;
 
     public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
@@ -41,34 +43,9 @@ public class AuthController {
         this.userMapper = Mappers.getMapper(UserResponseMapper.class);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtLoginResponse> login(@RequestBody @Validated JwtLoginRequest request) {
-
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = jwtTokenUtil.generateToken(userDetails);
-
-        if (!userService.isUserActive(userDetails.getUsername())) {
-            throw new UserInactiveException();
-        }
-
-        userService.updateLastLogin(userDetails.getUsername());
-
-        return ResponseEntity.ok(new JwtLoginResponse(token));
-    }
-
-
-    @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@RequestBody @Validated RegisterRequest request) {
-        if (userService.isEmailAlreadyRegistered(request.getEmail())) {
-            throw new UserExistsException();
-        }
-        UserEntity userEntity = userService.registerUser(request);
-        return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
-    }
-
     @GetMapping
-    public ResponseEntity<AuthResponse> auth() {
+    public ResponseEntity<AuthResponse> authenticateUser() {
+
         UserEntity userEntity;
         try {
             userEntity = userService.getCurrentUserEntity();
@@ -77,5 +54,36 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(new AuthResponse(userMapper.entityToResponse(userEntity)));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<JwtLoginResponse> loginUser(@RequestBody @Validated JwtLoginRequest request) {
+
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+        authenticationManager.authenticate(authToken);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+        String token = jwtTokenUtil.generateToken(userDetails);
+
+        if (!userService.isUserActive(userDetails.getUsername())) {
+            throw new UserInactiveException();
+        }
+        userService.updateLastLogin(userDetails.getUsername());
+
+        return ResponseEntity.ok(new JwtLoginResponse(token));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponse> registerUser(@RequestBody @Validated RegisterRequest request) {
+
+        boolean alreadyRegistered = userService.isEmailAlreadyRegistered(request.getEmail());
+
+        if (alreadyRegistered) {
+            throw new UserExistsException();
+        }
+
+        UserEntity userEntity = userService.registerUser(request);
+
+        return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
     }
 }

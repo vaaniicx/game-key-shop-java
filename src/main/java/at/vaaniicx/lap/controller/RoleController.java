@@ -28,34 +28,51 @@ public class RoleController {
     }
 
     @GetMapping
-    public List<RoleResponse> getAll() {
-        return roleService.getAllRoles().stream().map(roleMapper::entityToResponse).collect(Collectors.toList());
+    public ResponseEntity<List<RoleResponse>> getAllRoles() {
+
+        List<RoleResponse> roleResponses = roleService.getAllRoles()
+                .stream()
+                .map(roleMapper::entityToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(roleResponses);
     }
 
     @GetMapping("/{id}")
-    public RoleResponse getById(@PathVariable("id") Long roleId) {
-        return roleMapper.entityToResponse(roleService.getRoleById(roleId));
+    public ResponseEntity<RoleResponse> getRoleById(@PathVariable("id") Long roleId) {
+
+        RoleEntity roleById = roleService.getRoleById(roleId);
+
+        return ResponseEntity.ok(roleMapper.entityToResponse(roleById));
     }
 
     @PostMapping("/register")
-    public RoleEntity registerRole(@RequestBody @Validated RegisterRoleRequest request) {
-        RoleEntity role = RoleEntity.builder().role(request.getRole()).build();
+    public ResponseEntity<RoleEntity> registerRole(@RequestBody @Validated RegisterRoleRequest request) {
 
-        return roleService.updateRole(role);
+        RoleEntity role = new RoleEntity();
+        role.setRole(request.getRole());
+
+        RoleEntity persistedRole = roleService.saveRole(role);
+
+        return ResponseEntity.ok(persistedRole);
     }
 
     @PostMapping("/update")
-    public RoleEntity updateRole(@RequestBody @Validated UpdateRoleRequest request) {
+    public ResponseEntity<RoleEntity> updateRole(@RequestBody @Validated UpdateRoleRequest request) {
+
         RoleEntity role = roleService.getRoleById(request.getId());
         role.setRole(request.getRole());
 
-        return roleService.registerRole(role);
+        RoleEntity updatedRole = roleService.saveRole(role);
+
+        return ResponseEntity.ok(updatedRole);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteRole(@PathVariable("id") Long id) {
-        boolean deleted = roleService.deleteRole(id);
 
-        return new ResponseEntity<>(deleted, deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        roleService.deleteRole(id);
+
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 }

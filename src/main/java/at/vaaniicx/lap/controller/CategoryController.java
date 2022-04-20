@@ -2,8 +2,8 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.category.CategoryResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryEntity;
-import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.request.UpdateCategoryRequest;
+import at.vaaniicx.lap.model.request.management.category.RegisterCategoryRequest;
 import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,51 +24,75 @@ public class CategoryController {
 
     private final CategoryService categoryService;
     private final CategoryGameService categoryGameService;
-    private final CategoryResponseMapper categoryMapper = Mappers.getMapper(CategoryResponseMapper.class);
+
+    private final CategoryResponseMapper categoryMapper;
 
     public CategoryController(CategoryService categoryService, CategoryGameService categoryGameService) {
         this.categoryService = categoryService;
         this.categoryGameService = categoryGameService;
+        this.categoryMapper = Mappers.getMapper(CategoryResponseMapper.class);
     }
 
     @GetMapping
-    public List<CategoryResponse> getAll() {
-        List<CategoryEntity> categories = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
 
-        return categories.stream().map(categoryMapper::entityToResponse).collect(Collectors.toList());
+        List<CategoryResponse> response = categoryService.getAllCategories()
+                .stream()
+                .filter(Objects::nonNull)
+                .map(categoryMapper::entityToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public CategoryResponse getById(@PathVariable("id") Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable("id") Long id) {
+
         CategoryEntity category = categoryService.getCategoryById(id);
 
-        return categoryMapper.entityToResponse(category);
+        return ResponseEntity.ok(categoryMapper.entityToResponse(category));
     }
 
     @PutMapping("/update")
-    public CategoryResponse updateCategory(@RequestBody @Validated UpdateCategoryRequest request) {
-        CategoryEntity categoryById = categoryService.getCategoryById(request.getId());
-        categoryById.setCategory(request.getCategory());
-        categoryById.setDescription(request.getDescription());
+    public ResponseEntity<CategoryResponse> updateCategory(@RequestBody @Validated UpdateCategoryRequest request) {
 
-        CategoryEntity updatedCategory = categoryService.updateCategory(categoryById);
+        CategoryEntity category = categoryService.getCategoryById(request.getId());
+        category.setCategory(request.getCategory());
+        category.setDescription(request.getDescription());
 
-        return categoryMapper.entityToResponse(updatedCategory);
+        CategoryEntity updatedCategory = categoryService.save(category);
+
+        return ResponseEntity.ok(categoryMapper.entityToResponse(updatedCategory));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<CategoryResponse> registerCategory(@RequestBody @Validated RegisterCategoryRequest request) {
+
+        CategoryEntity category = new CategoryEntity();
+        category.setCategory(request.getCategory());
+        category.setDescription(request.getDescription());
+
+        CategoryEntity persistedCategory = categoryService.save(category);
+
+        return ResponseEntity.ok(categoryMapper.entityToResponse(persistedCategory));
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable("id") Long id) {
-        boolean deleted = categoryService.deleteCategory(id);
 
-        return new ResponseEntity<>(deleted, deleted ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        categoryService.delete(id);
+
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 
     @GetMapping("/{id}/game")
     public ResponseEntity<List<GamesByCategoryResponse>> getGamesByCategory(@PathVariable("id") Long id) {
-        List<CategoryGameEntity> gamesByCategoryId = categoryGameService.getGamesByCategoryId(id);
 
-        List<GamesByCategoryResponse> response = gamesByCategoryId.stream().map(game ->
-                new GamesByCategoryResponse(game.getGame().getId(), game.getGame().getTitle())).collect(Collectors.toList());
+        List<GamesByCategoryResponse> response = categoryGameService.getGamesByCategoryId(id)
+                .stream()
+                .map(game ->
+                        new GamesByCategoryResponse(game.getGame().getId(), game.getGame().getTitle()))
+                .collect(Collectors.toList());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

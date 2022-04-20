@@ -1,13 +1,11 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.mapper.placing.PlacingResponseMapper;
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
-import at.vaaniicx.lap.model.response.placing.CreatePlacingResponse;
-import at.vaaniicx.lap.model.response.placing.PlacingDetailsResponse;
-import at.vaaniicx.lap.model.response.placing.PlacingManagementDataResponse;
-import at.vaaniicx.lap.model.response.placing.UserPlacingsResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingResponse;
 import at.vaaniicx.lap.service.*;
-import org.springframework.http.HttpStatus;
+import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -30,6 +29,8 @@ public class PlacingController {
     private final PlacingDetailsService placingDetailsService;
     private final KeyCodeService keyCodeService;
 
+    private final PlacingResponseMapper placingMapper;
+
     public PlacingController(PlacingService placingService, UserService userService,
                              ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
                              PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
@@ -39,146 +40,111 @@ public class PlacingController {
         this.shoppingCartGameService = shoppingCartGameService;
         this.placingDetailsService = placingDetailsService;
         this.keyCodeService = keyCodeService;
+        this.placingMapper = Mappers.getMapper(PlacingResponseMapper.class);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PlacingResponse>> getAllPlacings() {
+
+        List<PlacingResponse> placingResponses = placingService.getAllPlacings().stream().map(placingMapper::entityToResponse).collect(Collectors.toList());
+
+        return ResponseEntity.ok(placingResponses);
     }
 
     @GetMapping("/{id}/create")
-    public ResponseEntity<CreatePlacingResponse> createPlacingForUser(@PathVariable("id") Long userId) {
+    public ResponseEntity<PlacingResponse> createPlacing(@PathVariable("id") Long userId) {
 
+        // User aus der Datenbank mit der ID holen
         UserEntity user = userService.getUserById(userId);
         PersonEntity person = user.getPerson();
+
+        // Warenkorb mit der Person-ID des Users aus der Datenbank holen
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(person.getId());
 
-        // Check for available keys
-        boolean available = cart.getGames().stream().noneMatch(game ->
-                keyCodeService.getKeyCountByGameIdAndSold(game.getGame().getId(), false) < game.getAmount());
-
+        // Sind genügend Keys für alle Spiele im Warenkorb vorhanden?
+        boolean available = isKeysAvailable(cart);
         if (!available) {
-            // no keys for selling available
-            return new ResponseEntity<>(null, HttpStatus.NOT_ACCEPTABLE);
+            // TODO: Fehlermeldung
+            // Es gibt nicht für alle Spiele genügend Schlüssel
+            // TODO: Execption thrown;
         }
 
-        // Create placing
+        // Bestellungs-Objekt erstellen und befüllen
         PlacingEntity placing = new PlacingEntity();
         placing.setPlacingDate(Instant.now());
         placing.setTotalPrice(cart.getTotalPrice());
         placing.setPerson(person);
 
-        // Save placing in DB
+        // Bestellung in der Datenbank persistieren
         PlacingEntity savedPlacing = placingService.save(placing);
 
         // Create placing details
-        List<PlacingDetailsEntity> placingDetails = new ArrayList<>();
+        Set<PlacingDetailsEntity> placingDetails = new HashSet<>();
 
         cart.getGames().forEach(item -> {
-
+            // Alle verfügbaren Schlüssel pro Spiel aus der Datenbank abrufen
             List<KeyCodeEntity> availableKeyCodes = keyCodeService.getAllAvailableKeyCodesByGameId(item.getGame().getId());
 
+            // Anzahl der bestellten Schlüssel kaufen
             for (int i = 0; i < item.getAmount(); i++) {
-                PlacingDetailsEntity details = new PlacingDetailsEntity();
-
+                // Schlüssel-Objekt befüllen
                 KeyCodeEntity keyCode = availableKeyCodes.get(i);
                 keyCode.setPerson(person);
                 keyCode.setSold(true);
 
-                // Persist key
-                KeyCodeEntity savedKeyCode = keyCodeService.saveKeyCode(keyCode);
+                // Aktualisiertes Schlüssel-Objekt persistieren (-> Schlüssel wurde nun an Benutzer X verkauft)
+                KeyCodeEntity savedKeyCode = keyCodeService.save(keyCode);
 
-                // Set details
+                // Bestellungsdetails-Objekt erstellen und befüllen
+                PlacingDetailsEntity details = new PlacingDetailsEntity();
                 details.setId(new PlacingDetailsPk(savedPlacing.getId(), savedKeyCode.getId()));
                 details.setPlacing(savedPlacing);
                 details.setPrice(savedKeyCode.getGame().getPrice());
                 details.setKeyCode(savedKeyCode);
 
-                // Persist details
+                // Bestellungsdetails-Objekt persistieren
                 PlacingDetailsEntity savedDetails = placingDetailsService.save(details);
-
-                // adding to list
                 placingDetails.add(savedDetails);
             }
         });
+        // TODO: Check ob das funktioniert im Postman
+        savedPlacing.setGames(placingDetails);
 
-        // create response
-        CreatePlacingResponse response =
-                CreatePlacingResponse
-                        .builder()
-                        .placingId(savedPlacing.getId())
-                        .placingDate(savedPlacing.getPlacingDate())
-                        .personId(person.getId())
-                        .totalPrice(cart.getTotalPrice())
-                        .placingDetails(placingDetails.stream().map(details ->
-                                        PlacingDetailsResponse
-                                                .builder()
-                                                .placingId(details.getPlacing().getId())
-                                                .title(details.getKeyCode().getGame().getTitle())
-                                                .ageRestriction(details.getKeyCode().getGame().getAgeRestriction())
-                                                .keyId(details.getKeyCode().getId())
-                                                .keyCode(details.getKeyCode().getKeyCode())
-                                                .gameId(details.getKeyCode().getGame().getId())
-                                                .build())
-                                .collect(Collectors.toList()))
-                        .build();
-
-        // clear shoppingcart
+        // Warenkorb des Benutzers leeren/zurücksetzen
         cart.setTotalPrice(0);
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
+
+        // Zurückgesetzen Warenkorb persistieren
         shoppingCartService.saveShoppingCart(cart);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(placingMapper.entityToResponse(savedPlacing));
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<UserPlacingsResponse>> getPlacementsForUser(@PathVariable("id") Long userId) {
+    public ResponseEntity<List<PlacingResponse>> getPlacementsForUser(@PathVariable("id") Long userId) {
 
         UserEntity user = userService.getUserById(userId);
         PersonEntity person = user.getPerson();
 
-        List<PlacingEntity> placings = placingService.getAllPlacingsByPersonId(person.getId());
+        List<PlacingResponse> placingResponses = placingService.getAllPlacingsByPersonId(person.getId())
+                .stream()
+                .map(placingMapper::entityToResponse)
+                .collect(Collectors.toList());
 
-        List<UserPlacingsResponse> ret = new ArrayList<>();
-        placings.forEach(pla -> ret.add(
-                UserPlacingsResponse
-                        .builder()
-                        .placingId(pla.getId())
-                        .placingDate(pla.getPlacingDate())
-                        .totalPrice(pla.getTotalPrice())
-                        .placingDetails(pla.getGames().stream().map(det ->
-                                PlacingDetailsResponse
-                                        .builder()
-                                        .placingId(det.getPlacing().getId())
-                                        .title(det.getKeyCode().getGame().getTitle())
-                                        .ageRestriction(det.getKeyCode().getGame().getAgeRestriction())
-                                        .keyId(det.getKeyCode().getId())
-                                        .keyCode(det.getKeyCode().getKeyCode())
-                                        .gameId(det.getKeyCode().getGame().getId())
-                                        .build()).collect(Collectors.toList()))
-                        .build()));
-
-        return new ResponseEntity<>(ret, HttpStatus.OK);
+        return ResponseEntity.ok(placingResponses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlacingManagementDataResponse> getPlacingDetailsForPlacingId(@PathVariable("id") Long placingId) {
+    public ResponseEntity<PlacingResponse> getPlacingDetailsForPlacingId(@PathVariable("id") Long placingId) {
 
         PlacingEntity placing = placingService.getPlacingByPlacingId(placingId);
 
-        PlacingManagementDataResponse response = PlacingManagementDataResponse
-                .builder()
-                .placingId(placing.getId())
-                .placingDate(placing.getPlacingDate())
-                .totalPrice(placing.getTotalPrice())
-                .personId(placing.getPerson().getId())
-                .placingDetails(placing.getGames().stream().map(det -> PlacingDetailsResponse
-                        .builder()
-                        .placingId(det.getPlacing().getId())
-                        .title(det.getKeyCode().getGame().getTitle())
-                        .ageRestriction(det.getKeyCode().getGame().getAgeRestriction())
-                        .keyId(det.getKeyCode().getId())
-                        .keyCode(det.getKeyCode().getKeyCode())
-                        .gameId(det.getKeyCode().getGame().getId())
-                        .build()).collect(Collectors.toList()))
-                .build();
+        return ResponseEntity.ok(placingMapper.entityToResponse(placing));
+    }
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    private boolean isKeysAvailable(ShoppingCartEntity cart) {
+        return cart.getGames().stream().noneMatch(game ->
+                keyCodeService.getKeyCountByGameIdAndSold(game.getGame().getId(), false) < game.getAmount());
     }
 }

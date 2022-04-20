@@ -7,13 +7,11 @@ import at.vaaniicx.lap.service.CountryService;
 import at.vaaniicx.lap.service.ProfilePictureService;
 import at.vaaniicx.lap.service.UserService;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Blob;
-
 
 @RestController
 @RequestMapping("/profile")
@@ -31,20 +29,24 @@ public class ProfileController {
     }
 
     @PostMapping("/update")
-    public ModifyProfileResponse updateProfile(@RequestBody @Validated UpdateProfileRequest request) {
-        UserEntity user = userService.getUserById(request.getId());
-        PersonEntity person = user.getPerson();
+    public ResponseEntity<ModifyProfileResponse> updateProfile(@RequestBody @Validated UpdateProfileRequest request) {
 
+        UserEntity user = userService.getUserById(request.getId());
+
+        PersonEntity person = user.getPerson();
         person.setFirstName(request.getFirstName());
         person.setLastName(request.getLastName());
         person.setBirthDate(request.getBirthDate());
+
         AddressEntity address = person.getAddress();
         address.setStreet(request.getStreet());
         address.setHouseNumber(request.getHouseNumber());
         address.setDoor(request.getDoor());
         address.setStair(request.getStair());
+
         LocationEntity location = address.getLocation();
         location.setLocation(request.getLocation());
+
         CountryEntity country = countryService.getCountryById(request.getCountryId());
 
         if (request.getProfilePicture() != null) {
@@ -67,7 +69,7 @@ public class ProfileController {
 
         userService.saveUser(user);
 
-        return ModifyProfileResponse.builder().id(user.getId()).email(user.getEmail()).build();
+        return ResponseEntity.ok(new ModifyProfileResponse(user.getId(), user.getEmail()));
     }
 
     @GetMapping("/{id}/deactivate")
@@ -78,6 +80,6 @@ public class ProfileController {
 
         userService.saveUser(user);
 
-        return new ResponseEntity<>(true, HttpStatus.OK);
+        return ResponseEntity.ok(Boolean.TRUE);
     }
 }
