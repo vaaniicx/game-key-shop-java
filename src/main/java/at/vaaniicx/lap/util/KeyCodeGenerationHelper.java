@@ -10,6 +10,15 @@ public class KeyCodeGenerationHelper {
     private static final byte FRAGMENTS = 5;
     private static final char SEPARATOR = '-';
 
+    private KeyCodeGenerationHelper() {
+        // Privater Konstruktor
+    }
+
+    /**
+     * Generiert einen Key-Code nach statischen Vorgaben.
+     *
+     * @return - Generierter Key-Code
+     */
     public static String generateKeyCode() {
 
         StringBuilder builder = new StringBuilder();
@@ -21,7 +30,7 @@ public class KeyCodeGenerationHelper {
                 builder.append(SEPARATOR);
             }
         }
-        
+
         return builder.toString();
     }
 }
