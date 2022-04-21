@@ -3,7 +3,6 @@ package at.vaaniicx.lap.mapper.placing;
 import at.vaaniicx.lap.mapper.placingdetails.PlacingDetailsResponseMapper;
 import at.vaaniicx.lap.model.entity.PlacingEntity;
 import at.vaaniicx.lap.model.response.placing.PlacingResponse;
-import org.mapstruct.factory.Mappers;
 
 import java.util.stream.Collectors;
 

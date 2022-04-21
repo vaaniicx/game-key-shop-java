@@ -5,7 +5,6 @@ import at.vaaniicx.lap.mapper.role.RoleResponseMapper;
 import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.mapstruct.factory.Mappers;
 
 public class UserResponseMapperImpl implements UserResponseMapper {
 
@@ -23,7 +22,9 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         destination.setLastLogin(source.getLastLogin());
         destination.setPerson(PersonResponseMapper.INSTANCE.entityToResponse(source.getPerson()));
         destination.setRole(RoleResponseMapper.INSTANCE.entityToResponse(source.getRole()));
-        destination.setProfilePicture(ImageConversionHelper.blobToByteArray(source.getProfilePicture().getPicture()));
+        destination.setProfilePicture(source.getProfilePicture() != null ? ImageConversionHelper.blobToByteArray(source.getProfilePicture().getPicture()) : null);
+
+        // TODO: PROFILBILD ALS EXTRA REQUEST SCHICKEN
 
         return destination;
     }

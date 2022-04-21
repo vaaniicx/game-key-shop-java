@@ -8,9 +8,6 @@ import org.mapstruct.factory.Mappers;
 
 public class PlacingDetailsResponseMapperImpl implements PlacingDetailsResponseMapper {
 
-    private final PlacingResponseMapper placingMapper = Mappers.getMapper(PlacingResponseMapper.class);
-    private final KeyResponseMapper keyMapper = Mappers.getMapper(KeyResponseMapper.class);
-
     @Override
     public PlacingDetailsResponse entityToResponse(PlacingDetailsEntity source) {
         if (source == null) {
@@ -18,8 +15,8 @@ public class PlacingDetailsResponseMapperImpl implements PlacingDetailsResponseM
         }
 
         PlacingDetailsResponse destination = new PlacingDetailsResponse();
-        destination.setPlacing(placingMapper.entityToResponse(source.getPlacing()));
-        destination.setKeyCode(keyMapper.entityToResponse(source.getKeyCode()));
+        destination.setPlacingId(source.getPlacing().getId());
+        destination.setKeyCode(KeyResponseMapper.INSTANCE.entityToResponse(source.getKeyCode()));
         destination.setPrice(source.getPrice());
 
         return destination;
