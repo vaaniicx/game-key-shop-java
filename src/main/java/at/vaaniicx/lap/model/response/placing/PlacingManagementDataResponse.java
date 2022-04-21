@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.model.response.placing;
 
+import at.vaaniicx.lap.model.response.placingdetails.PlacingDetailsResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 

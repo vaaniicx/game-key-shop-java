@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GamePreviewDataResponse {
+public class GamePreviewResponse {
 
     @JsonProperty("game_id")
     private Long gameId;

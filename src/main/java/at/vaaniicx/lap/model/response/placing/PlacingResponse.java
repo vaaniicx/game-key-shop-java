@@ -1,6 +1,7 @@
 package at.vaaniicx.lap.model.response.placing;
 
 
+import at.vaaniicx.lap.model.response.placingdetails.PlacingDetailsResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,5 +27,4 @@ public class PlacingResponse {
 
     @JsonProperty("placing_details")
     private List<PlacingDetailsResponse> placingDetailsResponses;
-
 }
