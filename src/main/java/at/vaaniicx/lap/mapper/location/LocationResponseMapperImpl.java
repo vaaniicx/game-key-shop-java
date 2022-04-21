@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 public class LocationResponseMapperImpl implements LocationResponseMapper {
 
-    private CountryResponseMapper countryMapper = Mappers.getMapper(CountryResponseMapper.class);
+    private final CountryResponseMapper countryMapper = Mappers.getMapper(CountryResponseMapper.class);
 
     @Override
     public LocationResponse entityToResponse(LocationEntity source) {

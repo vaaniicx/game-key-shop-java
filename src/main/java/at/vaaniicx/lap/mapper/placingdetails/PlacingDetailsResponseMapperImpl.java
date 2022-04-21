@@ -8,8 +8,8 @@ import org.mapstruct.factory.Mappers;
 
 public class PlacingDetailsResponseMapperImpl implements PlacingDetailsResponseMapper {
 
-    private PlacingResponseMapper placingMapper = Mappers.getMapper(PlacingResponseMapper.class);
-    private KeyResponseMapper keyMapper = Mappers.getMapper(KeyResponseMapper.class);
+    private final PlacingResponseMapper placingMapper = Mappers.getMapper(PlacingResponseMapper.class);
+    private final KeyResponseMapper keyMapper = Mappers.getMapper(KeyResponseMapper.class);
 
     @Override
     public PlacingDetailsResponse entityToResponse(PlacingDetailsEntity source) {

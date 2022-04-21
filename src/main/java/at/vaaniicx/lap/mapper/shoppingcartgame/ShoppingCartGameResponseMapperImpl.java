@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 public class ShoppingCartGameResponseMapperImpl implements ShoppingCartGameResponseMapper {
 
-    private GameResponseMapper gameMapper = Mappers.getMapper(GameResponseMapper.class);
+    private final GameResponseMapper gameMapper = Mappers.getMapper(GameResponseMapper.class);
 
     @Override
     public ShoppingCartGameResponse entityToResponse(ShoppingCartGameEntity source) {

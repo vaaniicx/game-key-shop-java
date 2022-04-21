@@ -5,20 +5,17 @@ import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
+import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.mapstruct.factory.Mappers;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class GameResponseMapperImpl implements GameResponseMapper {
-
-    private DeveloperResponseMapper developerMapper = Mappers.getMapper(DeveloperResponseMapper.class);
-    private PublisherResponseMapper publisherMapper = Mappers.getMapper(PublisherResponseMapper.class);
-    private CategoryResponseMapper categoryMapper = Mappers.getMapper(CategoryResponseMapper.class);
 
     @Override
     public GameResponse entityToResponse(GameEntity source) {
@@ -36,12 +33,33 @@ public class GameResponseMapperImpl implements GameResponseMapper {
         destination.setPrice(source.getPrice());
         destination.setSavings(source.getSavings());
         destination.setSystemRequirements(source.getSystemRequirements());
-        destination.setDeveloper(developerMapper.entityToResponse(source.getDeveloper()));
-        destination.setPublisher(publisherMapper.entityToResponse(source.getPublisher()));
+        destination.setDeveloper(DeveloperResponseMapper.INSTANCE.entityToResponse(source.getDeveloper()));
+        destination.setPublisher(PublisherResponseMapper.INSTANCE.entityToResponse(source.getPublisher()));
         destination.setGamePictures(getGamePicturesForGame(source.getGamePictures()));
         destination.setAgeRestriction(source.getAgeRestriction());
         destination.setThumbnail(getThumbnailForGame(source.getGamePictures()));
-        destination.setCategories(source.getCategories().stream().map(e -> categoryMapper.entityToResponse(e)).collect(Collectors.toList()));
+        destination.setCategories(source.getCategories().stream().map(CategoryResponseMapper.INSTANCE::entityToResponse).collect(Collectors.toList()));
+
+        return destination;
+    }
+
+    @Override
+    public GameEntity responseToEntity(RegisterGameRequest source) {
+        if (source == null) {
+            return null;
+        }
+
+        GameEntity destination = new GameEntity();
+        destination.setTitle(source.getTitle());
+        destination.setDescription(source.getDescription());
+        destination.setShortDescription(source.getShortDescription());
+        destination.setReleaseDate(source.getReleaseDate());
+        destination.setOriginalPrice(source.getOriginalPrice());
+        destination.setPrice(source.getPrice());
+        destination.setSavings(BigDecimal.valueOf(source.getOriginalPrice()).subtract(BigDecimal.valueOf(source.getPrice())).doubleValue());
+        destination.setSystemRequirements(source.getSystemRequirements());
+        destination.setAgeRestriction(source.getAgeRestriction());
+        // TODO: Mapper fertig machen
 
         return destination;
     }

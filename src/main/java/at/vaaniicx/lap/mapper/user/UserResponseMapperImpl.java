@@ -9,9 +9,6 @@ import org.mapstruct.factory.Mappers;
 
 public class UserResponseMapperImpl implements UserResponseMapper {
 
-    private PersonResponseMapper personMapper = Mappers.getMapper(PersonResponseMapper.class);
-    private RoleResponseMapper roleMapper = Mappers.getMapper(RoleResponseMapper.class);
-
     @Override
     public UserResponse entityToResponse(UserEntity source) {
         if (source == null) {
@@ -24,8 +21,8 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         destination.setActive(source.isActive());
         destination.setRegistrationDate(source.getRegistrationDate());
         destination.setLastLogin(source.getLastLogin());
-        destination.setPerson(personMapper.entityToResponse(source.getPerson()));
-        destination.setRole(roleMapper.entityToResponse(source.getRole()));
+        destination.setPerson(PersonResponseMapper.INSTANCE.entityToResponse(source.getPerson()));
+        destination.setRole(RoleResponseMapper.INSTANCE.entityToResponse(source.getRole()));
         destination.setProfilePicture(ImageConversionHelper.blobToByteArray(source.getProfilePicture().getPicture()));
 
         return destination;

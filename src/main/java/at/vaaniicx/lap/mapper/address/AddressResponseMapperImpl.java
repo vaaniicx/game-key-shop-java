@@ -3,11 +3,8 @@ package at.vaaniicx.lap.mapper.address;
 import at.vaaniicx.lap.mapper.location.LocationResponseMapper;
 import at.vaaniicx.lap.model.entity.AddressEntity;
 import at.vaaniicx.lap.model.response.address.AddressResponse;
-import org.mapstruct.factory.Mappers;
 
 public class AddressResponseMapperImpl implements AddressResponseMapper {
-
-    private LocationResponseMapper locationMapper = Mappers.getMapper(LocationResponseMapper.class);
 
     @Override
     public AddressResponse entityToResponse(AddressEntity source) {
@@ -17,7 +14,7 @@ public class AddressResponseMapperImpl implements AddressResponseMapper {
 
         AddressResponse destination = new AddressResponse();
         destination.setId(source.getId());
-        destination.setLocation(locationMapper.entityToResponse(source.getLocation()));
+        destination.setLocation(LocationResponseMapper.INSTANCE.entityToResponse(source.getLocation()));
         destination.setStreet(source.getStreet());
         destination.setHouseNumber(source.getHouseNumber());
         destination.setDoor(source.getDoor());

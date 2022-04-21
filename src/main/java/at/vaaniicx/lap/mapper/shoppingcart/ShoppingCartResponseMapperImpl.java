@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class ShoppingCartResponseMapperImpl implements ShoppingCartResponseMapper {
 
-    private ShoppingCartGameResponseMapper shoppingCartGameMapper = Mappers.getMapper(ShoppingCartGameResponseMapper.class);
+    private final ShoppingCartGameResponseMapper shoppingCartGameMapper = Mappers.getMapper(ShoppingCartGameResponseMapper.class);
 
     @Override
     public ShoppingCartResponse entityToResponse(ShoppingCartEntity source) {
@@ -21,7 +21,7 @@ public class ShoppingCartResponseMapperImpl implements ShoppingCartResponseMappe
         destination.setShoppingCartId(source.getId());
         destination.setPersonId(source.getPerson().getId());
         destination.setTotalPrice(source.getTotalPrice());
-        destination.setShoppingCartGames(source.getGames().stream().map(e -> shoppingCartGameMapper.entityToResponse(e)).collect(Collectors.toList()));
+        destination.setShoppingCartGames(source.getGames().stream().map(shoppingCartGameMapper::entityToResponse).collect(Collectors.toList()));
 
         return destination;
     }
