@@ -3,9 +3,9 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.developer.DeveloperNotFoundException;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.repository.DeveloperRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,20 +14,25 @@ public class DeveloperService {
 
     private final DeveloperRepository developerRepository;
 
+    @Autowired
     public DeveloperService(DeveloperRepository developerRepository) {
         this.developerRepository = developerRepository;
     }
 
+    /**
+     * Retourniert alle Entwickler.
+     *
+     * @return - Liste aller Entwicklern
+     */
     public List<DeveloperEntity> getAllDeveloper() {
-        List<DeveloperEntity> entities = developerRepository.findAll();
-
-        if (entities.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        return entities;
+        return developerRepository.findAll();
     }
 
+    /**
+     * Retourniert den zur übergebenen ID zugehörigen Entwickler.
+     *
+     * @return - Entwickler zur übergebenen ID
+     */
     public DeveloperEntity getDeveloperById(Long id) {
         Optional<DeveloperEntity> entity = developerRepository.findById(id);
 
@@ -38,15 +43,22 @@ public class DeveloperService {
         return entity.get();
     }
 
-    public DeveloperEntity registerDeveloper(String name) {
-        return developerRepository.save(DeveloperEntity.builder().developer(name).build());
+    /**
+     * Speichert das übergebene Entity-Objekt.
+     *
+     * @param entity - Zu persistierende Objekt
+     * @return - Persistierte Objekt
+     */
+    public DeveloperEntity save(DeveloperEntity entity) {
+        return developerRepository.save(entity);
     }
 
-    public DeveloperEntity updateDeveloper(DeveloperEntity e) {
-        return developerRepository.save(e);
-    }
-
-    public void deleteDeveloperById(Long id) {
+    /**
+     * Löscht das Entity-Objekt zur übergebenen ID.
+     *
+     * @param id - ID des zu löschenden Objekt
+     */
+    public void deleteById(Long id) {
         developerRepository.deleteById(id);
     }
 }

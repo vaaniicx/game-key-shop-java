@@ -13,6 +13,7 @@ import at.vaaniicx.lap.model.response.auth.JwtLoginResponse;
 import at.vaaniicx.lap.model.response.auth.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,10 +26,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private JwtTokenUtil jwtTokenUtil;
-    private UserDetailsService userDetailsService;
-    private UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final UserDetailsService userDetailsService;
+    private final UserService userService;
+
+    @Autowired
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+                          UserDetailsService userDetailsService, UserService userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<AuthResponse> authenticateUser() {
@@ -52,7 +62,7 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtTokenUtil.generateToken(userDetails);
 
-        if (!userService.isUserActive(userDetails.getUsername())) {
+        if (!userService.isAccountActiveByEmail(userDetails.getUsername())) {
             throw new UserInactiveException();
         }
         userService.updateLastLogin(userDetails.getUsername());
@@ -69,7 +79,7 @@ public class AuthController {
             throw new UserExistsException();
         }
 
-        UserEntity userEntity = userService.registerUser(request);
+        UserEntity userEntity = userService.register(request);
 
         return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
     }

@@ -7,6 +7,7 @@ import at.vaaniicx.lap.service.CountryService;
 import at.vaaniicx.lap.service.ProfilePictureService;
 import at.vaaniicx.lap.service.UserService;
 import at.vaaniicx.lap.util.ImageConversionHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +18,17 @@ import java.sql.Blob;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private UserService userService;
-    private ProfilePictureService profilePictureService;
-    private CountryService countryService;
+    private final  UserService userService;
+    private final  ProfilePictureService profilePictureService;
+    private final  CountryService countryService;
+
+    @Autowired
+    public ProfileController(UserService userService, ProfilePictureService profilePictureService,
+                             CountryService countryService) {
+        this.userService = userService;
+        this.profilePictureService = profilePictureService;
+        this.countryService = countryService;
+    }
 
     @PostMapping("/update")
     public ResponseEntity<ModifyProfileResponse> updateProfile(@RequestBody @Validated UpdateProfileRequest request) {
@@ -60,7 +69,7 @@ public class ProfileController {
         person.setAddress(address);
         user.setPerson(person);
 
-        userService.saveUser(user);
+        userService.save(user);
 
         return ResponseEntity.ok(new ModifyProfileResponse(user.getId(), user.getEmail()));
     }
@@ -71,7 +80,7 @@ public class ProfileController {
         UserEntity user = userService.getUserById(userId);
         user.setActive(false);
 
-        userService.saveUser(user);
+        userService.save(user);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

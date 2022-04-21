@@ -5,6 +5,7 @@ import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.response.role.UserByRoleResponse;
 import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +19,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUser() {
@@ -42,7 +48,7 @@ public class UserController {
     @GetMapping("/role/{id}")
     public ResponseEntity<List<UserByRoleResponse>> getUserByRole(@PathVariable("id") Long roleId) {
 
-        List<UserByRoleResponse> userByRoleResponses = userService.findUserByRoleId(roleId)
+        List<UserByRoleResponse> userByRoleResponses = userService.getUserByRoleId(roleId)
                 .stream()
                 .map(e -> UserByRoleResponse.builder().id(e.getId()).email(e.getEmail()).active(e.isActive()).build())
                 .collect(Collectors.toList());

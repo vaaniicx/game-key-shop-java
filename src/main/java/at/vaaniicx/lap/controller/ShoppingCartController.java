@@ -24,9 +24,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/shoppingcart")
 public class ShoppingCartController {
 
-    private ShoppingCartService shoppingCartService;
-    private ShoppingCartGameService shoppingCartGameService;
-    private GameService gameService;
+    private final  ShoppingCartService shoppingCartService;
+    private final  ShoppingCartGameService shoppingCartGameService;
+    private final  GameService gameService;
+
+    public ShoppingCartController(ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
+                                  GameService gameService) {
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartGameService = shoppingCartGameService;
+        this.gameService = gameService;
+    }
 
     @GetMapping
     public ResponseEntity<List<ShoppingCartResponse>> getAllCarts() {
@@ -101,7 +108,7 @@ public class ShoppingCartController {
         }
 
         cart.setTotalPrice(totalPrice);
-        shoppingCartService.saveShoppingCart(cart);
+        shoppingCartService.save(cart);
 
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
@@ -114,7 +121,7 @@ public class ShoppingCartController {
         cart.setTotalPrice(0);
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
-        shoppingCartService.saveShoppingCart(cart);
+        shoppingCartService.save(cart);
 
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }

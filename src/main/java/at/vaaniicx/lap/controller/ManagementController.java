@@ -6,6 +6,7 @@ import at.vaaniicx.lap.model.response.management.WarehouseEntranceDataResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.KeyCodeService;
 import at.vaaniicx.lap.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +20,16 @@ import java.util.Objects;
 @RequestMapping("/management")
 public class ManagementController {
 
-    private UserService userService;
-    private GameService gameService;
-    private KeyCodeService keyCodeService;
+    private final UserService userService;
+    private final GameService gameService;
+    private final KeyCodeService keyCodeService;
+
+    @Autowired
+    public ManagementController(UserService userService, GameService gameService, KeyCodeService keyCodeService) {
+        this.userService = userService;
+        this.gameService = gameService;
+        this.keyCodeService = keyCodeService;
+    }
 
     @GetMapping("/game/flat/{id}")
     public GameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {

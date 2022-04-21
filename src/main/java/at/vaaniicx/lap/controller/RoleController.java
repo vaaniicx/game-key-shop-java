@@ -6,6 +6,7 @@ import at.vaaniicx.lap.model.request.management.role.RegisterRoleRequest;
 import at.vaaniicx.lap.model.request.management.role.UpdateRoleRequest;
 import at.vaaniicx.lap.model.response.role.RoleResponse;
 import at.vaaniicx.lap.service.RoleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/role")
 public class RoleController {
 
-    private RoleService roleService;
+    private final  RoleService roleService;
+
+    @Autowired
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @GetMapping
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
@@ -44,7 +50,7 @@ public class RoleController {
         RoleEntity role = new RoleEntity();
         role.setRole(request.getRole());
 
-        RoleEntity persistedRole = roleService.saveRole(role);
+        RoleEntity persistedRole = roleService.save(role);
 
         return ResponseEntity.ok(persistedRole);
     }
@@ -55,7 +61,7 @@ public class RoleController {
         RoleEntity role = roleService.getRoleById(request.getId());
         role.setRole(request.getRole());
 
-        RoleEntity updatedRole = roleService.saveRole(role);
+        RoleEntity updatedRole = roleService.save(role);
 
         return ResponseEntity.ok(updatedRole);
     }
@@ -63,7 +69,7 @@ public class RoleController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteRole(@PathVariable("id") Long id) {
 
-        roleService.deleteRole(id);
+        roleService.deleteById(id);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

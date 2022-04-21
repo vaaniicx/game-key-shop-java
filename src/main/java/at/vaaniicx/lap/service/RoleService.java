@@ -3,6 +3,7 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.role.RoleNotFoundException;
 import at.vaaniicx.lap.model.entity.RoleEntity;
 import at.vaaniicx.lap.repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +15,16 @@ public class RoleService {
 
     private final RoleRepository roleRepository;
 
+    @Autowired
     public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
     }
 
+    /**
+     * Retourniert alle Rollen.
+     *
+     * @return - Liste aller Rollen
+     */
     public List<RoleEntity> getAllRoles() {
         return roleRepository.findAll();
     }
@@ -31,8 +38,13 @@ public class RoleService {
         return entity.get();
     }
 
-    public RoleEntity getRoleByRoleName(String roleName) {
-        Optional<RoleEntity> entity = roleRepository.findByRole(roleName);
+    /**
+     * Retourniert die zum übergebenen Rollennamen zugehörige Rolle.
+     *
+     * @return - Veräffentlicher zur übergebenen ID
+     */
+    public RoleEntity getRoleByRoleName(String role) {
+        Optional<RoleEntity> entity = roleRepository.findByRole(role);
 
         if (!entity.isPresent()) {
             throw new RoleNotFoundException();
@@ -40,15 +52,22 @@ public class RoleService {
         return entity.get();
     }
 
-    public RoleEntity updateRole(RoleEntity e) {
-        return roleRepository.save(e);
+    /**
+     * Speichert das übergebene Entity-Objekt.
+     *
+     * @param entity - Zu persistierende Objekt
+     * @return - Persistierte Objekt
+     */
+    public RoleEntity save(RoleEntity entity) {
+        return roleRepository.save(entity);
     }
 
-    public RoleEntity registerRole(RoleEntity e) {
-        return roleRepository.save(e);
-    }
-
-    public boolean deleteRole(Long id) {
+    /**
+     * Löscht das Entity-Objekt zur übergebenen ID.
+     *
+     * @param id - ID des zu löschenden Objekt
+     */
+    public boolean deleteById(Long id) {
         try {
             roleRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {

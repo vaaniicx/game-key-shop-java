@@ -10,6 +10,7 @@ import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +22,24 @@ import java.util.stream.Collectors;
 @RequestMapping("/game")
 public class GameController {
 
-    private GameService gameService;
-    private DeveloperService developerService;
-    private PublisherService publisherService;
-    private GamePictureService gamePictureService;
-    private CategoryService categoryService;
-    private CategoryGameService categoryGameService;
+    private final GameService gameService;
+    private final DeveloperService developerService;
+    private final PublisherService publisherService;
+    private final GamePictureService gamePictureService;
+    private final CategoryService categoryService;
+    private final CategoryGameService categoryGameService;
+
+    @Autowired
+    public GameController(GameService gameService, DeveloperService developerService, PublisherService publisherService,
+                          GamePictureService gamePictureService, CategoryService categoryService,
+                          CategoryGameService categoryGameService) {
+        this.gameService = gameService;
+        this.developerService = developerService;
+        this.publisherService = publisherService;
+        this.gamePictureService = gamePictureService;
+        this.categoryService = categoryService;
+        this.categoryGameService = categoryGameService;
+    }
 
     @GetMapping
     @ResponseBody
@@ -46,7 +59,7 @@ public class GameController {
         List<GamePreviewResponse> gamePreviewResponses = gameService.getAllGamesOrderByTitle()
                 .stream()
                 .map(e -> {
-                    GamePictureEntity thumbnail = gamePictureService.getThumbPictureForGameId(e.getId());
+                    GamePictureEntity thumbnail = gamePictureService.getThumbnailByGameId(e.getId());
 
                     return new GamePreviewResponse(e.getId(), e.getTitle(), e.getPrice(), e.getShortDescription(),
                             thumbnail.getId(), ImageConversionHelper.blobToByteArray(thumbnail.getImage()));

@@ -8,6 +8,7 @@ import at.vaaniicx.lap.model.response.key.RegisterCodeResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.KeyCodeService;
 import at.vaaniicx.lap.util.KeyCodeGenerationHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,14 @@ import java.util.List;
 @RequestMapping("/key")
 public class KeyController {
 
-    private KeyCodeService keyCodeService;
-    private GameService gameService;
+    private final KeyCodeService keyCodeService;
+    private final GameService gameService;
+
+    @Autowired
+    public KeyController(KeyCodeService keyCodeService, GameService gameService) {
+        this.keyCodeService = keyCodeService;
+        this.gameService = gameService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<RegisterCodeResponse> registerCode(@RequestBody @Validated RegisterCodeRequest request) {
@@ -51,7 +58,7 @@ public class KeyController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteKey(@PathVariable("id") Long id) {
 
-        keyCodeService.delete(id);
+        keyCodeService.deleteById(id);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

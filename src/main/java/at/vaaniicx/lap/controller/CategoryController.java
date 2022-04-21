@@ -8,6 +8,7 @@ import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,8 +22,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/category")
 public class CategoryController {
 
-    private CategoryService categoryService;
-    private CategoryGameService categoryGameService;
+    private final CategoryService categoryService;
+    private final CategoryGameService categoryGameService;
+
+    @Autowired
+    public CategoryController(CategoryService categoryService, CategoryGameService categoryGameService) {
+        this.categoryService = categoryService;
+        this.categoryGameService = categoryGameService;
+    }
 
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
@@ -71,7 +78,7 @@ public class CategoryController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable("id") Long id) {
 
-        categoryService.delete(id);
+        categoryService.deleteById(id);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

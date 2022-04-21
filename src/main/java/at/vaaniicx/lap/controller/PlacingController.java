@@ -5,6 +5,7 @@ import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
 import at.vaaniicx.lap.model.response.placing.PlacingResponse;
 import at.vaaniicx.lap.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,12 +22,24 @@ import java.util.stream.Collectors;
 @RequestMapping("/placing")
 public class PlacingController {
 
-    private PlacingService placingService;
-    private UserService userService;
-    private ShoppingCartService shoppingCartService;
-    private ShoppingCartGameService shoppingCartGameService;
-    private PlacingDetailsService placingDetailsService;
-    private KeyCodeService keyCodeService;
+    private final PlacingService placingService;
+    private final  UserService userService;
+    private final  ShoppingCartService shoppingCartService;
+    private final  ShoppingCartGameService shoppingCartGameService;
+    private final  PlacingDetailsService placingDetailsService;
+    private final  KeyCodeService keyCodeService;
+
+    @Autowired
+    public PlacingController(PlacingService placingService, UserService userService,
+                             ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
+                             PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
+        this.placingService = placingService;
+        this.userService = userService;
+        this.shoppingCartService = shoppingCartService;
+        this.shoppingCartGameService = shoppingCartGameService;
+        this.placingDetailsService = placingDetailsService;
+        this.keyCodeService = keyCodeService;
+    }
 
     @GetMapping
     public ResponseEntity<List<PlacingResponse>> getAllPlacings() {
@@ -101,7 +114,7 @@ public class PlacingController {
         cart.getGames().removeAll(cart.getGames());
 
         // Zurückgesetzen Warenkorb persistieren
-        shoppingCartService.saveShoppingCart(cart);
+        shoppingCartService.save(cart);
 
         return ResponseEntity.ok(PlacingResponseMapper.INSTANCE.entityToResponse(savedPlacing));
     }

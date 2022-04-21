@@ -9,6 +9,7 @@ import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
 import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/publisher")
 public class PublisherController {
 
-    private PublisherService publisherService;
-    private GameService gameService;
+    private final  PublisherService publisherService;
+    private final  GameService gameService;
+
+    @Autowired
+    public PublisherController(PublisherService publisherService, GameService gameService) {
+        this.publisherService = publisherService;
+        this.gameService = gameService;
+    }
 
     @GetMapping
     @ResponseBody
@@ -49,7 +56,7 @@ public class PublisherController {
         PublisherEntity publisher = publisherService.getPublisherById(request.getId());
         publisher.setPublisher(request.getPublisher());
 
-        PublisherEntity persistedPublisher = publisherService.savePublisher(publisher);
+        PublisherEntity persistedPublisher = publisherService.save(publisher);
 
         return ResponseEntity.ok(PublisherResponseMapper.INSTANCE.entityToResponse(persistedPublisher));
     }
@@ -60,7 +67,7 @@ public class PublisherController {
         PublisherEntity publisher = new PublisherEntity();
         publisher.setPublisher(request.getPublisher());
 
-        PublisherEntity persistedPublisher = publisherService.savePublisher(publisher);
+        PublisherEntity persistedPublisher = publisherService.save(publisher);
 
         return ResponseEntity.ok(new RegisterPublisherResponse(persistedPublisher.getId(), persistedPublisher.getPublisher()));
     }
@@ -68,7 +75,7 @@ public class PublisherController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deletePublisher(@PathVariable("id") Long id) {
 
-        publisherService.deletePublisherById(id);
+        publisherService.deleteById(id);
 
         return ResponseEntity.ok(Boolean.TRUE);
     }

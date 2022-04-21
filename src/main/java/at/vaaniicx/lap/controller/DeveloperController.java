@@ -8,6 +8,7 @@ import at.vaaniicx.lap.model.response.developer.DeveloperResponse;
 import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.service.DeveloperService;
 import at.vaaniicx.lap.service.GameService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,8 +21,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/developer")
 public class DeveloperController {
 
-    private DeveloperService developerService;
-    private GameService gameService;
+    private final DeveloperService developerService;
+    private final GameService gameService;
+
+    @Autowired
+    public DeveloperController(DeveloperService developerService, GameService gameService) {
+        this.developerService = developerService;
+        this.gameService = gameService;
+    }
 
     @GetMapping
     @ResponseBody
@@ -49,7 +56,7 @@ public class DeveloperController {
         DeveloperEntity developer = developerService.getDeveloperById(request.getId());
         developer.setDeveloper(request.getDeveloper());
 
-        DeveloperEntity persistedDeveloper = developerService.saveDeveloper(developer);
+        DeveloperEntity persistedDeveloper = developerService.save(developer);
 
         return ResponseEntity.ok(persistedDeveloper);
     }
@@ -60,7 +67,7 @@ public class DeveloperController {
         DeveloperEntity developer = new DeveloperEntity();
         developer.setDeveloper(request.getDeveloper());
 
-        DeveloperEntity persistedDeveloper = developerService.saveDeveloper(developer);
+        DeveloperEntity persistedDeveloper = developerService.save(developer);
 
         return ResponseEntity.ok(DeveloperResponseMapper.INSTANCE.entityToResponse(persistedDeveloper));
     }
@@ -68,7 +75,7 @@ public class DeveloperController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteDeveloper(@PathVariable("id") Long id) {
 
-        developerService.deleteDeveloperById(id);
+        developerService.deleteById(id);
 
         return new ResponseEntity<>(true, HttpStatus.OK);
     }

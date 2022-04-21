@@ -4,6 +4,7 @@ import at.vaaniicx.lap.mapper.country.CountryResponseMapper;
 import at.vaaniicx.lap.model.entity.CountryEntity;
 import at.vaaniicx.lap.model.response.country.CountryResponse;
 import at.vaaniicx.lap.service.CountryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/country")
 public class CountryController {
 
-    private CountryService countryService;
+    private final CountryService countryService;
+
+    @Autowired
+    public CountryController(CountryService countryService) {
+        this.countryService = countryService;
+    }
 
     @GetMapping
     @ResponseBody

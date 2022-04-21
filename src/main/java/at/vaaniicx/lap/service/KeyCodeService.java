@@ -3,6 +3,7 @@ package at.vaaniicx.lap.service;
 import at.vaaniicx.lap.exception.key.KeyCodeNotFoundException;
 import at.vaaniicx.lap.model.entity.KeyCodeEntity;
 import at.vaaniicx.lap.repository.KeyCodeRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -13,32 +14,58 @@ public class KeyCodeService {
 
     private final KeyCodeRepository keyCodeRepository;
 
+    @Autowired
     public KeyCodeService(KeyCodeRepository keyCodeRepository) {
         this.keyCodeRepository = keyCodeRepository;
     }
 
+    /**
+     * Retourniert alle zur übergebenen Spiele-ID zugehörigen Schlüssel.
+     *
+     * @return - Liste mit allen Schlüssel eines Spiels
+     */
     public List<KeyCodeEntity> getAllKeyCodesByGameId(Long id) {
         return keyCodeRepository.findByGameId(id);
     }
 
+    /**
+     * Retourniert alle zur übergebenen Spiele-ID zugehörigen, verfügbaren Schlüssel.
+     *
+     * @return - Liste mit allen verfügbaren Schlüssel eines Spiels
+     */
     public List<KeyCodeEntity> getAllAvailableKeyCodesByGameId(Long gameId) {
         return keyCodeRepository.findByGameIdAndSold(gameId, false);
     }
 
-    public KeyCodeEntity saveKeyCode(KeyCodeEntity entity) {
+    /**
+     * Retourniert alle zur übergebenen Spiele-ID zugehörigen Schlüssel.
+     *
+     * @return - Liste mit allen Schlüssel eines Spiels
+     */
+    public Long getKeyCountByGameIdAndSold(Long gameId, boolean sold) {
+        return keyCodeRepository.countByGameIdAndSold(gameId, sold);
+    }
+
+    /**
+     * Speichert das übergebene Entity-Objekt.
+     *
+     * @param entity - Zu persistierende Objekt
+     * @return - Persistierte Objekt
+     */
+    public KeyCodeEntity save(KeyCodeEntity entity) {
         return keyCodeRepository.save(entity);
     }
 
-    public boolean deleteKeyCodeById(Long keyId) {
+    /**
+     * Löscht das Entity-Objekt zur übergebenen ID.
+     *
+     * @param id - ID des zu löschenden Objekt
+     */
+    public void deleteById(Long id) {
         try {
-            keyCodeRepository.deleteById(keyId);
+            keyCodeRepository.deleteById(id);
         } catch (EmptyResultDataAccessException e) {
             throw new KeyCodeNotFoundException();
         }
-        return !keyCodeRepository.existsById(keyId);
-    }
-
-    public Long getKeyCountByGameIdAndSold(Long gameId, boolean sold) {
-        return keyCodeRepository.countByGameIdAndSold(gameId, sold);
     }
 }
