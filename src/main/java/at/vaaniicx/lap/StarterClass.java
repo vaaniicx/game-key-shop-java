@@ -11,6 +11,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan("at.vaaniicx.lap.model")
 public class StarterClass {
 
+    /***
+     * Einstiegspunkt der Applikation
+     *
+     * @param args - Start-Parameter
+     */
     public static void main(String[] args) {
         SpringApplication.run(StarterClass.class, args);
     }
