@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -37,7 +38,7 @@ public class RegisterGameRequest {
     private Long publisherId;
 
     @JsonProperty("game_pictures")
-    private List<byte[]> gamePictures;
+    private Set<byte[]> gamePictures;
 
     @JsonProperty("age_restriction")
     private byte ageRestriction;
@@ -46,5 +47,5 @@ public class RegisterGameRequest {
     private byte[] thumbnail;
 
     @JsonProperty("categories")
-    private List<Long> categories;
+    private Set<Long> categories;
 }

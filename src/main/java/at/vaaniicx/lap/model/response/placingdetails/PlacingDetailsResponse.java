@@ -14,8 +14,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlacingDetailsResponse {
 
-    @JsonProperty("placing")
-    private PlacingResponse placing;
+    @JsonProperty("placing_id")
+    private Long placingId;
 
     @JsonProperty("key_code")
     private KeyResponse keyCode;

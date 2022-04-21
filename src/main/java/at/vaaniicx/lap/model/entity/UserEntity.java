@@ -46,12 +46,4 @@ public class UserEntity {
     @OneToOne
     @JoinColumn(name = "profile_picture_id", nullable = true)
     private ProfilePictureEntity profilePicture;
-
-    public UserEntity(String email, String encode, boolean b, Instant now, RoleEntity role) {
-        this.email = email;
-        this.password = encode;
-        this.active = b;
-        this.registrationDate = now;
-        this.role = role;
-    }
 }

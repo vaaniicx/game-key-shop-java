@@ -34,9 +34,4 @@ public class LocationEntity {
             orphanRemoval = true
     )
     private Set<AddressEntity> addresses;
-
-    public LocationEntity(String postal, String location) {
-        this.postal = postal;
-        this.location = location;
-    }
 }

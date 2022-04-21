@@ -9,8 +9,8 @@ import java.sql.Blob;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
-@AllArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class GamePictureEntity {
 
     @Id

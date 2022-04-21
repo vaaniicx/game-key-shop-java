@@ -31,11 +31,4 @@ public class AddressEntity {
 
     @Column(name = "stair", length = 10)
     private String stair;
-
-    public AddressEntity(String street, String houseNumber, String door, String stair) {
-        this.street = street;
-        this.houseNumber = houseNumber;
-        this.door = door;
-        this.stair = stair;
-    }
 }
