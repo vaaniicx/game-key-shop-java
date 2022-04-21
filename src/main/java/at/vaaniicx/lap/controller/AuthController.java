@@ -13,7 +13,6 @@ import at.vaaniicx.lap.model.response.auth.JwtLoginResponse;
 import at.vaaniicx.lap.model.response.auth.RegisterResponse;
 import at.vaaniicx.lap.security.jwt.JwtTokenUtil;
 import at.vaaniicx.lap.service.UserService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,22 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenUtil jwtTokenUtil;
-
-    private final UserDetailsService userDetailsService;
-    private final UserService userService;
-
-    private final UserResponseMapper userMapper;
-
-    public AuthController(AuthenticationManager authenticationManager, UserDetailsService userDetailsService,
-                          UserService userService, JwtTokenUtil jwtTokenUtil) {
-        this.authenticationManager = authenticationManager;
-        this.userDetailsService = userDetailsService;
-        this.userService = userService;
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userMapper = Mappers.getMapper(UserResponseMapper.class);
-    }
+    private AuthenticationManager authenticationManager;
+    private JwtTokenUtil jwtTokenUtil;
+    private UserDetailsService userDetailsService;
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<AuthResponse> authenticateUser() {
@@ -53,7 +40,7 @@ public class AuthController {
             throw new InvalidTokenException();
         }
 
-        return ResponseEntity.ok(new AuthResponse(userMapper.entityToResponse(userEntity)));
+        return ResponseEntity.ok(new AuthResponse(UserResponseMapper.INSTANCE.entityToResponse(userEntity)));
     }
 
     @PostMapping("/login")

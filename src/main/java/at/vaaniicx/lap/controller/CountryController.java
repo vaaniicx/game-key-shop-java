@@ -4,7 +4,6 @@ import at.vaaniicx.lap.mapper.country.CountryResponseMapper;
 import at.vaaniicx.lap.model.entity.CountryEntity;
 import at.vaaniicx.lap.model.response.country.CountryResponse;
 import at.vaaniicx.lap.service.CountryService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +14,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/country")
 public class CountryController {
 
-    private final CountryService countryService;
-
-    private final CountryResponseMapper countryMapper;
-
-    public CountryController(CountryService countryService) {
-        this.countryService = countryService;
-        this.countryMapper = Mappers.getMapper(CountryResponseMapper.class);
-    }
+    private CountryService countryService;
 
     @GetMapping
     @ResponseBody
@@ -30,7 +22,7 @@ public class CountryController {
 
         List<CountryResponse> countryResponses = countryService.getAllCountries()
                 .stream()
-                .map(countryMapper::entityToResponse)
+                .map(CountryResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(countryResponses);
@@ -41,6 +33,6 @@ public class CountryController {
 
         CountryEntity countryById = countryService.getCountryById(id);
 
-        return ResponseEntity.ok(countryMapper.entityToResponse(countryById));
+        return ResponseEntity.ok(CountryResponseMapper.INSTANCE.entityToResponse(countryById));
     }
 }

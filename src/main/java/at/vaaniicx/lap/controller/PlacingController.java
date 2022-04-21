@@ -5,7 +5,6 @@ import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
 import at.vaaniicx.lap.model.response.placing.PlacingResponse;
 import at.vaaniicx.lap.service.*;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,31 +21,17 @@ import java.util.stream.Collectors;
 @RequestMapping("/placing")
 public class PlacingController {
 
-    private final PlacingService placingService;
-    private final UserService userService;
-    private final ShoppingCartService shoppingCartService;
-    private final ShoppingCartGameService shoppingCartGameService;
-    private final PlacingDetailsService placingDetailsService;
-    private final KeyCodeService keyCodeService;
-
-    private final PlacingResponseMapper placingMapper;
-
-    public PlacingController(PlacingService placingService, UserService userService,
-                             ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
-                             PlacingDetailsService placingDetailsService, KeyCodeService keyCodeService) {
-        this.placingService = placingService;
-        this.userService = userService;
-        this.shoppingCartService = shoppingCartService;
-        this.shoppingCartGameService = shoppingCartGameService;
-        this.placingDetailsService = placingDetailsService;
-        this.keyCodeService = keyCodeService;
-        this.placingMapper = Mappers.getMapper(PlacingResponseMapper.class);
-    }
+    private PlacingService placingService;
+    private UserService userService;
+    private ShoppingCartService shoppingCartService;
+    private ShoppingCartGameService shoppingCartGameService;
+    private PlacingDetailsService placingDetailsService;
+    private KeyCodeService keyCodeService;
 
     @GetMapping
     public ResponseEntity<List<PlacingResponse>> getAllPlacings() {
 
-        List<PlacingResponse> placingResponses = placingService.getAllPlacings().stream().map(placingMapper::entityToResponse).collect(Collectors.toList());
+        List<PlacingResponse> placingResponses = placingService.getAllPlacings().stream().map(PlacingResponseMapper.INSTANCE::entityToResponse).collect(Collectors.toList());
 
         return ResponseEntity.ok(placingResponses);
     }
@@ -118,7 +103,7 @@ public class PlacingController {
         // Zurückgesetzen Warenkorb persistieren
         shoppingCartService.saveShoppingCart(cart);
 
-        return ResponseEntity.ok(placingMapper.entityToResponse(savedPlacing));
+        return ResponseEntity.ok(PlacingResponseMapper.INSTANCE.entityToResponse(savedPlacing));
     }
 
     @GetMapping("/user/{id}")
@@ -129,7 +114,7 @@ public class PlacingController {
 
         List<PlacingResponse> placingResponses = placingService.getAllPlacingsByPersonId(person.getId())
                 .stream()
-                .map(placingMapper::entityToResponse)
+                .map(PlacingResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(placingResponses);
@@ -140,7 +125,7 @@ public class PlacingController {
 
         PlacingEntity placing = placingService.getPlacingByPlacingId(placingId);
 
-        return ResponseEntity.ok(placingMapper.entityToResponse(placing));
+        return ResponseEntity.ok(PlacingResponseMapper.INSTANCE.entityToResponse(placing));
     }
 
     private boolean isKeysAvailable(ShoppingCartEntity cart) {

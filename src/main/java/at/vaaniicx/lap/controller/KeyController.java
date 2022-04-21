@@ -19,13 +19,8 @@ import java.util.List;
 @RequestMapping("/key")
 public class KeyController {
 
-    private final KeyCodeService keyCodeService;
-    private final GameService gameService;
-
-    public KeyController(KeyCodeService keyCodeService, GameService gameService) {
-        this.keyCodeService = keyCodeService;
-        this.gameService = gameService;
-    }
+    private KeyCodeService keyCodeService;
+    private GameService gameService;
 
     @PostMapping("/register")
     public ResponseEntity<RegisterCodeResponse> registerCode(@RequestBody @Validated RegisterCodeRequest request) {

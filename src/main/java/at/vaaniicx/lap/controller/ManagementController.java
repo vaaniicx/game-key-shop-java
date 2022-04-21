@@ -19,15 +19,9 @@ import java.util.Objects;
 @RequestMapping("/management")
 public class ManagementController {
 
-    private final UserService userService;
-    private final GameService gameService;
-    private final KeyCodeService keyCodeService;
-
-    public ManagementController(UserService userService, GameService gameService, KeyCodeService keyCodeService) {
-        this.userService = userService;
-        this.gameService = gameService;
-        this.keyCodeService = keyCodeService;
-    }
+    private UserService userService;
+    private GameService gameService;
+    private KeyCodeService keyCodeService;
 
     @GetMapping("/game/flat/{id}")
     public GameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {

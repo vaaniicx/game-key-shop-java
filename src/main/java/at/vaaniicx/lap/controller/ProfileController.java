@@ -17,16 +17,9 @@ import java.sql.Blob;
 @RequestMapping("/profile")
 public class ProfileController {
 
-    private final UserService userService;
-    private final ProfilePictureService profilePictureService;
-    private final CountryService countryService;
-
-    public ProfileController(UserService userService, ProfilePictureService profilePictureService,
-                             CountryService countryService) {
-        this.userService = userService;
-        this.profilePictureService = profilePictureService;
-        this.countryService = countryService;
-    }
+    private UserService userService;
+    private ProfilePictureService profilePictureService;
+    private CountryService countryService;
 
     @PostMapping("/update")
     public ResponseEntity<ModifyProfileResponse> updateProfile(@RequestBody @Validated UpdateProfileRequest request) {

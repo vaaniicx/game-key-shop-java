@@ -10,7 +10,6 @@ import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,26 +24,16 @@ import java.util.stream.Collectors;
 @RequestMapping("/shoppingcart")
 public class ShoppingCartController {
 
-    private final ShoppingCartService shoppingCartService;
-    private final ShoppingCartGameService shoppingCartGameService;
-    private final GameService gameService;
-
-    private final ShoppingCartResponseMapper shoppingCartMapper;
-
-    public ShoppingCartController(ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
-                                  GameService gameService) {
-        this.shoppingCartService = shoppingCartService;
-        this.shoppingCartGameService = shoppingCartGameService;
-        this.gameService = gameService;
-        this.shoppingCartMapper = Mappers.getMapper(ShoppingCartResponseMapper.class);
-    }
+    private ShoppingCartService shoppingCartService;
+    private ShoppingCartGameService shoppingCartGameService;
+    private GameService gameService;
 
     @GetMapping
     public ResponseEntity<List<ShoppingCartResponse>> getAllCarts() {
 
         List<ShoppingCartResponse> shoppingCartResponses = shoppingCartService.getAllShoppingCarts()
                 .stream()
-                .map(shoppingCartMapper::entityToResponse)
+                .map(ShoppingCartResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(shoppingCartResponses);
@@ -55,7 +44,7 @@ public class ShoppingCartController {
 
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartById(shoppingCartId);
 
-        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
+        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
     @GetMapping("/person/{id}")
@@ -63,7 +52,7 @@ public class ShoppingCartController {
 
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
 
-        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
+        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
     @PostMapping("/person/add")
@@ -114,7 +103,7 @@ public class ShoppingCartController {
         cart.setTotalPrice(totalPrice);
         shoppingCartService.saveShoppingCart(cart);
 
-        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
+        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
     @DeleteMapping("/person/{id}/clear")
@@ -127,6 +116,6 @@ public class ShoppingCartController {
         cart.getGames().removeAll(cart.getGames());
         shoppingCartService.saveShoppingCart(cart);
 
-        return ResponseEntity.ok(shoppingCartMapper.entityToResponse(cart));
+        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 }

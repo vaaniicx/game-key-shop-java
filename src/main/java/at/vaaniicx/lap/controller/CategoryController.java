@@ -8,7 +8,6 @@ import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.CategoryService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,16 +21,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/category")
 public class CategoryController {
 
-    private final CategoryService categoryService;
-    private final CategoryGameService categoryGameService;
-
-    private final CategoryResponseMapper categoryMapper;
-
-    public CategoryController(CategoryService categoryService, CategoryGameService categoryGameService) {
-        this.categoryService = categoryService;
-        this.categoryGameService = categoryGameService;
-        this.categoryMapper = Mappers.getMapper(CategoryResponseMapper.class);
-    }
+    private CategoryService categoryService;
+    private CategoryGameService categoryGameService;
 
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
@@ -39,7 +30,7 @@ public class CategoryController {
         List<CategoryResponse> response = categoryService.getAllCategories()
                 .stream()
                 .filter(Objects::nonNull)
-                .map(categoryMapper::entityToResponse)
+                .map(CategoryResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(response);
@@ -50,7 +41,7 @@ public class CategoryController {
 
         CategoryEntity category = categoryService.getCategoryById(id);
 
-        return ResponseEntity.ok(categoryMapper.entityToResponse(category));
+        return ResponseEntity.ok(CategoryResponseMapper.INSTANCE.entityToResponse(category));
     }
 
     @PutMapping("/update")
@@ -62,7 +53,7 @@ public class CategoryController {
 
         CategoryEntity updatedCategory = categoryService.save(category);
 
-        return ResponseEntity.ok(categoryMapper.entityToResponse(updatedCategory));
+        return ResponseEntity.ok(CategoryResponseMapper.INSTANCE.entityToResponse(updatedCategory));
     }
 
     @PostMapping("/register")
@@ -74,7 +65,7 @@ public class CategoryController {
 
         CategoryEntity persistedCategory = categoryService.save(category);
 
-        return ResponseEntity.ok(categoryMapper.entityToResponse(persistedCategory));
+        return ResponseEntity.ok(CategoryResponseMapper.INSTANCE.entityToResponse(persistedCategory));
     }
 
     @DeleteMapping("/delete/{id}")

@@ -9,7 +9,6 @@ import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
 import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,15 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/publisher")
 public class PublisherController {
 
-    private final PublisherService publisherService;
-    private final GameService gameService;
-    private final PublisherResponseMapper publisherMapper;
-
-    public PublisherController(PublisherService publisherService, GameService gameService) {
-        this.publisherService = publisherService;
-        this.gameService = gameService;
-        this.publisherMapper = Mappers.getMapper(PublisherResponseMapper.class);
-    }
+    private PublisherService publisherService;
+    private GameService gameService;
 
     @GetMapping
     @ResponseBody
@@ -37,7 +29,7 @@ public class PublisherController {
 
         List<PublisherResponse> publisherResponses = publisherService.getAllPublisher()
                 .stream()
-                .map(publisherMapper::entityToResponse)
+                .map(PublisherResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(publisherResponses);
@@ -48,7 +40,7 @@ public class PublisherController {
 
         PublisherEntity publisherById = publisherService.getPublisherById(publisherId);
 
-        return ResponseEntity.ok(publisherMapper.entityToResponse(publisherById));
+        return ResponseEntity.ok(PublisherResponseMapper.INSTANCE.entityToResponse(publisherById));
     }
 
     @PostMapping("/update")
@@ -59,7 +51,7 @@ public class PublisherController {
 
         PublisherEntity persistedPublisher = publisherService.savePublisher(publisher);
 
-        return ResponseEntity.ok(publisherMapper.entityToResponse(persistedPublisher));
+        return ResponseEntity.ok(PublisherResponseMapper.INSTANCE.entityToResponse(persistedPublisher));
     }
 
     @PostMapping("/register")

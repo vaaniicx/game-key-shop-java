@@ -6,8 +6,6 @@ import at.vaaniicx.lap.model.request.management.role.RegisterRoleRequest;
 import at.vaaniicx.lap.model.request.management.role.UpdateRoleRequest;
 import at.vaaniicx.lap.model.response.role.RoleResponse;
 import at.vaaniicx.lap.service.RoleService;
-import org.mapstruct.factory.Mappers;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,20 +17,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/role")
 public class RoleController {
 
-    private final RoleService roleService;
-    private final RoleResponseMapper roleMapper;
-
-    public RoleController(RoleService roleService) {
-        this.roleService = roleService;
-        this.roleMapper = Mappers.getMapper(RoleResponseMapper.class);
-    }
+    private RoleService roleService;
 
     @GetMapping
     public ResponseEntity<List<RoleResponse>> getAllRoles() {
 
         List<RoleResponse> roleResponses = roleService.getAllRoles()
                 .stream()
-                .map(roleMapper::entityToResponse)
+                .map(RoleResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(roleResponses);
@@ -43,7 +35,7 @@ public class RoleController {
 
         RoleEntity roleById = roleService.getRoleById(roleId);
 
-        return ResponseEntity.ok(roleMapper.entityToResponse(roleById));
+        return ResponseEntity.ok(RoleResponseMapper.INSTANCE.entityToResponse(roleById));
     }
 
     @PostMapping("/register")

@@ -5,7 +5,6 @@ import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.response.role.UserByRoleResponse;
 import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.service.UserService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,20 +18,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
-    private final UserResponseMapper userMapper;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-        this.userMapper = Mappers.getMapper(UserResponseMapper.class);
-    }
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUser() {
 
         List<UserResponse> userResponses = userService.getAllUsers()
                 .stream()
-                .map(userMapper::entityToResponse)
+                .map(UserResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(userResponses);
@@ -43,7 +36,7 @@ public class UserController {
 
         UserEntity user = userService.getUserById(userId);
 
-        return ResponseEntity.ok(userMapper.entityToResponse(user));
+        return ResponseEntity.ok(UserResponseMapper.INSTANCE.entityToResponse(user));
     }
 
     @GetMapping("/role/{id}")

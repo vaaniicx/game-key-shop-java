@@ -14,14 +14,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/gamepicture")
 public class GamePictureController {
 
-    private final GamePictureService gamePictureService;
-
-    private final GamePictureResponseMapper gamePictureMapper;
-
-    public GamePictureController(GamePictureService gamePictureService) {
-        this.gamePictureService = gamePictureService;
-        this.gamePictureMapper = Mappers.getMapper(GamePictureResponseMapper.class);
-    }
+    private GamePictureService gamePictureService;
 
     @GetMapping
     @ResponseBody
@@ -29,7 +22,7 @@ public class GamePictureController {
 
         List<GamePictureResponse> gamePictureResponses = gamePictureService.getAllGamePictures()
                 .stream()
-                .map(gamePictureMapper::entityToResponse)
+                .map(GamePictureResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(gamePictureResponses);
@@ -38,7 +31,7 @@ public class GamePictureController {
     @GetMapping("/{id}")
     public ResponseEntity<GamePictureResponse> getById(@PathVariable("id") Long id) {
 
-        GamePictureResponse gamePictureResponse = gamePictureMapper.entityToResponse(gamePictureService.getGamePictureById(id));
+        GamePictureResponse gamePictureResponse = GamePictureResponseMapper.INSTANCE.entityToResponse(gamePictureService.getGamePictureById(id));
 
         return ResponseEntity.ok(gamePictureResponse);
     }

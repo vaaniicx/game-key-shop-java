@@ -10,12 +10,10 @@ import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,27 +21,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/game")
 public class GameController {
 
-    private final GameService gameService;
-    private final DeveloperService developerService;
-    private final PublisherService publisherService;
-    private final GamePictureService gamePictureService;
-    private final CategoryService categoryService;
-    private final CategoryGameService categoryGameService;
-
-    private final GameResponseMapper gameMapper;
-
-    public GameController(GameService gameService, DeveloperService developerService, PublisherService publisherService,
-                          GamePictureService gamePictureService, CategoryService categoryService,
-                          CategoryGameService categoryGameService) {
-        this.gameService = gameService;
-        this.developerService = developerService;
-        this.publisherService = publisherService;
-        this.gamePictureService = gamePictureService;
-        this.categoryService = categoryService;
-        this.categoryGameService = categoryGameService;
-
-        this.gameMapper = Mappers.getMapper(GameResponseMapper.class);
-    }
+    private GameService gameService;
+    private DeveloperService developerService;
+    private PublisherService publisherService;
+    private GamePictureService gamePictureService;
+    private CategoryService categoryService;
+    private CategoryGameService categoryGameService;
 
     @GetMapping
     @ResponseBody
@@ -51,7 +34,7 @@ public class GameController {
 
         List<GameResponse> gameResponses = gameService.getAllGamesOrderByTitle()
                 .stream()
-                .map(gameMapper::entityToResponse)
+                .map(GameResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(gameResponses);
@@ -96,13 +79,13 @@ public class GameController {
             categoryGameService.save(categoryGame);
         });
 
-        return ResponseEntity.ok(gameMapper.entityToResponse(gameEntity));
+        return ResponseEntity.ok(GameResponseMapper.INSTANCE.entityToResponse(gameEntity));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<GameResponse> getGameById(@PathVariable("id") Long gameId) {
 
-        GameResponse gameResponse = gameMapper.entityToResponse(gameService.getGameById(gameId));
+        GameResponse gameResponse = GameResponseMapper.INSTANCE.entityToResponse(gameService.getGameById(gameId));
 
         return ResponseEntity.ok(gameResponse);
     }
@@ -119,7 +102,7 @@ public class GameController {
     private GameEntity getGameFromRequest(RegisterGameRequest request) {
 
         // Game-Objekt erstellen und mit den Daten aus dem Request befüllen
-        GameEntity gameEntity = gameMapper.responseToEntity(request);
+        GameEntity gameEntity = GameResponseMapper.INSTANCE.responseToEntity(request);
         // Entwickler mit der ID aus der Datenbank holen und setzen
         gameEntity.setDeveloper(developerService.getDeveloperById(request.getDeveloperId()));
         // Publisher mit der ID aus der Datenbank holen und setzen

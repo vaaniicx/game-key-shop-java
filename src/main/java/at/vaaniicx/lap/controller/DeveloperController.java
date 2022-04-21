@@ -8,7 +8,6 @@ import at.vaaniicx.lap.model.response.developer.DeveloperResponse;
 import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.service.DeveloperService;
 import at.vaaniicx.lap.service.GameService;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -21,16 +20,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/developer")
 public class DeveloperController {
 
-    private final DeveloperService developerService;
-    private final GameService gameService;
-
-    private final DeveloperResponseMapper developerMapper;
-
-    public DeveloperController(DeveloperService developerService, GameService gameService) {
-        this.developerService = developerService;
-        this.gameService = gameService;
-        this.developerMapper = Mappers.getMapper(DeveloperResponseMapper.class);
-    }
+    private DeveloperService developerService;
+    private GameService gameService;
 
     @GetMapping
     @ResponseBody
@@ -38,7 +29,7 @@ public class DeveloperController {
 
         List<DeveloperResponse> developerResponses = developerService.getAllDeveloper()
                 .stream()
-                .map(developerMapper::entityToResponse)
+                .map(DeveloperResponseMapper.INSTANCE::entityToResponse)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(developerResponses);
@@ -47,7 +38,7 @@ public class DeveloperController {
     @GetMapping("/{id}")
     public ResponseEntity<DeveloperResponse> getDeveloperById(@PathVariable("id") Long id) {
 
-        DeveloperResponse developerResponse = developerMapper.entityToResponse(developerService.getDeveloperById(id));
+        DeveloperResponse developerResponse = DeveloperResponseMapper.INSTANCE.entityToResponse(developerService.getDeveloperById(id));
 
         return ResponseEntity.ok(developerResponse);
     }
@@ -71,7 +62,7 @@ public class DeveloperController {
 
         DeveloperEntity persistedDeveloper = developerService.saveDeveloper(developer);
 
-        return ResponseEntity.ok(developerMapper.entityToResponse(persistedDeveloper));
+        return ResponseEntity.ok(DeveloperResponseMapper.INSTANCE.entityToResponse(persistedDeveloper));
     }
 
     @DeleteMapping("/delete/{id}")
