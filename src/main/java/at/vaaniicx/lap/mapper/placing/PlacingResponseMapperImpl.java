@@ -16,9 +16,14 @@ public class PlacingResponseMapperImpl implements PlacingResponseMapper {
 
         PlacingResponse destination = new PlacingResponse();
         destination.setId(source.getId());
+        destination.setPersonId(source.getPerson().getId());
         destination.setPlacingDate(source.getPlacingDate());
         destination.setTotalPrice(source.getTotalPrice());
-        destination.setPlacingDetailsResponses(source.getGames().stream().map(PlacingDetailsResponseMapper.INSTANCE::entityToResponse).collect(Collectors.toList()));
+        destination.setPlacingDetailsResponses(source.getGames()
+                .stream()
+                .map(PlacingDetailsResponseMapper.INSTANCE::entityToResponse)
+                .collect(Collectors.toList())
+        );
 
         return destination;
     }

@@ -44,7 +44,10 @@ public class PlacingController {
     @GetMapping
     public ResponseEntity<List<PlacingResponse>> getAllPlacings() {
 
-        List<PlacingResponse> placingResponses = placingService.getAllPlacings().stream().map(PlacingResponseMapper.INSTANCE::entityToResponse).collect(Collectors.toList());
+        List<PlacingResponse> placingResponses = placingService.getAllPlacings()
+                .stream()
+                .map(PlacingResponseMapper.INSTANCE::entityToResponse)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(placingResponses);
     }
@@ -134,7 +137,7 @@ public class PlacingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PlacingResponse> getPlacingDetailsForPlacingId(@PathVariable("id") Long placingId) {
+    public ResponseEntity<PlacingResponse> getPlacingById(@PathVariable("id") Long placingId) {
 
         PlacingEntity placing = placingService.getPlacingByPlacingId(placingId);
 

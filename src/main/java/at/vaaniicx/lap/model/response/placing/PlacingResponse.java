@@ -19,11 +19,14 @@ public class PlacingResponse {
 
     private Long id;
 
-    @JsonProperty("total_price")
-    private double totalPrice;
+    @JsonProperty("person_id")
+    private Long personId;
 
     @JsonProperty("placing_date")
     private Instant placingDate;
+
+    @JsonProperty("total_price")
+    private double totalPrice;
 
     @JsonProperty("placing_details")
     private List<PlacingDetailsResponse> placingDetailsResponses;

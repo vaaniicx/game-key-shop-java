@@ -1,7 +1,5 @@
 package at.vaaniicx.lap.model.response.placingdetails;
 
-import at.vaaniicx.lap.model.response.key.KeyResponse;
-import at.vaaniicx.lap.model.response.placing.PlacingResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +15,17 @@ public class PlacingDetailsResponse {
     @JsonProperty("placing_id")
     private Long placingId;
 
+    private String title;
+
+    @JsonProperty("age_restriction")
+    private byte ageRestriction;
+
+    @JsonProperty("key_id")
+    private Long keyId;
+
     @JsonProperty("key_code")
-    private KeyResponse keyCode;
+    private String keyCode;
 
-    @JsonProperty("price")
-    private double price;
-
+    @JsonProperty("game_id")
+    private Long gameId;
 }
