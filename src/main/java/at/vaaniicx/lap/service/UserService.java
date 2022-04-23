@@ -159,6 +159,7 @@ public class UserService {
      * @return - Benutzer zur Person-ID
      */
     public UserEntity getUserByPersonId(Long id) {
+
         Optional<UserEntity> entity = userRepository.findByPersonId(id);
 
         if (!entity.isPresent()) {

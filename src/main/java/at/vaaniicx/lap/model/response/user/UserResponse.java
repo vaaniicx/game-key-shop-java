@@ -34,5 +34,4 @@ public class UserResponse {
 
     @JsonProperty("profile_picture")
     private byte[] profilePicture;
-
 }
