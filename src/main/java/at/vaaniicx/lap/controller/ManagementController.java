@@ -1,7 +1,8 @@
 package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.entity.UserEntity;
-import at.vaaniicx.lap.model.response.key.GameFlatResponse;
+import at.vaaniicx.lap.model.response.game.SlimGameResponse;
+import at.vaaniicx.lap.model.response.key.KeyResponse;
 import at.vaaniicx.lap.model.response.management.WarehouseEntranceDataResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.KeyCodeService;
@@ -20,40 +21,13 @@ import java.util.Objects;
 @RequestMapping("/management")
 public class ManagementController {
 
-    private final UserService userService;
     private final GameService gameService;
     private final KeyCodeService keyCodeService;
 
     @Autowired
-    public ManagementController(UserService userService, GameService gameService, KeyCodeService keyCodeService) {
-        this.userService = userService;
+    public ManagementController(GameService gameService, KeyCodeService keyCodeService) {
         this.gameService = gameService;
         this.keyCodeService = keyCodeService;
-    }
-
-    @GetMapping("/game/flat/{id}")
-    public GameFlatResponse getKeyManagementGameFlat(@PathVariable("id") Long gameId) {
-        return new GameFlatResponse(gameId, gameService.getGameById(gameId).getTitle(),
-                keyCodeService.getKeyCountByGameIdAndSold(gameId, true), keyCodeService.getKeyCountByGameIdAndSold(gameId, false));
-    }
-
-    @GetMapping("/game/key/{id}")
-    public List<at.vaaniicx.lap.model.response.key.DataResponse> getKeyManagementData(@PathVariable("id") Long gameId) {
-        List<at.vaaniicx.lap.model.response.key.DataResponse> ret = new ArrayList<>();
-
-        keyCodeService.getAllKeyCodesByGameId(gameId).stream().filter(Objects::nonNull)
-                .forEach(k -> {
-                    UserEntity user = null;
-                    if (k.getPerson() != null) {
-                        user = userService.getUserByPersonId(k.getPerson().getId());
-                    }
-
-                    ret.add(new at.vaaniicx.lap.model.response.key.DataResponse(k.getId(), k.getKeyCode(), k.isSold(),
-                            user != null ? user.getId() : null,
-                            user != null ? user.getEmail() : null));
-                });
-
-        return ret;
     }
 
     @GetMapping("/warehouse/entrance")
