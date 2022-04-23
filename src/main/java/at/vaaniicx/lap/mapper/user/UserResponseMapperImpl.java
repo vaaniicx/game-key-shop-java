@@ -24,8 +24,6 @@ public class UserResponseMapperImpl implements UserResponseMapper {
         destination.setRole(RoleResponseMapper.INSTANCE.entityToResponse(source.getRole()));
         destination.setProfilePicture(source.getProfilePicture() != null ? ImageConversionHelper.blobToByteArray(source.getProfilePicture().getPicture()) : null);
 
-        // TODO: PROFILBILD ALS EXTRA REQUEST SCHICKEN
-
         return destination;
     }
 }

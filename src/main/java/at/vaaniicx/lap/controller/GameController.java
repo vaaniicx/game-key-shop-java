@@ -8,6 +8,7 @@ import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
 import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
 import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
+import at.vaaniicx.lap.model.response.game.SlimGameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +29,19 @@ public class GameController {
     private final GamePictureService gamePictureService;
     private final CategoryService categoryService;
     private final CategoryGameService categoryGameService;
+    private final KeyCodeService keyCodeService;
 
     @Autowired
     public GameController(GameService gameService, DeveloperService developerService, PublisherService publisherService,
                           GamePictureService gamePictureService, CategoryService categoryService,
-                          CategoryGameService categoryGameService) {
+                          CategoryGameService categoryGameService, KeyCodeService keyCodeService) {
         this.gameService = gameService;
         this.developerService = developerService;
         this.publisherService = publisherService;
         this.gamePictureService = gamePictureService;
         this.categoryService = categoryService;
         this.categoryGameService = categoryGameService;
+        this.keyCodeService = keyCodeService;
     }
 
     @GetMapping
@@ -110,6 +113,16 @@ public class GameController {
         categoryGameService.delete(categoryGameById); // Datensatz löschen
 
         return ResponseEntity.ok(Boolean.TRUE);
+    }
+
+    @GetMapping("/slim/{id}")
+    public ResponseEntity<SlimGameResponse> getSlimGameResponse(@PathVariable("id") Long id)  {
+
+        SlimGameResponse slimGameResponse = GameResponseMapper.INSTANCE.entityToSlimResponse(gameService.getGameById(id));
+        slimGameResponse.setKeysAvail(keyCodeService.getKeyCountByGameIdAndSold(id, false));
+        slimGameResponse.setKeysSold(keyCodeService.getKeyCountByGameIdAndSold(id, true));
+
+        return ResponseEntity.ok(slimGameResponse);
     }
 
     private GameEntity getGameFromRequest(RegisterGameRequest request) {
