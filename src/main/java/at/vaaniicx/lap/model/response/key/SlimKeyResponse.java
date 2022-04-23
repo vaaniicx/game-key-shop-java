@@ -1,6 +1,5 @@
 package at.vaaniicx.lap.model.response.key;
 
-import at.vaaniicx.lap.model.response.game.GameResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,11 +10,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeyResponse {
+public class SlimKeyResponse {
 
     private Long id;
 
-    private GameResponse game;
+    @JsonProperty("game_id")
+    private Long gameId;
 
     @JsonProperty("user_id")
     private Long userId;
