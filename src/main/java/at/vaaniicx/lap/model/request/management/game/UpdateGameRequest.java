@@ -9,7 +9,9 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class RegisterGameRequest {
+public class UpdateGameRequest {
+
+    private Long id;
 
     private String title;
 

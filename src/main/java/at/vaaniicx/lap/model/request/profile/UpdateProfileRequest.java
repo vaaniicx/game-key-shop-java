@@ -1,7 +1,6 @@
 package at.vaaniicx.lap.model.request.profile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +10,6 @@ import java.util.Date;
 @Setter
 public class UpdateProfileRequest {
 
-    @JsonProperty("id")
     private Long id;
 
     @JsonProperty("first_name")
@@ -23,22 +21,17 @@ public class UpdateProfileRequest {
     @JsonProperty("birth_date")
     private Date birthDate;
 
-    @JsonProperty("street")
     private String street;
 
     @JsonProperty("house_number")
     private String houseNumber;
 
-    @JsonProperty("door")
     private String door;
 
-    @JsonProperty("stair")
     private String stair;
 
-    @JsonProperty("postal")
     private String postal;
 
-    @JsonProperty("location")
     private String location;
 
     @JsonProperty("country_id")
@@ -46,4 +39,10 @@ public class UpdateProfileRequest {
 
     @JsonProperty("profile_picture")
     private byte[] profilePicture;
+
+    @JsonProperty("role_id")
+    private Long roleId;
+
+    @JsonProperty("active")
+    private boolean isActive;
 }

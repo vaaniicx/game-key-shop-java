@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.request;
+package at.vaaniicx.lap.model.request.key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeyManagementGenerateCodeRequest {
+public class GenerateKeyCodeRequest {
 
     @JsonProperty("game_id")
     private Long gameId;

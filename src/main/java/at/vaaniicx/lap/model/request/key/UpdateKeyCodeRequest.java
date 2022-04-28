@@ -1,16 +1,14 @@
-package at.vaaniicx.lap.model.request.management.key;
+package at.vaaniicx.lap.model.request.key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class RegisterCodeRequest {
+public class UpdateKeyCodeRequest {
 
-    @JsonProperty("game_id")
-    private Long gameId;
+    private Long id;
 
     @JsonProperty("key_code")
     private String keyCode;
