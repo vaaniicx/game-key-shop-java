@@ -2,6 +2,7 @@ package at.vaaniicx.lap.mapper.game;
 
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
+import at.vaaniicx.lap.model.request.management.game.UpdateGameRequest;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.model.response.game.SlimGameResponse;
 import org.mapstruct.Mapper;
@@ -17,4 +18,6 @@ public interface GameResponseMapper {
     SlimGameResponse entityToSlimResponse(GameEntity source);
 
     GameEntity responseToEntity(RegisterGameRequest source);
+
+    GameEntity responseToEntity(UpdateGameRequest source);
 }

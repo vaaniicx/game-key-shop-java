@@ -4,10 +4,10 @@ import at.vaaniicx.lap.exception.gamepicture.GamePictureNotFoundException;
 import at.vaaniicx.lap.mapper.category.CategoryResponseMapper;
 import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
-import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
+import at.vaaniicx.lap.model.request.management.game.UpdateGameRequest;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.model.response.game.SlimGameResponse;
 import at.vaaniicx.lap.util.ImageConversionHelper;
@@ -107,7 +107,26 @@ public class GameResponseMapperImpl implements GameResponseMapper {
         destination.setSavings(BigDecimal.valueOf(source.getOriginalPrice()).subtract(BigDecimal.valueOf(source.getPrice())).doubleValue());
         destination.setSystemRequirements(source.getSystemRequirements());
         destination.setAgeRestriction(source.getAgeRestriction());
-        // TODO: Mapper fertig machen
+
+        return destination;
+    }
+
+    @Override
+    public GameEntity responseToEntity(UpdateGameRequest source) {
+        if (source == null) {
+            return null;
+        }
+
+        GameEntity destination = new GameEntity();
+        destination.setTitle(source.getTitle());
+        destination.setDescription(source.getDescription());
+        destination.setShortDescription(source.getShortDescription());
+        destination.setReleaseDate(source.getReleaseDate());
+        destination.setOriginalPrice(source.getOriginalPrice());
+        destination.setPrice(source.getPrice());
+        destination.setSavings(BigDecimal.valueOf(source.getOriginalPrice()).subtract(BigDecimal.valueOf(source.getPrice())).doubleValue());
+        destination.setSystemRequirements(source.getSystemRequirements());
+        destination.setAgeRestriction(source.getAgeRestriction());
 
         return destination;
     }
