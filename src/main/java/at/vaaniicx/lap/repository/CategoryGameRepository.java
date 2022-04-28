@@ -15,7 +15,5 @@ public interface CategoryGameRepository extends CrudRepository<CategoryGameEntit
     @Override
     Optional<CategoryGameEntity> findById(CategoryGamePk privateKey);
 
-    List<CategoryGameEntity> findByGameId(Long id);
-
     List<CategoryGameEntity> findByCategoryId(Long id);
 }

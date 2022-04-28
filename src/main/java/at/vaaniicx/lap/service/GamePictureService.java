@@ -1,12 +1,14 @@
 package at.vaaniicx.lap.service;
 
 import at.vaaniicx.lap.exception.gamepicture.GamePictureNotFoundException;
+import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.repository.GamePictureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class GamePictureService {
@@ -53,5 +55,14 @@ public class GamePictureService {
      */
     public GamePictureEntity save(GamePictureEntity entity) {
         return gamePictureRepository.save(entity);
+    }
+
+    /**
+     * Löscht alle übergebenen Entity-Objekte.
+     *
+     * @param entities - Zu löschende Objekte
+     */
+    public void deleteAll(Set<GamePictureEntity> entities) {
+        gamePictureRepository.deleteAll(entities);
     }
 }

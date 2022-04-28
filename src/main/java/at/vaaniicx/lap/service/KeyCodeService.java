@@ -8,6 +8,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class KeyCodeService {
@@ -26,6 +27,22 @@ public class KeyCodeService {
      */
     public List<KeyCodeEntity> getAllKeyCodesByGameId(Long id) {
         return keyCodeRepository.findByGameId(id);
+    }
+
+    /**
+     * Retourniert den zur übergebenen ID zugehörigen Schlüssel.
+     *
+     * @return - Schlüssel zur ID
+     */
+    public KeyCodeEntity getKeyCodeById(Long id) {
+
+        Optional<KeyCodeEntity> entity = keyCodeRepository.findById(id);
+
+        if (!entity.isPresent()) {
+            throw new KeyCodeNotFoundException();
+        }
+
+        return entity.get();
     }
 
     /**

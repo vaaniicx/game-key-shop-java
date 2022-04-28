@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CategoryGameService {
@@ -38,6 +39,7 @@ public class CategoryGameService {
      * @return - Gefundene Objekt
      */
     public CategoryGameEntity getCategoryGameById(CategoryGamePk pk) {
+
         Optional<CategoryGameEntity> entity = categoryGameRepository.findById(pk);
 
         if (!entity.isPresent()) {
@@ -63,5 +65,14 @@ public class CategoryGameService {
      */
     public void delete(CategoryGameEntity entity) {
         categoryGameRepository.delete(entity);
+    }
+
+    /**
+     * Löscht alle übergebenen Entity-Objekte.
+     *
+     * @param entities - Zu löschende Objekte
+     */
+    public void deleteAll(Set<CategoryGameEntity> entities) {
+        categoryGameRepository.deleteAll(entities);
     }
 }
