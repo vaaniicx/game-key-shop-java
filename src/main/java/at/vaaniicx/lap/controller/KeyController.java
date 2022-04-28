@@ -4,8 +4,9 @@ import at.vaaniicx.lap.exception.user.UserNotFoundException;
 import at.vaaniicx.lap.mapper.key.KeyResponseMapper;
 import at.vaaniicx.lap.model.entity.KeyCodeEntity;
 import at.vaaniicx.lap.model.entity.UserEntity;
-import at.vaaniicx.lap.model.request.KeyManagementGenerateCodeRequest;
-import at.vaaniicx.lap.model.request.management.key.RegisterCodeRequest;
+import at.vaaniicx.lap.model.request.key.GenerateKeyCodeRequest;
+import at.vaaniicx.lap.model.request.key.UpdateKeyCodeRequest;
+import at.vaaniicx.lap.model.request.key.RegisterKeyCodeRequest;
 import at.vaaniicx.lap.model.response.key.SlimKeyResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.KeyCodeService;
@@ -35,8 +36,25 @@ public class KeyController {
         this.userService = userService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SlimKeyResponse> getKeyById(@PathVariable("id") Long id) {
+
+        return ResponseEntity.ok(KeyResponseMapper.INSTANCE.entityToSlimResponse(keyCodeService.getKeyCodeById(id)));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<SlimKeyResponse> updateKeyCode(@RequestBody @Validated UpdateKeyCodeRequest request) {
+
+        KeyCodeEntity keyCode = keyCodeService.getKeyCodeById(request.getId());
+        keyCode.setKeyCode(request.getKeyCode());
+
+        KeyCodeEntity persistedKeyCode = keyCodeService.save(keyCode);
+
+        return ResponseEntity.ok(KeyResponseMapper.INSTANCE.entityToSlimResponse(persistedKeyCode));
+    }
+
     @PostMapping("/register")
-    public ResponseEntity<SlimKeyResponse> registerCode(@RequestBody @Validated RegisterCodeRequest request) {
+    public ResponseEntity<SlimKeyResponse> registerKeyCode(@RequestBody @Validated RegisterKeyCodeRequest request) {
 
         KeyCodeEntity entity = keyCodeService.save(new KeyCodeEntity(
                 gameService.getGameById(request.getGameId()), request.getKeyCode(), false));
@@ -45,7 +63,7 @@ public class KeyController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<List<SlimKeyResponse>> generateKeysForGame(@RequestBody @Validated KeyManagementGenerateCodeRequest request) {
+    public ResponseEntity<List<SlimKeyResponse>> generateKeyCodesForGame(@RequestBody @Validated GenerateKeyCodeRequest request) {
 
         List<SlimKeyResponse> codeResponses = new ArrayList<>();
 
@@ -62,7 +80,7 @@ public class KeyController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deleteKey(@PathVariable("id") Long id) {
+    public ResponseEntity<Boolean> deleteKeyCode(@PathVariable("id") Long id) {
 
         keyCodeService.deleteById(id);
 
@@ -70,7 +88,7 @@ public class KeyController {
     }
 
     @GetMapping("/game/{id}")
-    public ResponseEntity<List<SlimKeyResponse>> getKeysByGameId(@PathVariable("id") Long id) {
+    public ResponseEntity<List<SlimKeyResponse>> getKeyCodesByGameId(@PathVariable("id") Long id) {
 
         List<SlimKeyResponse> response = keyCodeService.getAllKeyCodesByGameId(id)
                 .stream()

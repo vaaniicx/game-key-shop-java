@@ -51,7 +51,7 @@ public class CategoryController {
         return ResponseEntity.ok(CategoryResponseMapper.INSTANCE.entityToResponse(category));
     }
 
-    @PutMapping("/update")
+    @PostMapping("/update")
     public ResponseEntity<CategoryResponse> updateCategory(@RequestBody @Validated UpdateCategoryRequest request) {
 
         CategoryEntity category = categoryService.getCategoryById(request.getId());

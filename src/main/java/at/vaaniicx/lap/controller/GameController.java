@@ -6,16 +6,19 @@ import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
 import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
+import at.vaaniicx.lap.model.request.management.game.UpdateGameRequest;
 import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.model.response.game.SlimGameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -66,21 +69,88 @@ public class GameController {
 
                     return new GamePreviewResponse(e.getId(), e.getTitle(), e.getPrice(), e.getShortDescription(),
                             thumbnail.getId(), ImageConversionHelper.blobToByteArray(thumbnail.getImage()));
-                })
-                .collect(Collectors.toList());
+                }).collect(Collectors.toList());
 
         return ResponseEntity.ok(gamePreviewResponses);
+    }
+
+    @GetMapping("/warehouse")
+    public ResponseEntity<List<SlimGameResponse>> getWarehouse() {
+
+        List<SlimGameResponse> responses = gameService.getAllGamesOrderByTitle()
+                .stream()
+                .map(g -> {
+                    SlimGameResponse slimGameResponse = GameResponseMapper.INSTANCE.entityToSlimResponse(g);
+                    slimGameResponse.setKeysAvail(keyCodeService.getKeyCountByGameIdAndSold(g.getId(), false));
+
+                    return slimGameResponse;
+                }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/register")
     public ResponseEntity<GameResponse> registerGame(@RequestBody @Validated RegisterGameRequest request) {
 
         // Game-Objekt erstellen und persistieren
-        GameEntity gameEntity = getGameFromRequest(request);
+        GameEntity gameEntity = createGameFromRequest(request);
+        gameEntity.setGamePictures(new HashSet<>());
+        gameEntity.setCategories(new HashSet<>());
         gameService.save(gameEntity);
 
         // Thumbnail-Objekt erstellen und persistieren
         GamePictureEntity thumbnail = getGamePicture(gameEntity, request.getThumbnail(), true);
+        gameEntity.getGamePictures().add(thumbnail);
+        gamePictureService.save(thumbnail);
+
+        // Spielebilder-Objekte erstellen und persistieren
+        request.getGamePictures().forEach(entity -> {
+            GamePictureEntity gamePicture = getGamePicture(gameEntity, entity, false);
+            gameEntity.getGamePictures().add(gamePicture);
+            gamePictureService.save(gamePicture);
+        });
+
+        // Spielekategorie-Objekte erstellen und persistieren
+        request.getCategories().forEach(entity -> {
+            CategoryGameEntity categoryGame = getCategoryGame(gameEntity, entity);
+            gameEntity.getCategories().add(categoryGame);
+            categoryGameService.save(categoryGame);
+        });
+
+        return ResponseEntity.ok(GameResponseMapper.INSTANCE.entityToResponse(gameEntity));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<Void> updateGame(@RequestBody @Validated UpdateGameRequest request) {
+
+        // Game-Objekt erstellen und neue Werte setzen
+        GameEntity gameEntity = gameService.getGameById(request.getId());
+        gameEntity.setTitle(request.getTitle());
+        gameEntity.setDescription(request.getDescription());
+        gameEntity.setShortDescription(request.getShortDescription());
+        gameEntity.setReleaseDate(request.getReleaseDate());
+        gameEntity.setOriginalPrice(request.getOriginalPrice());
+        gameEntity.setPrice(request.getPrice());
+        gameEntity.setSystemRequirements(request.getSystemRequirements());
+        gameEntity.setAgeRestriction(request.getAgeRestriction());
+        // Entwickler mit der ID aus der Datenbank holen und setzen
+        gameEntity.setDeveloper(developerService.getDeveloperById(request.getDeveloperId()));
+        // Publisher mit der ID aus der Datenbank holen und setzen
+        gameEntity.setPublisher(publisherService.getPublisherById(request.getPublisherId()));
+
+        // Kategorien und Spielebilder löschen
+        categoryGameService.deleteAll(gameEntity.getCategories());
+        gameEntity.getCategories().removeAll(gameEntity.getCategories());
+
+        gamePictureService.deleteAll(gameEntity.getGamePictures());
+        gameEntity.getGamePictures().removeAll(gameEntity.getGamePictures());
+
+        // Persistieren
+        gameService.save(gameEntity);
+
+        // Thumbnail-Objekt erstellen und persistieren
+        GamePictureEntity thumbnail = getGamePicture(gameEntity, request.getThumbnail(), true);
+        gameEntity.getGamePictures().add(thumbnail);
         gamePictureService.save(thumbnail);
 
         // Spielebilder-Objekte erstellen und persistieren
@@ -95,7 +165,7 @@ public class GameController {
             categoryGameService.save(categoryGame);
         });
 
-        return ResponseEntity.ok(GameResponseMapper.INSTANCE.entityToResponse(gameEntity));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -106,7 +176,7 @@ public class GameController {
         return ResponseEntity.ok(gameResponse);
     }
 
-    @DeleteMapping("/{id}/delete/category/{catId}")
+    @PutMapping("/{id}/remove/category/{catId}")
     public ResponseEntity<Boolean> deleteCategoryFromGame(@PathVariable("id") Long gameId, @PathVariable("catId") Long categoryId) {
 
         CategoryGameEntity categoryGameById = categoryGameService.getCategoryGameById(new CategoryGamePk(categoryId, gameId));
@@ -116,7 +186,7 @@ public class GameController {
     }
 
     @GetMapping("/slim/{id}")
-    public ResponseEntity<SlimGameResponse> getSlimGameResponse(@PathVariable("id") Long id)  {
+    public ResponseEntity<SlimGameResponse> getSlimGameResponse(@PathVariable("id") Long id) {
 
         SlimGameResponse slimGameResponse = GameResponseMapper.INSTANCE.entityToSlimResponse(gameService.getGameById(id));
         slimGameResponse.setKeysAvail(keyCodeService.getKeyCountByGameIdAndSold(id, false));
@@ -125,7 +195,7 @@ public class GameController {
         return ResponseEntity.ok(slimGameResponse);
     }
 
-    private GameEntity getGameFromRequest(RegisterGameRequest request) {
+    private GameEntity createGameFromRequest(RegisterGameRequest request) {
 
         // Game-Objekt erstellen und mit den Daten aus dem Request befüllen
         GameEntity gameEntity = GameResponseMapper.INSTANCE.responseToEntity(request);

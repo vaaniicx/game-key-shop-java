@@ -1,11 +1,16 @@
 package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.role.RoleResponseMapper;
+import at.vaaniicx.lap.mapper.user.UserResponseMapper;
 import at.vaaniicx.lap.model.entity.RoleEntity;
+import at.vaaniicx.lap.model.entity.UserEntity;
 import at.vaaniicx.lap.model.request.management.role.RegisterRoleRequest;
 import at.vaaniicx.lap.model.request.management.role.UpdateRoleRequest;
 import at.vaaniicx.lap.model.response.role.RoleResponse;
+import at.vaaniicx.lap.model.response.user.SlimUserResponse;
+import at.vaaniicx.lap.model.response.user.UserResponse;
 import at.vaaniicx.lap.service.RoleService;
+import at.vaaniicx.lap.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,10 +24,12 @@ import java.util.stream.Collectors;
 public class RoleController {
 
     private final  RoleService roleService;
+    private final UserService userService;
 
     @Autowired
-    public RoleController(RoleService roleService) {
+    public RoleController(RoleService roleService, UserService userService) {
         this.roleService = roleService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -42,6 +49,17 @@ public class RoleController {
         RoleEntity roleById = roleService.getRoleById(roleId);
 
         return ResponseEntity.ok(RoleResponseMapper.INSTANCE.entityToResponse(roleById));
+    }
+
+    @GetMapping("/{id}/user")
+    public ResponseEntity<List<SlimUserResponse>> getUserByRoleId(@PathVariable("id") Long roleId) {
+
+        List<SlimUserResponse> responses = userService.getUserByRoleId(roleId)
+                .stream()
+                .map(UserResponseMapper.INSTANCE::entityToSlimResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responses);
     }
 
     @PostMapping("/register")
