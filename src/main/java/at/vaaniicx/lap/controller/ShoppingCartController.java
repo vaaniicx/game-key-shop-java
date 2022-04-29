@@ -7,6 +7,7 @@ import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
 import at.vaaniicx.lap.model.request.shoppingcart.AddToShoppingCartRequest;
 import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
+import at.vaaniicx.lap.model.response.shoppingcart.SlimShoppingCartResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
@@ -36,22 +37,22 @@ public class ShoppingCartController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ShoppingCartResponse>> getAllCarts() {
+    public ResponseEntity<List<SlimShoppingCartResponse>> getAllCarts() {
 
-        List<ShoppingCartResponse> shoppingCartResponses = shoppingCartService.getAllShoppingCarts()
+        List<SlimShoppingCartResponse> responses = shoppingCartService.getAllShoppingCarts()
                 .stream()
-                .map(ShoppingCartResponseMapper.INSTANCE::entityToResponse)
+                .map(ShoppingCartResponseMapper.INSTANCE::entityToSlimResponse)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(shoppingCartResponses);
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ShoppingCartResponse> getCartById(@PathVariable("id") Long shoppingCartId) {
+    public ResponseEntity<SlimShoppingCartResponse> getCartById(@PathVariable("id") Long shoppingCartId) {
 
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartById(shoppingCartId);
 
-        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
+        return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToSlimResponse(cart));
     }
 
     @GetMapping("/person/{id}")
