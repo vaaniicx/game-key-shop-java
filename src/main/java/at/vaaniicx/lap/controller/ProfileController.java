@@ -2,6 +2,7 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.request.profile.ChangePasswordRequest;
+import at.vaaniicx.lap.model.request.profile.DeactivateProfileRequest;
 import at.vaaniicx.lap.model.request.profile.UpdateProfileRequest;
 import at.vaaniicx.lap.model.response.profile.ModifyProfileResponse;
 import at.vaaniicx.lap.service.CountryService;
@@ -84,10 +85,10 @@ public class ProfileController {
         return ResponseEntity.ok(new ModifyProfileResponse(user.getId(), user.getEmail()));
     }
 
-    @GetMapping("/{id}/deactivate")
-    public ResponseEntity<Boolean> deactivateAccount(@PathVariable("id") Long userId) {
+    @PutMapping("/deactivate")
+    public ResponseEntity<Boolean> deactivateProfile(@RequestBody @Validated DeactivateProfileRequest request) {
 
-        UserEntity user = userService.getUserById(userId);
+        UserEntity user = userService.getUserById(request.getUserId());
         user.setActive(false);
 
         userService.save(user);
