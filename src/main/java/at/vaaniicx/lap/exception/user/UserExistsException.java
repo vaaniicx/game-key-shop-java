@@ -5,6 +5,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.EntityExistsException;
 
-@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "Benutzer wurde bereits mit dieser E-Mail registriert!")
+@ResponseStatus(value = HttpStatus.FORBIDDEN, reason = "Mit dieser E-Mail existiert bereits ein Benutzerkonto!")
 public class UserExistsException extends EntityExistsException {
 }

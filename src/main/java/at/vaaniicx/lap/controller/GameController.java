@@ -132,7 +132,6 @@ public class GameController {
         // Spielekategorie-Objekte erstellen und persistieren
         request.getCategories().forEach(entity -> {
             CategoryGameEntity categoryGame = getCategoryGame(gameEntity, entity);
-            gameEntity.getCategories().add(categoryGame);
             categoryGameService.save(categoryGame);
         });
 

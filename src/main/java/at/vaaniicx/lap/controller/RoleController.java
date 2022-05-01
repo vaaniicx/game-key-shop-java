@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.role.RoleDeleteException;
 import at.vaaniicx.lap.mapper.role.RoleResponseMapper;
 import at.vaaniicx.lap.mapper.user.UserResponseMapper;
 import at.vaaniicx.lap.model.entity.RoleEntity;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/role")
 public class RoleController {
 
-    private final  RoleService roleService;
+    private final RoleService roleService;
     private final UserService userService;
 
     @Autowired
@@ -85,7 +86,13 @@ public class RoleController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteRole(@PathVariable("id") Long id) {
 
-        roleService.deleteById(id);
+        boolean isRuleSet = userService.getAllUsers().stream().anyMatch(user -> user.getRole().getId() == id);
+
+        if (!isRuleSet) {
+            roleService.deleteById(id);
+        } else {
+            throw new RoleDeleteException();
+        }
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
