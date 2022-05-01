@@ -1,6 +1,6 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.exception.role.RoleDeleteException;
+import at.vaaniicx.lap.exception.role.DeleteRoleException;
 import at.vaaniicx.lap.mapper.role.RoleResponseMapper;
 import at.vaaniicx.lap.mapper.user.UserResponseMapper;
 import at.vaaniicx.lap.model.entity.RoleEntity;
@@ -91,7 +91,7 @@ public class RoleController {
         if (!isRuleSet) {
             roleService.deleteById(id);
         } else {
-            throw new RoleDeleteException();
+            throw new DeleteRoleException();
         }
 
         return ResponseEntity.ok(Boolean.TRUE);
