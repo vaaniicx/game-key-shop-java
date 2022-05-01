@@ -1,13 +1,16 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.category.DeleteCategoryException;
 import at.vaaniicx.lap.mapper.category.CategoryResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryEntity;
+import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.request.UpdateCategoryRequest;
 import at.vaaniicx.lap.model.request.category.RegisterCategoryRequest;
 import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;
 import at.vaaniicx.lap.service.CategoryService;
+import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +81,13 @@ public class CategoryController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteCategory(@PathVariable("id") Long id) {
 
-        categoryService.deleteById(id);
+        List<CategoryGameEntity> games = categoryGameService.getGamesByCategoryId(id);
+
+        if (Collections.isEmpty(games)) {
+            categoryService.deleteById(id);
+        } else {
+            throw new DeleteCategoryException();
+        }
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
