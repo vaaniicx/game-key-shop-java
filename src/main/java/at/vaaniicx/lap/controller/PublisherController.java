@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.publisher.DeletePublisherException;
 import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
 import at.vaaniicx.lap.model.request.publisher.RegisterPublisherRequest;
@@ -75,7 +76,13 @@ public class PublisherController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deletePublisher(@PathVariable("id") Long id) {
 
-        publisherService.deleteById(id);
+        boolean isPublisherSet = gameService.getAllGamesOrderByTitle().stream().anyMatch(game -> game.getPublisher().getId() == id);
+
+        if (!isPublisherSet) {
+            publisherService.deleteById(id);
+        } else {
+            throw new DeletePublisherException();
+        }
 
         return ResponseEntity.ok(Boolean.TRUE);
     }
