@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.key.NoKeysAvailableException;
 import at.vaaniicx.lap.mapper.shoppingcart.ShoppingCartResponseMapper;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
@@ -9,6 +10,7 @@ import at.vaaniicx.lap.model.request.shoppingcart.AddToShoppingCartRequest;
 import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
 import at.vaaniicx.lap.model.response.shoppingcart.SlimShoppingCartResponse;
 import at.vaaniicx.lap.service.GameService;
+import at.vaaniicx.lap.service.KeyCodeService;
 import at.vaaniicx.lap.service.ShoppingCartGameService;
 import at.vaaniicx.lap.service.ShoppingCartService;
 import org.springframework.http.ResponseEntity;
@@ -18,22 +20,24 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/shoppingcart")
 public class ShoppingCartController {
 
-    private final  ShoppingCartService shoppingCartService;
-    private final  ShoppingCartGameService shoppingCartGameService;
-    private final  GameService gameService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartGameService shoppingCartGameService;
+    private final GameService gameService;
+    private final KeyCodeService keyCodeService;
 
     public ShoppingCartController(ShoppingCartService shoppingCartService, ShoppingCartGameService shoppingCartGameService,
-                                  GameService gameService) {
+                                  GameService gameService, KeyCodeService keyCodeService) {
         this.shoppingCartService = shoppingCartService;
         this.shoppingCartGameService = shoppingCartGameService;
         this.gameService = gameService;
+        this.keyCodeService = keyCodeService;
     }
 
     @GetMapping
@@ -69,30 +73,31 @@ public class ShoppingCartController {
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(request.getPersonId());
         List<ShoppingCartGameEntity> shoppingCartGames = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
 
-        boolean foundEntry =
-                shoppingCartGames.stream()
-                        .filter(Objects::nonNull)
-                        .anyMatch(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId()));
+        Optional<ShoppingCartGameEntity> foundEntry =
+                shoppingCartGames.stream().filter(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId())).findFirst();
 
         ShoppingCartGameEntity game;
-        if (foundEntry) {
-            // Vorhandenen Eintrag updaten
-            game = shoppingCartGames.stream()
-                    .filter(Objects::nonNull)
-                    .filter(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId()))
-                    .findFirst().get();
+        if (foundEntry.isPresent()) {
+            game = foundEntry.get();
 
+            // Vorhandenen Eintrag updaten
             byte newAmount = (byte) (game.getAmount() + request.getAmount());
-            game.setAmount(newAmount < 0 ? 0 : newAmount);
+            Long available = keyCodeService.getKeyCountByGameIdAndSold(game.getId().getGameId(), false);
+
+            if (newAmount <= available) {
+                game.setAmount(newAmount < 0 ? 0 : newAmount);
+            } else {
+                throw new NoKeysAvailableException();
+            }
         } else {
-            // Neuen Eintrag
+            // Neuen Eintrag erstellen
             game = new ShoppingCartGameEntity();
             game.setId(new ShoppingCartGamePk(cart.getId(), request.getGameId()));
             game.setGame(gameService.getGameById(request.getGameId()));
             game.setShoppingCart(cart);
             game.setAmount(request.getAmount());
         }
-
+        // Persistieren
         shoppingCartGameService.save(game);
 
         List<ShoppingCartGameEntity> allEntries = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
