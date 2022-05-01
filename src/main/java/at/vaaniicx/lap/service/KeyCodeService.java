@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class KeyCodeService {
@@ -84,5 +85,14 @@ public class KeyCodeService {
         } catch (EmptyResultDataAccessException e) {
             throw new KeyCodeNotFoundException();
         }
+    }
+
+    /**
+     * Löscht die übergebenen Entity-Objekte.
+     *
+     * @param entities - Liste der zu löschenden Entities
+     */
+    public void deleteAll(Set<KeyCodeEntity> entities) {
+        keyCodeRepository.deleteAll(entities);
     }
 }

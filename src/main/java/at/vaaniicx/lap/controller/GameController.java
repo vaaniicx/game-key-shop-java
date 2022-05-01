@@ -1,10 +1,12 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.game.DeleteGameException;
 import at.vaaniicx.lap.mapper.game.GameResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
+import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
 import at.vaaniicx.lap.model.request.game.RegisterGameRequest;
 import at.vaaniicx.lap.model.request.game.UpdateGameRequest;
 import at.vaaniicx.lap.model.response.GamePreviewResponse;
@@ -19,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -36,11 +37,14 @@ public class GameController {
     private final CategoryService categoryService;
     private final CategoryGameService categoryGameService;
     private final KeyCodeService keyCodeService;
+    private final PlacingService placingService;
+    private final ShoppingCartGameService shoppingCartGameService;
 
     @Autowired
     public GameController(GameService gameService, DeveloperService developerService, PublisherService publisherService,
                           GamePictureService gamePictureService, CategoryService categoryService,
-                          CategoryGameService categoryGameService, KeyCodeService keyCodeService) {
+                          CategoryGameService categoryGameService, KeyCodeService keyCodeService,
+                          PlacingService placingService, ShoppingCartGameService shoppingCartGameService) {
         this.gameService = gameService;
         this.developerService = developerService;
         this.publisherService = publisherService;
@@ -48,6 +52,8 @@ public class GameController {
         this.categoryService = categoryService;
         this.categoryGameService = categoryGameService;
         this.keyCodeService = keyCodeService;
+        this.placingService = placingService;
+        this.shoppingCartGameService = shoppingCartGameService;
     }
 
     @GetMapping
@@ -184,6 +190,31 @@ public class GameController {
         });
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Boolean> deleteGameById(@PathVariable("id") Long id) {
+
+        GameEntity gameById = gameService.getGameById(id);
+
+        boolean isGameSet = placingService.getAllPlacings()
+                .stream()
+                .anyMatch(placing -> placing.getGames().stream().map(entry -> entry.getKeyCode().getGame().getId())
+                        .collect(Collectors.toList())
+                        .contains(id));
+
+        if (!isGameSet) {
+            categoryGameService.deleteAll(gameById.getCategories());
+            gamePictureService.deleteAll(gameById.getGamePictures());
+            keyCodeService.deleteAll(gameById.getKeys());
+            shoppingCartGameService.deleteAllByGameId(gameById.getId());
+            gameService.deleteById(id);
+            // refetch warenkörbe, games
+        } else {
+            throw new DeleteGameException();
+        }
+
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping("/{id}")

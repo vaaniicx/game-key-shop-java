@@ -16,4 +16,6 @@ public interface ShoppingCartGameRepository extends CrudRepository<ShoppingCartG
     Optional<ShoppingCartGameEntity> findById(ShoppingCartGamePk privateKey);
 
     List<ShoppingCartGameEntity> findByShoppingCartId(Long id);
+
+    void deleteByGameId(Long id);
 }

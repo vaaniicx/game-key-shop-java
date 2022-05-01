@@ -70,4 +70,13 @@ public class GameService {
     public GameEntity save(GameEntity entity) {
         return gameRepository.save(entity);
     }
+
+    /**
+     * Löscht das Entity-Objekt zur übergebenen ID.
+     *
+     * @param id - ID des zu löschenden Objekt
+     */
+    public void deleteById(Long id) {
+        gameRepository.deleteById(id);
+    }
 }
