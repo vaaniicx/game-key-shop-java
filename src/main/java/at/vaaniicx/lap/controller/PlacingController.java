@@ -1,18 +1,32 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.key.NoKeysAvailableException;
 import at.vaaniicx.lap.mapper.placing.PlacingResponseMapper;
 import at.vaaniicx.lap.model.entity.*;
 import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
 import at.vaaniicx.lap.model.response.placing.PlacingResponse;
 import at.vaaniicx.lap.service.*;
+import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,11 +37,11 @@ import java.util.stream.Collectors;
 public class PlacingController {
 
     private final PlacingService placingService;
-    private final  UserService userService;
-    private final  ShoppingCartService shoppingCartService;
-    private final  ShoppingCartGameService shoppingCartGameService;
-    private final  PlacingDetailsService placingDetailsService;
-    private final  KeyCodeService keyCodeService;
+    private final UserService userService;
+    private final ShoppingCartService shoppingCartService;
+    private final ShoppingCartGameService shoppingCartGameService;
+    private final PlacingDetailsService placingDetailsService;
+    private final KeyCodeService keyCodeService;
 
     @Autowired
     public PlacingController(PlacingService placingService, UserService userService,
@@ -65,9 +79,8 @@ public class PlacingController {
         // Sind genügend Keys für alle Spiele im Warenkorb vorhanden?
         boolean available = isKeysAvailable(cart);
         if (!available) {
-            // TODO: Fehlermeldung
             // Es gibt nicht für alle Spiele genügend Schlüssel
-            // TODO: Execption thrown;
+            throw new NoKeysAvailableException();
         }
 
         // Bestellungs-Objekt erstellen und befüllen
@@ -108,7 +121,6 @@ public class PlacingController {
                 placingDetails.add(savedDetails);
             }
         });
-        // TODO: Check ob das funktioniert im Postman
         savedPlacing.setGames(placingDetails);
 
         // Warenkorb des Benutzers leeren/zurücksetzen
@@ -120,6 +132,65 @@ public class PlacingController {
         shoppingCartService.save(cart);
 
         return ResponseEntity.ok(PlacingResponseMapper.INSTANCE.entityToResponse(savedPlacing));
+    }
+
+    @GetMapping("/{id}/invoice")
+    public ResponseEntity<byte[]> createInvoice(@PathVariable("id") Long id) throws IOException, DocumentException {
+
+        PlacingEntity placing = placingService.getPlacingByPlacingId(id);
+
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, new FileOutputStream("INVOICE.pdf"));
+
+        document.open();
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+        headerFont.setSize(20);
+        headerFont.setColor(BaseColor.BLACK);
+
+        Font basicText = FontFactory.getFont(FontFactory.HELVETICA);
+        basicText.setSize(16);
+
+        Paragraph sender = new Paragraph("GAMEKEYSHOP", headerFont);
+        Paragraph senderAddress = new Paragraph("Mollardgasse 87");
+        Paragraph senderLocation = new Paragraph("1060 Wien");
+
+        sender.setAlignment(Element.ALIGN_CENTER);
+        senderAddress.setAlignment(Element.ALIGN_CENTER);
+        senderLocation.setAlignment(Element.ALIGN_CENTER);
+
+        document.add(sender);
+        document.add(senderAddress);
+        document.add(senderLocation);
+
+        document.add(Chunk.NEWLINE);
+        document.add(new LineSeparator());
+        document.add(Chunk.NEWLINE);
+
+        document.add(getLeftAndRightParagraph("Rechnungsempfänger", "Rechnungsdatum: " + placing.getPlacingDate()));
+
+        Paragraph receiver = getLeftAndRightParagraph(placing.getPerson().getFirstName() + " " + placing.getPerson().getLastName(), "Rechnungsnummer: R22/" + placing.getId());
+        Paragraph receiverAddress = new Paragraph(placing.getPerson().getAddress().getStreet() + " " + placing.getPerson().getAddress().getHouseNumber());
+        Paragraph receiverAddressAdd = new Paragraph(placing.getPerson().getAddress().getLocation().getPostal() + " " + placing.getPerson().getAddress().getLocation().getLocation());
+
+        document.add(receiver);
+        document.add(receiverAddress);
+        document.add(receiverAddressAdd);
+
+        document.close();
+
+        byte[] content = Files.readAllBytes(Paths.get("INVOICE.pdf"));
+
+        return ResponseEntity.ok(content);
+    }
+
+    public Paragraph getLeftAndRightParagraph(String left, String right) {
+
+        Chunk glue = new Chunk(new VerticalPositionMark());
+        Paragraph p = new Paragraph(left);
+        p.add(new Chunk(glue));
+        p.add(right);
+
+        return p;
     }
 
     @GetMapping("/user/{id}")

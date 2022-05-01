@@ -2,8 +2,8 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.publisher.PublisherResponseMapper;
 import at.vaaniicx.lap.model.entity.PublisherEntity;
-import at.vaaniicx.lap.model.request.management.publisher.RegisterPublisherRequest;
-import at.vaaniicx.lap.model.request.management.publisher.UpdatePublisherRequest;
+import at.vaaniicx.lap.model.request.publisher.RegisterPublisherRequest;
+import at.vaaniicx.lap.model.request.publisher.UpdatePublisherRequest;
 import at.vaaniicx.lap.model.response.game.GamesByPublisherResponse;
 import at.vaaniicx.lap.model.response.publisher.PublisherResponse;
 import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;

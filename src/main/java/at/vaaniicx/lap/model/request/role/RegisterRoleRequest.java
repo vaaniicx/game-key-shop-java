@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.request.management.role;
+package at.vaaniicx.lap.model.request.role;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

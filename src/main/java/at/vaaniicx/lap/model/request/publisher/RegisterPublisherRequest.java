@@ -1,7 +1,6 @@
-package at.vaaniicx.lap.model.request.management.publisher;
+package at.vaaniicx.lap.model.request.publisher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -2,8 +2,8 @@ package at.vaaniicx.lap.controller;
 
 import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
-import at.vaaniicx.lap.model.request.management.developer.RegisterDeveloperRequest;
-import at.vaaniicx.lap.model.request.management.developer.UpdateDeveloperRequest;
+import at.vaaniicx.lap.model.request.developer.RegisterDeveloperRequest;
+import at.vaaniicx.lap.model.request.developer.UpdateDeveloperRequest;
 import at.vaaniicx.lap.model.response.developer.DeveloperResponse;
 import at.vaaniicx.lap.model.response.developer.GamesByDeveloperResponse;
 import at.vaaniicx.lap.service.DeveloperService;

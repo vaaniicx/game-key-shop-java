@@ -3,7 +3,7 @@ package at.vaaniicx.lap.controller;
 import at.vaaniicx.lap.mapper.category.CategoryResponseMapper;
 import at.vaaniicx.lap.model.entity.CategoryEntity;
 import at.vaaniicx.lap.model.request.UpdateCategoryRequest;
-import at.vaaniicx.lap.model.request.management.category.RegisterCategoryRequest;
+import at.vaaniicx.lap.model.request.category.RegisterCategoryRequest;
 import at.vaaniicx.lap.model.response.category.CategoryResponse;
 import at.vaaniicx.lap.model.response.category.GamesByCategoryResponse;
 import at.vaaniicx.lap.service.CategoryGameService;

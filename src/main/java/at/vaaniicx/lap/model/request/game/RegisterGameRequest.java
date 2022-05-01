@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.request.management.game;
+package at.vaaniicx.lap.model.request.game;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -9,9 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class UpdateGameRequest {
-
-    private Long id;
+public class RegisterGameRequest {
 
     private String title;
 

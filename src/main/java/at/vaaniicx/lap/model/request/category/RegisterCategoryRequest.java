@@ -1,4 +1,4 @@
-package at.vaaniicx.lap.model.request.management.category;
+package at.vaaniicx.lap.model.request.category;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

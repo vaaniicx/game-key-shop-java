@@ -5,10 +5,11 @@ import at.vaaniicx.lap.model.entity.CategoryGameEntity;
 import at.vaaniicx.lap.model.entity.GameEntity;
 import at.vaaniicx.lap.model.entity.GamePictureEntity;
 import at.vaaniicx.lap.model.entity.pk.CategoryGamePk;
-import at.vaaniicx.lap.model.request.management.game.RegisterGameRequest;
-import at.vaaniicx.lap.model.request.management.game.UpdateGameRequest;
+import at.vaaniicx.lap.model.request.game.RegisterGameRequest;
+import at.vaaniicx.lap.model.request.game.UpdateGameRequest;
 import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
+import at.vaaniicx.lap.model.response.game.PopularGameResponse;
 import at.vaaniicx.lap.model.response.game.SlimGameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
@@ -18,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +62,21 @@ public class GameController {
         return ResponseEntity.ok(gameResponses);
     }
 
+    @GetMapping("/popular")
+    public ResponseEntity<List<PopularGameResponse>> getPopularGames() {
+
+        List<PopularGameResponse> responses = gameService.getAllGamesOrderByTitle()
+                .stream()
+                .map(e -> new PopularGameResponse(e.getId(), e.getTitle(),
+                        keyCodeService.getKeyCountByGameIdAndSold(e.getId(), true)))
+                .sorted(Comparator.comparing(PopularGameResponse::getKeysSold).reversed())
+                .collect(Collectors.toList());
+
+        responses.subList(5, responses.size()).clear();
+
+        return ResponseEntity.ok(responses);
+    }
+
     @GetMapping("/preview")
     public ResponseEntity<List<GamePreviewResponse>> getGamePreviews() {
 
@@ -68,7 +86,8 @@ public class GameController {
                     GamePictureEntity thumbnail = gamePictureService.getThumbnailByGameId(e.getId());
 
                     return new GamePreviewResponse(e.getId(), e.getTitle(), e.getPrice(), e.getShortDescription(),
-                            thumbnail.getId(), ImageConversionHelper.blobToByteArray(thumbnail.getImage()));
+                            thumbnail.getId(), ImageConversionHelper.blobToByteArray(thumbnail.getImage()),
+                            keyCodeService.getKeyCountByGameIdAndSold(e.getId(), false));
                 }).collect(Collectors.toList());
 
         return ResponseEntity.ok(gamePreviewResponses);

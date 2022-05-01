@@ -26,4 +26,7 @@ public class GamePreviewResponse {
 
     @JsonProperty("thumbnail")
     private byte[] thumbnail;
+
+    @JsonProperty("available_keys")
+    private Long availableKeys;
 }

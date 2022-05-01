@@ -1,17 +1,16 @@
-package at.vaaniicx.lap.model.request.management.role;
+package at.vaaniicx.lap.model.request.developer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateRoleRequest {
+public class UpdateDeveloperRequest {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("role")
-    private String role;
+    @JsonProperty("developer")
+    private String developer;
 }
