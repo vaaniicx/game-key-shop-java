@@ -1,5 +1,6 @@
 package at.vaaniicx.lap.controller;
 
+import at.vaaniicx.lap.exception.developer.DeleteDeveloperException;
 import at.vaaniicx.lap.mapper.developer.DeveloperResponseMapper;
 import at.vaaniicx.lap.model.entity.DeveloperEntity;
 import at.vaaniicx.lap.model.request.developer.RegisterDeveloperRequest;
@@ -75,7 +76,13 @@ public class DeveloperController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Boolean> deleteDeveloper(@PathVariable("id") Long id) {
 
-        developerService.deleteById(id);
+        boolean isDeveloperSet = gameService.getAllGamesOrderByTitle().stream().anyMatch(game -> game.getDeveloper().getId() == id);
+
+        if (!isDeveloperSet) {
+            developerService.deleteById(id);
+        } else {
+            throw new DeleteDeveloperException();
+        }
 
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
