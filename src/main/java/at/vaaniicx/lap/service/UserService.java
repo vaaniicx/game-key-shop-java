@@ -124,20 +124,20 @@ public class UserService {
 
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Verschlüsseln
         user.setActive(Boolean.TRUE);
         user.setRegistrationDate(Instant.now());
-        user.setRole(roleService.getRoleByRoleName("Kunde"));
+        user.setRole(roleService.getRoleByRoleName("Kunde")); // Rolle standardmäßig "Kunde"
 
         user.setPerson(person);
         person.setAddress(address);
         address.setLocation(location);
 
-        UserEntity persistedUser = userRepository.save(user);
+        UserEntity persistedUser = userRepository.save(user); // Persistieren
 
         ShoppingCartEntity shoppingCart =
                 new ShoppingCartEntity(personService.getPersonById(persistedUser.getPerson().getId()), 0);
-        shoppingCartService.save(shoppingCart);
+        shoppingCartService.save(shoppingCart); // Persistieren
 
         return persistedUser;
     }
@@ -176,13 +176,13 @@ public class UserService {
         Optional<UserEntity> entity = userRepository.findByEmail(username);
 
         if (!entity.isPresent()) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(); // Kein Benutzer mit der E-Mail gefunden
         }
 
         UserEntity user = entity.get();
-        user.setLastLogin(Instant.now());
+        user.setLastLogin(Instant.now()); // Zeitpunkt der letzten Anmeldung setzen
 
-        save(user);
+        save(user); // Persistieren
     }
 
     /**

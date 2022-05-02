@@ -82,6 +82,12 @@ public class ShoppingCartService {
         return shoppingCartRepository.save(entity);
     }
 
+    /**
+     * Berechnet die Gesamtsumme des Warenkorbs.
+     *
+     * @param cart - Warenkorb, dessen Gesamtsumme berechnet werden soll
+     * @return - Gesamtsumme
+     */
     public double calculateShoppingCartSum(ShoppingCartEntity cart) {
 
         List<ShoppingCartGameEntity> allEntries = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());

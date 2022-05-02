@@ -20,6 +20,12 @@ public class ShoppingCartGameService {
         this.shoppingCartGameRepository = shoppingCartGameRepository;
     }
 
+    /**
+     * Liefert den Warenkorb zu einer ID.
+     *
+     * @param id - ID zum Warenkorb
+     * @return - Warenkorb zur ID
+     */
     public List<ShoppingCartGameEntity> getShoppingCartGameByShoppingCartId(long id) {
         return shoppingCartGameRepository.findByShoppingCartId(id);
     }
