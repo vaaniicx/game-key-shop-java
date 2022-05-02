@@ -56,6 +56,11 @@ public class PlacingController {
         this.keyCodeService = keyCodeService;
     }
 
+    /**
+     * Liefer alle Bestellungen.
+     *
+     * @return - Liste aller Bestellungen
+     */
     @GetMapping
     public ResponseEntity<List<PlacingResponse>> getAllPlacings() {
 
@@ -67,6 +72,12 @@ public class PlacingController {
         return ResponseEntity.ok(placingResponses);
     }
 
+    /**
+     * Erstellen/Durchführen einer Bestellung.
+     *
+     * @param userId - Person zur Bestellung
+     * @return - Erstellte Bestellung
+     */
     @GetMapping("/{id}/create")
     public ResponseEntity<PlacingResponse> createPlacing(@PathVariable("id") Long userId) {
 
@@ -80,20 +91,18 @@ public class PlacingController {
         // Sind genügend Keys für alle Spiele im Warenkorb vorhanden?
         boolean available = isKeysAvailable(cart);
         if (!available) {
-            // Es gibt nicht für alle Spiele genügend Schlüssel
-            throw new NoKeysAvailableException();
+            throw new NoKeysAvailableException(); // Es gibt nicht für alle Spiele genügend Schlüssel
         }
 
-        // Bestellungs-Objekt erstellen und befüllen
+        // Bestellungs-Objekt erstellen
         PlacingEntity placing = new PlacingEntity();
-        placing.setPlacingDate(Instant.now());
+        placing.setPlacingDate(Instant.now()); // Werte setzen
         placing.setTotalPrice(cart.getTotalPrice());
         placing.setPerson(person);
 
-        // Bestellung in der Datenbank persistieren
-        PlacingEntity savedPlacing = placingService.save(placing);
+        PlacingEntity savedPlacing = placingService.save(placing); // Persistieren
 
-        // Create placing details
+        // Bestelldetails erstellen
         Set<PlacingDetailsEntity> placingDetails = new HashSet<>();
 
         // Top 3 der schlechtesten Spiele -> 10% Rabatt
@@ -109,21 +118,19 @@ public class PlacingController {
             // Alle verfügbaren Schlüssel pro Spiel aus der Datenbank abrufen
             List<KeyCodeEntity> availableKeyCodes = keyCodeService.getAllAvailableKeyCodesByGameId(item.getGame().getId());
 
-            // Anzahl der bestellten Schlüssel kaufen
-            for (int i = 0; i < item.getAmount(); i++) {
-                // Schlüssel-Objekt befüllen
-                KeyCodeEntity keyCode = availableKeyCodes.get(i);
-                keyCode.setPerson(person);
+            for (int i = 0; i < item.getAmount(); i++) { // Anzahl der bestellten Schlüssel kaufen
+                KeyCodeEntity keyCode = availableKeyCodes.get(i); // Schlüssel-Objekt befüllen
+                keyCode.setPerson(person); // Werte setzen
                 keyCode.setSold(true);
 
-                // Aktualisiertes Schlüssel-Objekt persistieren (-> Schlüssel wurde nun an Benutzer X verkauft)
-                KeyCodeEntity savedKeyCode = keyCodeService.save(keyCode);
+                // Persistieren
+                KeyCodeEntity savedKeyCode = keyCodeService.save(keyCode); // (-> Schlüssel wurde nun an Benutzer X verkauft)
 
-                // Bestellungsdetails-Objekt erstellen und befüllen
+                // Bestellungsdetails-Objekt erstellen
                 PlacingDetailsEntity details = new PlacingDetailsEntity();
                 details.setId(new PlacingDetailsPk(savedPlacing.getId(), savedKeyCode.getId()));
-                details.setPlacing(savedPlacing);
-
+                details.setPlacing(savedPlacing); // Werte setzen
+                // Ist das Spiel ein reduziertes Spiel (=> Top-3)?
                 details.setPrice(statisticGameIds.contains(keyCode.getGame().getId()) ?
                         savedKeyCode.getGame().getPrice() * 0.9 : savedKeyCode.getGame().getPrice());
                 details.setKeyCode(savedKeyCode);
@@ -140,8 +147,7 @@ public class PlacingController {
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
 
-        // Zurückgesetzen Warenkorb persistieren
-        shoppingCartService.save(cart);
+        shoppingCartService.save(cart); // Zurückgesetzen Warenkorb persistieren
 
         // Die Gesamtsummen aller Warenkörbe neu berechnen, da sich die Top-3 der schlechtesten Spiele
         // geändert haben könnte und Kunden sonst fälschlicherweise Rabatt bekommen
@@ -151,6 +157,12 @@ public class PlacingController {
         return ResponseEntity.ok(PlacingResponseMapper.INSTANCE.entityToResponse(savedPlacing));
     }
 
+    /**
+     * Liefert alle Bestellungen zu einem Benutzer.
+     *
+     * @param userId - ID zum Benutzer
+     * @return - Liste aller Bestellungen zum Benutzer
+     */
     @GetMapping("/user/{id}")
     public ResponseEntity<List<PlacingResponse>> getPlacementsForUser(@PathVariable("id") Long userId) {
 
@@ -165,6 +177,12 @@ public class PlacingController {
         return ResponseEntity.ok(placingResponses);
     }
 
+    /**
+     * Liefert die Bestellung zur ID.
+     *
+     * @param placingId - ID zur Bestellung
+     * @return - Bestellung zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<PlacingResponse> getPlacingById(@PathVariable("id") Long placingId) {
 

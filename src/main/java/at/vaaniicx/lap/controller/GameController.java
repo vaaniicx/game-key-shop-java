@@ -57,6 +57,11 @@ public class GameController {
         this.shoppingCartGameService = shoppingCartGameService;
     }
 
+    /**
+     * Liefert alle Spiele. Geordnet nach Titel.
+     *
+     * @return - Liste aller Spiele
+     */
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<GameResponse>> getAllGames() {
@@ -69,27 +74,41 @@ public class GameController {
         return ResponseEntity.ok(gameResponses);
     }
 
+    /**
+     * Liefert die Top-3 der am wenigsten verkauftesten Spiele.
+     *
+     * @return - Liste der Top-3
+     */
     @GetMapping("/statistic")
     public ResponseEntity<List<StatisticGameResponse>> getStatisticGames() {
 
-        List<StatisticGameResponse> responses = gameService.getAllGamesOrderByTitle().stream().map(e -> new StatisticGameResponse(e.getId(), e.getTitle(),
-                        keyCodeService.getKeyCountByGameIdAndSold(e.getId(), true)))
-                .sorted(Comparator.comparing(StatisticGameResponse::getKeysSold))
+        List<StatisticGameResponse> responses = gameService.getAllGamesOrderByTitle().
+                stream()
+                .map(e -> new StatisticGameResponse(e.getId(), e.getTitle(),
+                        keyCodeService.getKeyCountByGameIdAndSold(e.getId(), true))) // Mappen
+                .sorted(Comparator.comparing(StatisticGameResponse::getKeysSold)) // Sortieren
                 .collect(Collectors.toList());
 
-        responses.subList(3, responses.size()).clear();
+        responses.subList(3, responses.size()).clear(); // Nur die schlechtesten 3 in der Liste behalten
 
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Liefert die Game-Preview aller Spiele.
+     *
+     * @return - Liste aller Previews
+     */
     @GetMapping("/preview")
     public ResponseEntity<List<GamePreviewResponse>> getGamePreviews() {
 
         List<GamePreviewResponse> gamePreviewResponses = gameService.getAllGamesOrderByTitle()
                 .stream()
                 .map(e -> {
+                    // Thumbnail separat holen
                     GamePictureEntity thumbnail = gamePictureService.getThumbnailByGameId(e.getId());
 
+                    // Response erstellen
                     return new GamePreviewResponse(e.getId(), e.getTitle(), e.getPrice(), e.getShortDescription(),
                             thumbnail.getId(), ImageConversionHelper.blobToByteArray(thumbnail.getImage()),
                             keyCodeService.getKeyCountByGameIdAndSold(e.getId(), false));
@@ -98,12 +117,18 @@ public class GameController {
         return ResponseEntity.ok(gamePreviewResponses);
     }
 
+    /**
+     * Liefert die Spieledaten für den Lagereingang.
+     *
+     * @return - Liste aller Lagereingangs-Daten
+     */
     @GetMapping("/warehouse")
     public ResponseEntity<List<SlimGameResponse>> getWarehouse() {
 
         List<SlimGameResponse> responses = gameService.getAllGamesOrderByTitle()
                 .stream()
                 .map(g -> {
+                    // Reduziertes Spieleobjekt für die Übertragung erstellen, ummappen
                     SlimGameResponse slimGameResponse = GameResponseMapper.INSTANCE.entityToSlimResponse(g);
                     slimGameResponse.setKeysAvail(keyCodeService.getKeyCountByGameIdAndSold(g.getId(), false));
 
@@ -113,42 +138,54 @@ public class GameController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Registriert ein Spiel.
+     *
+     * @param request - Registrierungs-Request
+     * @return - Registriertes Spiel
+     */
     @PostMapping("/register")
     public ResponseEntity<GameResponse> registerGame(@RequestBody @Validated RegisterGameRequest request) {
 
-        // Game-Objekt erstellen und persistieren
+        // Game-Objekt erstellen
         GameEntity gameEntity = createGameFromRequest(request);
         gameEntity.setGamePictures(new HashSet<>());
         gameEntity.setCategories(new HashSet<>());
-        gameService.save(gameEntity);
+        gameService.save(gameEntity); // Persistieren
 
-        // Thumbnail-Objekt erstellen und persistieren
+        // Thumbnail-Objekt erstellen
         GamePictureEntity thumbnail = getGamePicture(gameEntity, request.getThumbnail(), true);
         gameEntity.getGamePictures().add(thumbnail);
-        gamePictureService.save(thumbnail);
+        gamePictureService.save(thumbnail); // Persistieren
 
-        // Spielebilder-Objekte erstellen und persistieren
+        // Spielebilder-Objekte erstellen
         request.getGamePictures().forEach(entity -> {
             GamePictureEntity gamePicture = getGamePicture(gameEntity, entity, false);
             gameEntity.getGamePictures().add(gamePicture);
-            gamePictureService.save(gamePicture);
+            gamePictureService.save(gamePicture); // Persistieren
         });
 
-        // Spielekategorie-Objekte erstellen und persistieren
+        // Spielekategorie-Objekte erstellen
         request.getCategories().forEach(entity -> {
             CategoryGameEntity categoryGame = getCategoryGame(gameEntity, entity);
-            categoryGameService.save(categoryGame);
+            categoryGameService.save(categoryGame); // Persistieren
         });
 
         return ResponseEntity.ok(GameResponseMapper.INSTANCE.entityToResponse(gameEntity));
     }
 
+    /**
+     * Aktualisiert ein Spiel.
+     *
+     * @param request - Update-Request
+     * @return - Aktualisiertes Spiel
+     */
     @PutMapping("/update")
     public ResponseEntity<Void> updateGame(@RequestBody @Validated UpdateGameRequest request) {
 
-        // Game-Objekt erstellen und neue Werte setzen
+        // Game-Objekt erstellen
         GameEntity gameEntity = gameService.getGameById(request.getId());
-        gameEntity.setTitle(request.getTitle());
+        gameEntity.setTitle(request.getTitle()); // Neue Werte setzen
         gameEntity.setDescription(request.getDescription());
         gameEntity.setShortDescription(request.getShortDescription());
         gameEntity.setReleaseDate(request.getReleaseDate());
@@ -161,39 +198,46 @@ public class GameController {
         // Publisher mit der ID aus der Datenbank holen und setzen
         gameEntity.setPublisher(publisherService.getPublisherById(request.getPublisherId()));
 
-        // Kategorien und Spielebilder löschen
+        // Kategorien löschen
         categoryGameService.deleteAll(gameEntity.getCategories());
         gameEntity.getCategories().removeAll(gameEntity.getCategories());
 
+        // Spielebilder löschen
         gamePictureService.deleteAll(gameEntity.getGamePictures());
         gameEntity.getGamePictures().removeAll(gameEntity.getGamePictures());
 
-        // Persistieren
-        gameService.save(gameEntity);
+        gameService.save(gameEntity); // Spiel persistieren
 
-        // Thumbnail-Objekt erstellen und persistieren
+        // Thumbnail-Objekt erstellen
         GamePictureEntity thumbnail = getGamePicture(gameEntity, request.getThumbnail(), true);
         gameEntity.getGamePictures().add(thumbnail);
-        gamePictureService.save(thumbnail);
+        gamePictureService.save(thumbnail); // Persistieren
 
-        // Spielebilder-Objekte erstellen und persistieren
+        // Spielebilder-Objekte erstellen
         request.getGamePictures().forEach(entity -> {
             GamePictureEntity gamePicture = getGamePicture(gameEntity, entity, false);
-            gamePictureService.save(gamePicture);
+            gamePictureService.save(gamePicture); // Persistieren
         });
 
-        // Spielekategorie-Objekte erstellen und persistieren
+        // Spielekategorie-Objekte erstellen
         request.getCategories().forEach(entity -> {
             CategoryGameEntity categoryGame = getCategoryGame(gameEntity, entity);
-            categoryGameService.save(categoryGame);
+            categoryGameService.save(categoryGame); // Persistieren
         });
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Löscht ein Spiel mittels ID.
+     *
+     * @param id - ID zum Spiel
+     * @return - Response-Entity
+     */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deleteGameById(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteGameById(@PathVariable("id") Long id) {
 
+        // Spiel zur ID holen
         GameEntity gameById = gameService.getGameById(id);
 
         boolean isGameSet = placingService.getAllPlacings()
@@ -202,37 +246,57 @@ public class GameController {
                         .collect(Collectors.toList())
                         .contains(id));
 
+        // Wurde das Spiel bereits gekauft?
         if (!isGameSet) {
+            // Spiel wurde nicht gekauft, scheint daher nicht in Bestellungen auf und kann somit gelöscht werden
             categoryGameService.deleteAll(gameById.getCategories());
             gamePictureService.deleteAll(gameById.getGamePictures());
             keyCodeService.deleteAll(gameById.getKeys());
             shoppingCartGameService.deleteAllByGameId(gameById.getId());
             gameService.deleteById(id);
-            // refetch warenkörbe, games
         } else {
-            throw new DeleteGameException();
+            throw new DeleteGameException(); // In Verwendung, kann nicht gelöscht werden
         }
 
-        return ResponseEntity.ok(true);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Liefert das Spiel zur ID.
+     *
+     * @param id - ID zum Spiel
+     * @return - Spiel zur ID
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<GameResponse> getGameById(@PathVariable("id") Long gameId) {
+    public ResponseEntity<GameResponse> getGameById(@PathVariable("id") Long id) {
 
-        GameResponse gameResponse = GameResponseMapper.INSTANCE.entityToResponse(gameService.getGameById(gameId));
+        GameResponse gameResponse = GameResponseMapper.INSTANCE.entityToResponse(gameService.getGameById(id));
 
         return ResponseEntity.ok(gameResponse);
     }
 
+    /**
+     * Löscht die Zuordnung einer Kategorie zu einem Spiel.
+     *
+     * @param gameId - ID zum Spiel
+     * @param categoryId - ID zur Kategorie
+     * @return - Response-Entity
+     */
     @PutMapping("/{id}/remove/category/{catId}")
-    public ResponseEntity<Boolean> deleteCategoryFromGame(@PathVariable("id") Long gameId, @PathVariable("catId") Long categoryId) {
+    public ResponseEntity<Void> deleteCategoryFromGame(@PathVariable("id") Long gameId, @PathVariable("catId") Long categoryId) {
 
         CategoryGameEntity categoryGameById = categoryGameService.getCategoryGameById(new CategoryGamePk(categoryId, gameId));
         categoryGameService.delete(categoryGameById); // Datensatz löschen
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Liefert das reduzierte Spieleobjekt mittels ID.
+     *
+     * @param id - ID zum Spiel
+     * @return - Reduziertes Spieleobjekt zur ID
+     */
     @GetMapping("/slim/{id}")
     public ResponseEntity<SlimGameResponse> getSlimGameResponse(@PathVariable("id") Long id) {
 

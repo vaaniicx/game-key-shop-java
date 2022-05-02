@@ -40,46 +40,68 @@ public class AuthController {
         this.userService = userService;
     }
 
+    /**
+     * Authentifiziert den aktuellen Benutzer.
+     *
+     * @return - Benutzerobjekt
+     */
     @GetMapping
     public ResponseEntity<AuthResponse> authenticateUser() {
 
         UserEntity userEntity;
         try {
+            // hole aktuellen Benutzer
             userEntity = userService.getCurrentUserEntity();
         } catch (UserNotFoundException e) {
-            throw new InvalidTokenException();
+            throw new InvalidTokenException(); // Token nicht gültig
         }
 
         return ResponseEntity.ok(new AuthResponse(UserResponseMapper.INSTANCE.entityToResponse(userEntity)));
     }
 
+    /**
+     * Führt das Benutzer-Login durch.
+     *
+     * @param request - Login-Request
+     * @return - Auth-Token
+     */
     @PostMapping("/login")
     public ResponseEntity<JwtLoginResponse> loginUser(@RequestBody @Validated JwtLoginRequest request) {
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
-        authenticationManager.authenticate(authToken);
+        authenticationManager.authenticate(authToken); // Authentifizierung
 
+        // Benutzer laden
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        String token = jwtTokenUtil.generateToken(userDetails);
+        String token = jwtTokenUtil.generateToken(userDetails); // Token-Generierung
 
+        // Benutzerkonto deaktiviert?
         if (!userService.isAccountActiveByEmail(userDetails.getUsername())) {
-            throw new UserInactiveException();
+            throw new UserInactiveException(); // Konto deaktiviert, keine Anmeldung möglich
         }
+        // Anmeldung erfolgreich, letzte Anmeldung aktualisieren
         userService.updateLastLogin(userDetails.getUsername());
 
         return ResponseEntity.ok(new JwtLoginResponse(token));
     }
 
+    /**
+     * Registriert ein Benutzerkonto.
+     *
+     * @param request - Registrierungs-Request
+     * @return - Registrierungs-Response
+     */
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> registerUser(@RequestBody @Validated RegisterRequest request) {
 
+        // Wurde die E-Mail bereits registriert?
         boolean alreadyRegistered = userService.isEmailAlreadyRegistered(request.getEmail());
 
         if (alreadyRegistered) {
-            throw new UserExistsException();
+            throw new UserExistsException(); // E-Mail bereits registriert, keine Registrierung möglich
         }
 
-        UserEntity userEntity = userService.register(request);
+        UserEntity userEntity = userService.register(request); // Registrierung durchführen
 
         return ResponseEntity.ok(new RegisterResponse(userEntity.getEmail(), userEntity.getRegistrationDate()));
     }

@@ -22,6 +22,11 @@ public class CountryController {
         this.countryService = countryService;
     }
 
+    /**
+     * Liefert alle Länder.
+     *
+     * @return - Liste aller Länder
+     */
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<CountryResponse>> getAllCountries() {
@@ -34,6 +39,12 @@ public class CountryController {
         return ResponseEntity.ok(countryResponses);
     }
 
+    /**
+     * Liefert das Land zur ID.
+     *
+     * @param id - ID des Landes
+     * @return - Land zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<CountryResponse> getCountryById(@PathVariable("id") Long id) {
 

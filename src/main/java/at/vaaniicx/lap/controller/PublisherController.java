@@ -11,6 +11,7 @@ import at.vaaniicx.lap.model.response.publisher.RegisterPublisherResponse;
 import at.vaaniicx.lap.service.GameService;
 import at.vaaniicx.lap.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,11 @@ public class PublisherController {
         this.gameService = gameService;
     }
 
+    /**
+     * Liefert alle Publisher.
+     *
+     * @return - Liste aller Publisher
+     */
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<PublisherResponse>> getAllPublisher() {
@@ -43,6 +49,12 @@ public class PublisherController {
         return ResponseEntity.ok(publisherResponses);
     }
 
+    /**
+     * Liefert den Publisher zur ID.
+     *
+     * @param publisherId - ID zum Publisher
+     * @return - Publisher zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<PublisherResponse> getPublisherById(@PathVariable("id") Long publisherId) {
 
@@ -51,42 +63,69 @@ public class PublisherController {
         return ResponseEntity.ok(PublisherResponseMapper.INSTANCE.entityToResponse(publisherById));
     }
 
+    /**
+     * Aktualisiert einen Publisher.
+     *
+     * @param request - Update-Request
+     * @return - Aktualisierter Publisher
+     */
     @PostMapping("/update")
     public ResponseEntity<PublisherResponse> updatePublisher(@RequestBody @Validated UpdatePublisherRequest request) {
 
         PublisherEntity publisher = publisherService.getPublisherById(request.getId());
-        publisher.setPublisher(request.getPublisher());
+        publisher.setPublisher(request.getPublisher()); // Neue Werte setzen
 
-        PublisherEntity persistedPublisher = publisherService.save(publisher);
+        PublisherEntity persistedPublisher = publisherService.save(publisher); // Persistieren
 
         return ResponseEntity.ok(PublisherResponseMapper.INSTANCE.entityToResponse(persistedPublisher));
     }
 
+    /**
+     * Registriert einen Publisher.
+     *
+     * @param request - Registrierungs-Request
+     * @return - Registrierter Publisher
+     */
     @PostMapping("/register")
     public ResponseEntity<RegisterPublisherResponse> registerPublisher(@RequestBody @Validated RegisterPublisherRequest request) {
 
-        PublisherEntity publisher = new PublisherEntity();
+        PublisherEntity publisher = new PublisherEntity(); // Erstellen
         publisher.setPublisher(request.getPublisher());
 
-        PublisherEntity persistedPublisher = publisherService.save(publisher);
+        PublisherEntity persistedPublisher = publisherService.save(publisher); // Persistieren
 
         return ResponseEntity.ok(new RegisterPublisherResponse(persistedPublisher.getId(), persistedPublisher.getPublisher()));
     }
 
+    /**
+     * Löscht einen Publisher zur ID.
+     *
+     * @param id - ID zum Publisher
+     * @return - Response-Entity
+     */
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deletePublisher(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deletePublisher(@PathVariable("id") Long id) {
 
-        boolean isPublisherSet = gameService.getAllGamesOrderByTitle().stream().anyMatch(game -> game.getPublisher().getId() == id);
+        boolean isPublisherSet = gameService.getAllGamesOrderByTitle()
+                .stream()
+                .anyMatch(game -> game.getPublisher().getId() == id);
 
+        // Ist der Publisher einem Spiel zugeordnet?
         if (!isPublisherSet) {
-            publisherService.deleteById(id);
+            publisherService.deleteById(id); // Nicht in Verwendung, kann gelöscht werden
         } else {
-            throw new DeletePublisherException();
+            throw new DeletePublisherException(); // In Verwendung, kann nicht gelöscht werden
         }
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Liefert alle Spiele zu einem Publisher.
+     *
+     * @param id - ID zum Publisher
+     * @return - Liste aller Spiele eines Publishers
+     */
     @GetMapping("/{id}/game")
     public ResponseEntity<List<GamesByPublisherResponse>> getGamesByPublisher(@PathVariable("id") Long id) {
 

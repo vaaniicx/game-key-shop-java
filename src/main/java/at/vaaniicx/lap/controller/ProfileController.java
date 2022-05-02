@@ -39,11 +39,17 @@ public class ProfileController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Aktualisiert ein Benutzerkonto.
+     *
+     * @param request - Update-Request
+     * @return - Aktualisiertes Benutzerkonto
+     */
     @PostMapping("/update")
     public ResponseEntity<ModifyProfileResponse> updateProfile(@RequestBody @Validated UpdateProfileRequest request) {
 
         UserEntity user = userService.getUserById(request.getId());
-        user.setRole(roleService.getRoleById(request.getRoleId()));
+        user.setRole(roleService.getRoleById(request.getRoleId())); // Neue Werte setzen
         user.setActive(request.isActive());
 
         PersonEntity person = user.getPerson();
@@ -62,17 +68,17 @@ public class ProfileController {
 
         CountryEntity country = countryService.getCountryById(request.getCountryId());
 
-        if (request.getProfilePicture() != null) {
+        if (request.getProfilePicture() != null) { // Neues Profilbild wurde hochgeladen
             Blob blob = ImageConversionHelper.byteArrayToBlob(request.getProfilePicture());
 
             ProfilePictureEntity profilePicture = user.getProfilePicture();
             if (profilePicture != null) {
-                profilePicture.setPicture(blob);
+                profilePicture.setPicture(blob); // Profilbild aktualisieren/umsetzen
             } else {
-                profilePicture = ProfilePictureEntity.builder().picture(blob).build();
+                profilePicture = ProfilePictureEntity.builder().picture(blob).build(); // Neues Profilbild anlegen
             }
 
-            user.setProfilePicture(profilePictureService.save(profilePicture));
+            user.setProfilePicture(profilePictureService.save(profilePicture)); // Persistieren
         }
 
         location.setCountry(country);
@@ -80,35 +86,48 @@ public class ProfileController {
         person.setAddress(address);
         user.setPerson(person);
 
-        userService.save(user);
+        userService.save(user); // Persistieren
 
         return ResponseEntity.ok(new ModifyProfileResponse(user.getId(), user.getEmail()));
     }
 
+    /**
+     * Deaktiviert ein Benutzerkonto.
+     *
+     * @param request - Deaktivierungs-Request
+     * @return - Response-Entity
+     */
     @PutMapping("/deactivate")
-    public ResponseEntity<Boolean> deactivateProfile(@RequestBody @Validated DeactivateProfileRequest request) {
+    public ResponseEntity<Void> deactivateProfile(@RequestBody @Validated DeactivateProfileRequest request) {
 
         UserEntity user = userService.getUserById(request.getUserId());
-        user.setActive(false);
+        user.setActive(false); // Deaktivieren
 
-        userService.save(user);
+        userService.save(user); // Persistieren
 
-        return ResponseEntity.ok(Boolean.TRUE);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * Ändert das Passwort eines Benutzerkontos.
+     *
+     * @param request - Änderungs-Request
+     * @return - Response-Entity
+     */
     @PostMapping("/password")
     public ResponseEntity<Void> changePassword(@RequestBody @Validated ChangePasswordRequest request) {
 
         UserEntity user = userService.getUserById(request.getUserId());
 
+        // Stimmt das aktuelle Passwort mit dem persistierten überein?
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            // passwörter stimmen nicht überein
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK); // Keine Übereinstimmung
         }
 
+        // Stimmt das neue Passwort mit der Wiederholung überein?
         if (request.getNewPassword().equals(request.getNewPasswordRepeated())) {
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-            userService.save(user);
+            user.setPassword(passwordEncoder.encode(request.getNewPassword())); // Neues Passwort setzen
+            userService.save(user); // Persistieren
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

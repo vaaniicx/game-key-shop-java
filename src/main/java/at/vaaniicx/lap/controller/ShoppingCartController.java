@@ -42,6 +42,11 @@ public class ShoppingCartController {
         this.keyCodeService = keyCodeService;
     }
 
+    /**
+     * Liefert alle Warenkörbe.
+     *
+     * @return - Liste aller Warenkörbe
+     */
     @GetMapping
     public ResponseEntity<List<SlimShoppingCartResponse>> getAllCarts() {
 
@@ -53,6 +58,12 @@ public class ShoppingCartController {
         return ResponseEntity.ok(responses);
     }
 
+    /**
+     * Liefert den Warenkorb zur ID.
+     *
+     * @param shoppingCartId - ID zum Warenkorb
+     * @return - Warenkorb zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<SlimShoppingCartResponse> getCartById(@PathVariable("id") Long shoppingCartId) {
 
@@ -61,6 +72,12 @@ public class ShoppingCartController {
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToSlimResponse(cart));
     }
 
+    /**
+     * Liefert den Warenkorb einer Person.
+     *
+     * @param personId - ID zur Person
+     * @return - Warenkorb zur Person
+     */
     @GetMapping("/person/{id}")
     public ResponseEntity<ShoppingCartResponse> getCartByPersonId(@PathVariable("id") Long personId) {
 
@@ -71,6 +88,12 @@ public class ShoppingCartController {
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
+    /**
+     * Fügt einen Artikel zum Warenkorb hinzu.
+     *
+     * @param request - Aktualisierungs-Request
+     * @return - Aktualisierter Warenkorb
+     */
     @PostMapping("/person/add")
     public ResponseEntity<ShoppingCartResponse> addItemToShoppingCart(@RequestBody @Validated AddToShoppingCartRequest request) {
 
@@ -79,52 +102,53 @@ public class ShoppingCartController {
         // Inhalt des Shopping-Carts holen
         List<ShoppingCartGameEntity> shoppingCartGames = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
 
-        // Gibt es bereits einen Eintrag des Spiels?
         Optional<ShoppingCartGameEntity> foundEntry =
                 shoppingCartGames.stream().filter(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId())).findFirst();
 
         ShoppingCartGameEntity game;
-        if (foundEntry.isPresent()) {
+        if (foundEntry.isPresent()) { // Gibt es bereits einen Eintrag des Spiels?
             game = foundEntry.get();
 
-            // Vorhandenen Eintrag updaten
-            byte newAmount = (byte) (game.getAmount() + request.getAmount());
+            byte newAmount = (byte) (game.getAmount() + request.getAmount());  // Vorhandenen Eintrag updaten
             Long available = keyCodeService.getKeyCountByGameIdAndSold(game.getId().getGameId(), false);
 
             if (newAmount <= available) {
                 game.setAmount(newAmount < 0 ? 0 : newAmount);
             } else {
-                throw new NoKeysAvailableException();
+                throw new NoKeysAvailableException(); // Nicht genügend Schlüssel vorhanden
             }
         } else {
-            // Neuen Eintrag erstellen
-            game = new ShoppingCartGameEntity();
+            game = new ShoppingCartGameEntity(); // Neuen Eintrag erstellen
             game.setId(new ShoppingCartGamePk(cart.getId(), request.getGameId()));
             game.setGame(gameService.getGameById(request.getGameId()));
             game.setShoppingCart(cart);
             game.setAmount(request.getAmount());
         }
-        // Persistieren
-        shoppingCartGameService.save(game);
+        shoppingCartGameService.save(game); // Persistieren
 
-        double totalPrice = shoppingCartService.calculateShoppingCartSum(cart);
-
+        double totalPrice = shoppingCartService.calculateShoppingCartSum(cart); // Gesamtsumme berechnen
         cart.setTotalPrice(totalPrice);
-        shoppingCartService.save(cart);
+        shoppingCartService.save(cart); // Persistieren
 
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
-
+    /**
+     * Löscht den Inhalt des Warenkorbes einer Person.
+     *
+     * @param personId - ID zur Person
+     * @return - Leerer Warenkorb der Person
+     */
     @DeleteMapping("/person/{id}/clear")
     public ResponseEntity<ShoppingCartResponse> clearShoppingCartForPerson(@PathVariable("id") Long personId) {
 
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
+        cart.setTotalPrice(0); // Gesamtsumme setzen
 
-        cart.setTotalPrice(0);
         shoppingCartGameService.deleteAllById(cart.getGames());
         cart.getGames().removeAll(cart.getGames());
-        shoppingCartService.save(cart);
+
+        shoppingCartService.save(cart); // Persistieren
 
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }

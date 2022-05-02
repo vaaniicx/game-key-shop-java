@@ -26,6 +26,11 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Liefert alle Benutzerkonten.
+     *
+     * @return - Liste aller Benutzerkonten
+     */
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUser() {
 
@@ -37,6 +42,12 @@ public class UserController {
         return ResponseEntity.ok(userResponses);
     }
 
+    /**
+     * Liefert das Benutzerkonto zur ID.
+     *
+     * @param userId - ID zum Benutzer
+     * @return - Benutzer zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Long userId) {
 
@@ -45,6 +56,12 @@ public class UserController {
         return ResponseEntity.ok(UserResponseMapper.INSTANCE.entityToResponse(user));
     }
 
+    /**
+     * Liefert alle Benutzer zu einer Rolle.
+     *
+     * @param roleId - ID zur Rolle
+     * @return - Liste aller Benutzer einer Rolle
+     */
     @GetMapping("/role/{id}")
     public ResponseEntity<List<UserByRoleResponse>> getUserByRole(@PathVariable("id") Long roleId) {
 

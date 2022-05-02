@@ -18,10 +18,17 @@ public class GamePictureController {
         this.gamePictureService = gamePictureService;
     }
 
+    /**
+     * Liefert das Spielebild zur ID.
+     *
+     * @param id - ID zum Spielebild
+     * @return - Spielebild zur ID
+     */
     @GetMapping("/{id}")
     public ResponseEntity<GamePictureResponse> getById(@PathVariable("id") Long id) {
 
-        GamePictureResponse gamePictureResponse = GamePictureResponseMapper.INSTANCE.entityToResponse(gamePictureService.getGamePictureById(id));
+        GamePictureResponse gamePictureResponse =
+                GamePictureResponseMapper.INSTANCE.entityToResponse(gamePictureService.getGamePictureById(id));
 
         return ResponseEntity.ok(gamePictureResponse);
     }
