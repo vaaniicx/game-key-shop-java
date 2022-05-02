@@ -13,6 +13,7 @@ import at.vaaniicx.lap.model.response.GamePreviewResponse;
 import at.vaaniicx.lap.model.response.game.GameResponse;
 import at.vaaniicx.lap.model.response.game.PopularGameResponse;
 import at.vaaniicx.lap.model.response.game.SlimGameResponse;
+import at.vaaniicx.lap.model.response.game.StatisticGameResponse;
 import at.vaaniicx.lap.service.*;
 import at.vaaniicx.lap.util.ImageConversionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,6 +80,19 @@ public class GameController {
                 .collect(Collectors.toList());
 
         responses.subList(5, responses.size()).clear();
+
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/statistic")
+    public ResponseEntity<List<StatisticGameResponse>> getStatisticGames() {
+
+        List<StatisticGameResponse> responses = gameService.getAllGamesOrderByTitle().stream().map(e -> new StatisticGameResponse(e.getId(), e.getTitle(),
+                        keyCodeService.getKeyCountByGameIdAndSold(e.getId(), true)))
+                .sorted(Comparator.comparing(StatisticGameResponse::getKeysSold))
+                .collect(Collectors.toList());
+
+        responses.subList(3, responses.size()).clear();
 
         return ResponseEntity.ok(responses);
     }
