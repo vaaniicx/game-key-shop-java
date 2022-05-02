@@ -7,6 +7,7 @@ import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
 import at.vaaniicx.lap.model.entity.ShoppingCartGameEntity;
 import at.vaaniicx.lap.model.entity.pk.ShoppingCartGamePk;
 import at.vaaniicx.lap.model.request.shoppingcart.AddToShoppingCartRequest;
+import at.vaaniicx.lap.model.response.game.StatisticGameResponse;
 import at.vaaniicx.lap.model.response.shoppingcart.ShoppingCartResponse;
 import at.vaaniicx.lap.model.response.shoppingcart.SlimShoppingCartResponse;
 import at.vaaniicx.lap.service.GameService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,15 +66,20 @@ public class ShoppingCartController {
 
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(personId);
 
+        cart.setTotalPrice(shoppingCartService.calculateShoppingCartSum(cart)); // Gesamtsumme berechnen
+
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
 
     @PostMapping("/person/add")
     public ResponseEntity<ShoppingCartResponse> addItemToShoppingCart(@RequestBody @Validated AddToShoppingCartRequest request) {
 
+        // Shopping-Cart des Benutzers holen
         ShoppingCartEntity cart = shoppingCartService.getShoppingCartByPersonId(request.getPersonId());
+        // Inhalt des Shopping-Carts holen
         List<ShoppingCartGameEntity> shoppingCartGames = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
 
+        // Gibt es bereits einen Eintrag des Spiels?
         Optional<ShoppingCartGameEntity> foundEntry =
                 shoppingCartGames.stream().filter(scg -> scg.getGame() != null && scg.getGame().getId().equals(request.getGameId())).findFirst();
 
@@ -100,24 +107,14 @@ public class ShoppingCartController {
         // Persistieren
         shoppingCartGameService.save(game);
 
-        List<ShoppingCartGameEntity> allEntries = shoppingCartGameService.getShoppingCartGameByShoppingCartId(cart.getId());
-        double totalPrice = 0;
-        for (ShoppingCartGameEntity entry : allEntries) {
-            if (entry.getAmount() <= 0) {
-                shoppingCartGameService.deleteAllById(Collections.singleton(entry));
-                cart.getGames().remove(entry);
-            }
-
-            GameEntity g = entry.getGame();
-            System.out.println("entry amount: " + entry.getAmount());
-            totalPrice += BigDecimal.valueOf(g.getPrice()).multiply(BigDecimal.valueOf(entry.getAmount())).doubleValue();
-        }
+        double totalPrice = shoppingCartService.calculateShoppingCartSum(cart);
 
         cart.setTotalPrice(totalPrice);
         shoppingCartService.save(cart);
 
         return ResponseEntity.ok(ShoppingCartResponseMapper.INSTANCE.entityToResponse(cart));
     }
+
 
     @DeleteMapping("/person/{id}/clear")
     public ResponseEntity<ShoppingCartResponse> clearShoppingCartForPerson(@PathVariable("id") Long personId) {

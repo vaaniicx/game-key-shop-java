@@ -69,21 +69,6 @@ public class GameController {
         return ResponseEntity.ok(gameResponses);
     }
 
-    @GetMapping("/popular")
-    public ResponseEntity<List<PopularGameResponse>> getPopularGames() {
-
-        List<PopularGameResponse> responses = gameService.getAllGamesOrderByTitle()
-                .stream()
-                .map(e -> new PopularGameResponse(e.getId(), e.getTitle(),
-                        keyCodeService.getKeyCountByGameIdAndSold(e.getId(), true)))
-                .sorted(Comparator.comparing(PopularGameResponse::getKeysSold).reversed())
-                .collect(Collectors.toList());
-
-        responses.subList(5, responses.size()).clear();
-
-        return ResponseEntity.ok(responses);
-    }
-
     @GetMapping("/statistic")
     public ResponseEntity<List<StatisticGameResponse>> getStatisticGames() {
 

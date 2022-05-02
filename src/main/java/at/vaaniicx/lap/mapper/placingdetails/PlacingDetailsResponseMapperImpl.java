@@ -18,6 +18,7 @@ public class PlacingDetailsResponseMapperImpl implements PlacingDetailsResponseM
         destination.setKeyId(source.getKeyCode().getId());
         destination.setKeyCode(source.getKeyCode().getKeyCode());
         destination.setGameId(source.getKeyCode().getGame().getId());
+        destination.setPrice(source.getPrice());
 
         return destination;
     }

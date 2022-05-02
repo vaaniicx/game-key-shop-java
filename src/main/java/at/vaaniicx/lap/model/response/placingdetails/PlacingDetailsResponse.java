@@ -28,4 +28,6 @@ public class PlacingDetailsResponse {
 
     @JsonProperty("game_id")
     private Long gameId;
+
+    private double price;
 }
