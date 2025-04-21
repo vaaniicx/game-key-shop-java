@@ -1,35 +1,37 @@
 package at.vaaniicx.lap.controller;
 
-import at.vaaniicx.lap.exception.key.NoKeysAvailableException;
-import at.vaaniicx.lap.mapper.placing.PlacingResponseMapper;
-import at.vaaniicx.lap.model.entity.*;
-import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
-import at.vaaniicx.lap.model.response.game.StatisticGameResponse;
-import at.vaaniicx.lap.model.response.placing.PlacingResponse;
-import at.vaaniicx.lap.service.*;
-import com.itextpdf.text.*;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.itextpdf.text.pdf.draw.VerticalPositionMark;
+import java.time.Instant;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.time.Instant;
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
+import at.vaaniicx.lap.exception.key.NoKeysAvailableException;
+import at.vaaniicx.lap.mapper.placing.PlacingResponseMapper;
+import at.vaaniicx.lap.model.entity.KeyCodeEntity;
+import at.vaaniicx.lap.model.entity.PersonEntity;
+import at.vaaniicx.lap.model.entity.PlacingDetailsEntity;
+import at.vaaniicx.lap.model.entity.PlacingEntity;
+import at.vaaniicx.lap.model.entity.ShoppingCartEntity;
+import at.vaaniicx.lap.model.entity.UserEntity;
+import at.vaaniicx.lap.model.entity.pk.PlacingDetailsPk;
+import at.vaaniicx.lap.model.response.game.StatisticGameResponse;
+import at.vaaniicx.lap.model.response.placing.PlacingResponse;
+import at.vaaniicx.lap.service.GameService;
+import at.vaaniicx.lap.service.KeyCodeService;
+import at.vaaniicx.lap.service.PlacingDetailsService;
+import at.vaaniicx.lap.service.PlacingService;
+import at.vaaniicx.lap.service.ShoppingCartGameService;
+import at.vaaniicx.lap.service.ShoppingCartService;
+import at.vaaniicx.lap.service.UserService;
 
 @RestController
 @RequestMapping("/placing")
